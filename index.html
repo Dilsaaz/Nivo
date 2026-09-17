@@ -6,35 +6,42 @@
 <title>NIVO — One spin. Real desk.</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script>tailwind.config={theme:{extend:{colors:{ink:"#0b1f3a",blue:"#1a73e8",sky:"#e8f1ff",line:"#d7e3f4",ok:"#0f9d58"}}}}</script>
+<script>tailwind.config={theme:{extend:{colors:{ink:"#071428",blue:"#1a73e8",sky:"#eaf2ff"}}}}</script>
 <style>
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Playfair+Display:wght@600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Cormorant+Garamond:wght@600;700&display=swap");
 *{box-sizing:border-box}
-body{font-family:Manrope,system-ui,sans-serif;background:#f3f6fb;color:#0b1f3a}
-.serif{font-family:"Playfair Display",serif}
-.card{background:#fff;border:1px solid #d7e3f4;border-radius:20px;box-shadow:0 10px 30px rgba(15,40,80,.06)}
-.btn{background:#1a73e8;color:#fff;border-radius:14px;font-weight:700}
-.ghost{border:1px solid #d7e3f4;background:#fff}
-.side-btn{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;width:100%;text-align:left}
-.side-btn.on{background:#e8f1ff;color:#1a73e8}
-.wheel{width:280px;height:280px;border-radius:50%;border:10px solid #0b1f3a;position:relative;overflow:hidden;margin:0 auto;transition:transform 4s cubic-bezier(.12,.7,.12,1)}
-.pointer{width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-top:20px solid #1a73e8;margin:8px auto 0}
+body{font-family:Manrope,system-ui;background:#eef3f9;color:#071428}
+.serif{font-family:"Cormorant Garamond",serif}
+.card{background:#fff;border:1px solid #d5e2f2;border-radius:22px;box-shadow:0 12px 40px rgba(10,30,70,.07)}
+.btn{background:linear-gradient(180deg,#2b7fff,#1557c7);color:#fff;border-radius:14px;font-weight:800}
+.ghost{border:1px solid #d5e2f2;background:#fff}
 .hidden{display:none!important}
-.spin-dot{width:36px;height:36px;border:3px solid #d7e3f4;border-top-color:#1a73e8;border-radius:50%;animation:sp .7s linear infinite;margin:0 auto}
-@keyframes sp{to{transform:rotate(360deg)}}
-.card-tile{height:92px;border-radius:16px;background:linear-gradient(180deg,#1a73e8,#0b1f3a);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px}
-input{border:1px solid #d7e3f4;border-radius:12px;padding:12px 14px;width:100%;background:#fff}
-.logo-mark{width:40px;height:40px;border-radius:12px;background:#1a73e8;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
-table{width:100%;font-size:12px;border-collapse:collapse}
-th,td{padding:8px 6px;border-bottom:1px solid #e8eef6;text-align:left}
+.side-btn{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;width:100%;font-weight:700;color:#3d4f66}
+.side-btn.on{background:#e8f1ff;color:#1557c7}
+.hero{background:radial-gradient(circle at 80% 20%,rgba(80,160,255,.35),transparent 40%),linear-gradient(135deg,#071428 0%,#12315c 55%,#1a73e8 130%);color:#fff;border-radius:24px;overflow:hidden;position:relative}
+.hero img{position:absolute;right:-20px;bottom:-30px;width:210px;opacity:.28;pointer-events:none}
+.logo{width:44px;height:44px}
+.wheel{width:270px;height:270px;border-radius:50%;border:10px solid #071428;margin:0 auto;position:relative;overflow:hidden;transition:transform 4s cubic-bezier(.12,.7,.12,1)}
+.pointer{width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-top:18px solid #1a73e8;margin:6px auto 0}
+.card-tile{height:92px;border-radius:16px;background:linear-gradient(180deg,#1a73e8,#071428);color:#fff;font-weight:800;font-size:22px}
+input{border:1px solid #d5e2f2;border-radius:12px;padding:12px 14px;width:100%;background:#fff}
+.lvl{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.lvl b{display:block;font-size:20px}
 </style>
 </head>
-<body class="min-h-screen">
+<body>
+<svg width="0" height="0">
+  <symbol id="nivo-mark" viewBox="0 0 64 64">
+    <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#6cb6ff"/><stop offset="1" stop-color="#1a73e8"/></linearGradient></defs>
+    <rect rx="16" width="64" height="64" fill="#071428"/>
+    <path d="M16 46V18h8l16 20V18h8v28h-8L24 26v20h-8z" fill="url(#g)"/>
+  </symbol>
+</svg>
 <div id="auth" class="max-w-md mx-auto px-4 py-10">
-  <div class="text-center mb-8">
-    <div class="logo-mark mx-auto mb-3" style="width:56px;height:56px;font-size:20px">N</div>
-    <div class="serif text-4xl">NIVO</div>
-    <div class="text-sm tracking-[.25em] text-blue mt-1">ONE SPIN · REAL DESK</div>
+  <div class="text-center mb-7">
+    <svg class="logo mx-auto mb-3"><use href="#nivo-mark"/></svg>
+    <div class="serif text-5xl">NIVO</div>
+    <div class="text-[11px] tracking-[.35em] text-blue mt-1">ONE SPIN · REAL DESK</div>
   </div>
   <div id="box-login" class="card p-5 mb-3">
     <div class="font-bold mb-3">Sign in</div>
@@ -51,7 +58,7 @@ th,td{padding:8px 6px;border-bottom:1px solid #e8eef6;text-align:left}
     <input id="su-pass" type="password" class="mb-2" placeholder="Password"/>
     <input id="su-ref" class="mb-3" placeholder="Referral code (optional)"/>
     <button class="btn w-full py-3" onclick="sendOtp()">Send OTP</button>
-    <button class="w-full mt-3 text-sm text-blue" onclick="showBox('box-login')">Back to sign in</button>
+    <button class="w-full mt-3 text-sm text-blue" onclick="showBox('box-login')">Back</button>
   </div>
   <div id="box-otp" class="card p-5 mb-3 hidden">
     <div class="font-bold mb-3">Enter OTP</div>
@@ -68,58 +75,124 @@ th,td{padding:8px 6px;border-bottom:1px solid #e8eef6;text-align:left}
     <button class="w-full mt-3 text-sm text-blue" onclick="showBox('box-login')">Back</button>
   </div>
 </div>
-
 <div id="app" class="hidden">
   <div class="max-w-6xl mx-auto md:flex min-h-screen">
     <aside class="md:w-64 p-4">
-      <div class="flex items-center gap-3 mb-6"><div class="logo-mark">N</div><div class="serif text-2xl">NIVO</div></div>
+      <div class="flex items-center gap-3 mb-6">
+        <svg class="logo"><use href="#nivo-mark"/></svg>
+        <div><div class="serif text-3xl leading-none">NIVO</div><div class="text-[10px] tracking-[.28em] text-blue">REAL DESK</div></div>
+      </div>
       <button class="side-btn on" data-tab="home" onclick="tab('home')">Home</button>
       <button class="side-btn" data-tab="wallet" onclick="tab('wallet')">Wallet</button>
       <button class="side-btn" data-tab="deposit" onclick="tab('deposit')">Deposit</button>
       <button class="side-btn" data-tab="withdraw" onclick="tab('withdraw')">Withdraw</button>
       <button class="side-btn" data-tab="spin" onclick="tab('spin')">Daily Spin</button>
       <button class="side-btn" data-tab="game" onclick="tab('game')">Gamezone</button>
-      <button class="side-btn" data-tab="team" onclick="tab('team')">Team</button>
+      <button class="side-btn" data-tab="team" onclick="tab('team')">Team A B C D</button>
       <button class="side-btn" data-tab="profile" onclick="tab('profile')">Profile</button>
-      <button class="side-btn mt-6 text-slate-500" onclick="logout()">Logout</button>
+      <button class="side-btn mt-6 text-slate-400" onclick="logout()">Logout</button>
     </aside>
     <main class="flex-1 p-4 pb-16">
       <section id="tab-home">
-        <div class="grid grid-cols-2 gap-3 mb-4">
-          <div class="card p-4"><div class="text-xs text-slate-500">WALLET</div><div class="text-2xl font-extrabold">$<span id="h-bal">0.00</span></div></div>
-          <div class="card p-4"><div class="text-xs text-slate-500">PROFIT</div><div class="text-2xl font-extrabold text-blue">$<span id="h-profit">0.00</span></div></div>
+        <div class="hero p-6 mb-4 min-h-[168px]">
+          <div class="relative z-10">
+            <div class="text-[11px] tracking-[.3em] text-blue-200">WELCOME TO THE DESK</div>
+            <div class="serif text-4xl mt-1">Hello, <span id="h-name">Member</span></div>
+            <div class="text-sm text-blue-100 mt-1">Level <span id="h-lv">1</span> · <span id="h-lvn"></span></div>
+          </div>
+          <img alt="" src="https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&w=600&q=60"/>
         </div>
-        <div class="card p-4 mb-4"><div class="serif text-3xl">Level <span id="h-lv">1</span></div><div class="text-sm" id="h-lvn"></div></div>
-        <div class="card p-4 mb-4"><div class="font-bold" id="h-code"></div><div class="text-xs break-all" id="h-link"></div><button class="ghost rounded-full px-3 py-1 text-xs mt-2" onclick="copyRef()">Copy link</button></div>
-        <div class="grid grid-cols-2 gap-3"><button class="btn py-3" onclick="tab('spin')">Open Spin</button><button class="ghost rounded-2xl py-3 font-bold" onclick="tab('deposit')">Deposit $45+</button></div>
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <div class="card p-4"><div class="text-[11px] tracking-widest text-slate-500">WALLET</div><div class="text-2xl font-extrabold">$<span id="h-bal">0.00</span></div></div>
+          <div class="card p-4"><div class="text-[11px] tracking-widest text-slate-500">INCOME</div><div class="text-2xl font-extrabold text-blue">$<span id="h-profit">0.00</span></div></div>
+        </div>
+        <div class="lvl mb-4">
+          <div class="card p-3 text-center"><span class="text-[10px] text-slate-500">A TEAM</span><b id="nA">0</b></div>
+          <div class="card p-3 text-center"><span class="text-[10px] text-slate-500">B TEAM</span><b id="nB">0</b></div>
+          <div class="card p-3 text-center"><span class="text-[10px] text-slate-500">C TEAM</span><b id="nC">0</b></div>
+          <div class="card p-3 text-center"><span class="text-[10px] text-slate-500">D TEAM</span><b id="nD">0</b></div>
+        </div>
+        <div class="card p-4 mb-4">
+          <div class="text-[11px] tracking-widest text-slate-500 mb-1">REFERRAL DESK</div>
+          <div class="serif text-3xl" id="h-code"></div>
+          <div class="text-xs break-all mt-1 text-slate-500" id="h-link"></div>
+          <button class="btn px-4 py-2 mt-3 text-sm" onclick="copyRef()">Copy invite link</button>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <button class="btn py-3" onclick="tab('spin')">Open Spin</button>
+          <button class="ghost rounded-2xl py-3 font-bold" onclick="tab('deposit')">Deposit $45+</button>
+        </div>
       </section>
-      <section id="tab-wallet" class="hidden"><div class="card p-5"><div class="text-3xl font-extrabold">$<span id="w-bal">0.00</span></div><div class="text-sm">Locked $<span id="w-lock">0.00</span></div><div class="text-sm text-blue">Profit $<span id="w-free">0.00</span></div></div></section>
+      <section id="tab-wallet" class="hidden">
+        <div class="card p-5">
+          <div class="serif text-3xl mb-2">Wallet</div>
+          <div class="text-3xl font-extrabold mb-3">$<span id="w-bal">0.00</span></div>
+          <div class="text-sm">Locked capital $<span id="w-lock">0.00</span></div>
+          <div class="text-sm text-blue">Withdrawable income $<span id="w-free">0.00</span></div>
+        </div>
+      </section>
       <section id="tab-deposit" class="hidden">
         <div class="card p-5">
+          <div class="serif text-3xl mb-2">Deposit</div>
           <div class="bg-sky rounded-2xl p-3 text-xs break-all font-mono" id="dep-addr"></div>
           <button class="btn w-full py-3 mt-3" onclick="copyAddr()">Copy address</button>
-          <div id="copy-ok" class="hidden text-ok text-sm font-bold mt-2 text-center">Copied. Address is in your clipboard.</div>
+          <div id="copy-ok" class="hidden text-center text-green-600 text-sm font-bold mt-2">Copied. Address is in your clipboard.</div>
           <input id="dep-amt" type="number" class="mt-4" placeholder="Amount (min $45)"/>
           <label class="block text-xs mt-3 mb-1">Payment screenshot</label>
           <input id="dep-shot" type="file" accept="image/*"/>
           <button class="btn w-full py-3 mt-4" onclick="sendDep()">Submit deposit</button>
-          <p class="text-xs mt-3" id="dep-note"></p><div id="dep-hist" class="text-sm mt-4"></div>
+          <p class="text-xs mt-3 text-slate-500" id="dep-note"></p>
+          <div id="dep-hist" class="text-sm mt-4"></div>
         </div>
       </section>
       <section id="tab-withdraw" class="hidden">
-        <div class="card p-5 mb-3"><p class="text-xs break-all" id="wd-saved"></p><input id="wd-addr" class="mt-3" placeholder="0x BEP20"/><button class="ghost w-full py-2 mt-2 rounded-xl font-bold" onclick="saveAddr()">Save / Edit address</button></div>
-        <div class="card p-5"><input id="wd-amt" type="number" placeholder="Profit amount"/><button class="btn w-full py-3 mt-3" onclick="askWd()">Request withdraw</button><div id="wd-hist" class="text-sm mt-4"></div></div>
+        <div class="card p-5 mb-3">
+          <div class="serif text-3xl mb-2">Withdraw</div>
+          <p class="text-sm text-slate-600">Income only. Pending until admin approval. Then 10 minutes.</p>
+          <p class="text-xs mt-2 break-all" id="wd-saved"></p>
+          <input id="wd-addr" class="mt-3" placeholder="0x BEP20"/>
+          <button class="ghost w-full py-2 mt-2 rounded-xl font-bold" onclick="saveAddr()">Save / Edit address</button>
+        </div>
+        <div class="card p-5">
+          <input id="wd-amt" type="number" placeholder="Income amount"/>
+          <button class="btn w-full py-3 mt-3" onclick="askWd()">Request withdraw</button>
+          <div id="wd-hist" class="text-sm mt-4"></div>
+        </div>
       </section>
-      <section id="tab-spin" class="hidden"><div class="card p-5 text-center"><div class="text-sm">Spins left: <b id="sp-left">0</b></div><div class="pointer"></div><div id="wheel" class="wheel"></div><button class="btn px-10 py-3 mt-5" onclick="doSpin()">Spin</button></div></section>
-      <section id="tab-game" class="hidden"><div class="card p-5"><div class="flex gap-2"><input id="gz-amt" type="number" placeholder="Min $10"/><button class="btn px-5" onclick="gzStart()">Play</button></div><div id="gz-board" class="grid grid-cols-3 gap-3 mt-5"></div><div id="gz-msg" class="text-center font-bold mt-4"></div></div></section>
-      <section id="tab-team" class="hidden"><div class="card p-5 mb-3" id="t-counts"></div><div class="card p-5 text-sm" id="t-plan"></div></section>
+      <section id="tab-spin" class="hidden">
+        <div class="card p-5 text-center">
+          <div class="serif text-3xl">Daily Spin</div>
+          <div class="text-sm text-slate-500 mb-2">Spins left: <b id="sp-left">0</b></div>
+          <div class="pointer"></div>
+          <div id="wheel" class="wheel"></div>
+          <button class="btn px-10 py-3 mt-5" onclick="doSpin()">Spin</button>
+        </div>
+      </section>
+      <section id="tab-game" class="hidden">
+        <div class="card p-5">
+          <div class="serif text-3xl">Gamezone</div>
+          <div class="flex gap-2 mt-3"><input id="gz-amt" type="number" placeholder="Min $10"/><button class="btn px-5" onclick="gzStart()">Play</button></div>
+          <div id="gz-board" class="grid grid-cols-3 gap-3 mt-5"></div>
+          <div id="gz-msg" class="text-center font-bold mt-4"></div>
+        </div>
+      </section>
+      <section id="tab-team" class="hidden">
+        <div class="hero p-5 mb-4 min-h-[120px]"><div class="serif text-3xl relative z-10">Team structure</div><div class="text-blue-100 text-sm relative z-10">A direct · B C D downline</div></div>
+        <div class="lvl mb-4">
+          <div class="card p-3 text-center"><span class="text-[10px]">A</span><b id="tA">0</b></div>
+          <div class="card p-3 text-center"><span class="text-[10px]">B</span><b id="tB">0</b></div>
+          <div class="card p-3 text-center"><span class="text-[10px]">C</span><b id="tC">0</b></div>
+          <div class="card p-3 text-center"><span class="text-[10px]">D</span><b id="tD">0</b></div>
+        </div>
+        <div class="card p-4 text-sm leading-7" id="t-plan"></div>
+        <div class="card p-4 mt-3 text-sm" id="t-list"></div>
+      </section>
       <section id="tab-profile" class="hidden"><div class="card p-5" id="p-box"></div></section>
     </main>
   </div>
 </div>
-
 <div id="admin" class="hidden max-w-5xl mx-auto p-4">
-  <div class="flex items-center justify-between mb-4"><div class="serif text-2xl">NIVO Admin</div><button class="ghost rounded-xl px-4 py-2" onclick="logout()">Exit</button></div>
+  <div class="flex items-center justify-between mb-4"><div class="flex items-center gap-2"><svg class="logo"><use href="#nivo-mark"/></svg><div class="serif text-3xl">Admin</div></div><button class="ghost rounded-xl px-4 py-2" onclick="logout()">Exit</button></div>
   <div class="grid grid-cols-3 gap-3 mb-4">
     <div class="card p-4"><div class="text-xs">USERS</div><div class="text-2xl font-extrabold" id="ad-users">0</div></div>
     <div class="card p-4"><div class="text-xs">PENDING DEP</div><div class="text-2xl font-extrabold" id="ad-pd">0</div></div>
@@ -129,15 +202,13 @@ th,td{padding:8px 6px;border-bottom:1px solid #e8eef6;text-align:left}
   <div class="card p-4 mb-4" id="ad-wds"></div>
   <div class="card p-4" id="ad-mem"></div>
 </div>
-
 <div id="pop" class="hidden fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-6">
   <div class="card p-6 max-w-sm w-full text-center">
-    <div class="serif text-2xl" id="pop-t"></div>
+    <div class="serif text-3xl" id="pop-t"></div>
     <p class="text-sm mt-2" id="pop-m"></p>
     <button class="btn w-full py-3 mt-4" onclick="closePop()">OK</button>
   </div>
 </div>
-
 <script>
 var ADDR="0x4E58b3522112BA59621d808E3687a566A87d7623";
 var ADMIN_ID="nivoadmin";
@@ -145,7 +216,7 @@ var ADMIN_PW="Nivo@2026";
 var EJ_PUB="k0dCrs4f9E7VKwgMY";
 var EJ_SVC="service_hdyma9x";
 var EJ_TPL="template_al6v76j";
-var SLICES=[{l:"1.1x",m:1.1,c:"#1a73e8"},{l:"1.3x",m:1.3,c:"#0b1f3a"},{l:"1.5x",m:1.5,c:"#3b82f6"},{l:"1.8x",m:1.8,c:"#0b1f3a"},{l:"2.0x",m:2.0,c:"#1a73e8"},{l:"No win",m:0,c:"#64748b"}];
+var SLICES=[{l:"1.1x",m:1.1,c:"#1a73e8"},{l:"1.3x",m:1.3,c:"#071428"},{l:"1.5x",m:1.5,c:"#3b82f6"},{l:"1.8x",m:1.8,c:"#071428"},{l:"2.0x",m:2.0,c:"#1a73e8"},{l:"No win",m:0,c:"#64748b"}];
 var u=null, pending=null, otpCode="", otpAt=0, gzLive=false;
 if(EJ_PUB) try{emailjs.init({publicKey:EJ_PUB})}catch(e){}
 function el(id){return document.getElementById(id)}
@@ -158,15 +229,17 @@ function money(n){return Number(n||0).toFixed(2)}
 function codeOf(){var c="NIVO23456789ABCDEFGHJKMNPQRSTUVWXYZ",s="";for(var i=0;i<8;i++)s+=c.charAt(Math.floor(Math.random()*c.length));return s;}
 function showBox(id){["box-login","box-signup","box-otp","box-admin"].forEach(function(x){el(x).classList.toggle("hidden",x!==id)})}
 function hideAll(){el("auth").classList.add("hidden");el("app").classList.add("hidden");el("admin").classList.add("hidden")}
+function kidsOf(ref){return allUsers().filter(function(p){return String(p.sponsor||"").toUpperCase()===String(ref||"").toUpperCase()})}
+function layers(){var A=kidsOf(u.ref);var B=[];A.forEach(function(a){B=B.concat(kidsOf(a.ref))});var C=[];B.forEach(function(b){C=C.concat(kidsOf(b.ref))});var D=[];C.forEach(function(c){D=D.concat(kidsOf(c.ref))});return {A:A,B:B,C:C,D:D};}
 function doLogin(){var name=el("li-user").value.trim(),pass=el("li-pass").value;u=load(name);if(!u||u.pass!==pass){pop("Error","Wrong username or password");return}enterUser();}
 function sendOtp(){
   var name=el("su-user").value.trim(),email=el("su-email").value.trim(),pass=el("su-pass").value;
   if(!name||!email||!pass){pop("Required","Username, email and password");return}
   if(load(name)){pop("Error","Username taken");return}
   otpCode=String(Math.floor(100000+Math.random()*900000)); otpAt=Date.now();
-  pending={user:name,email:email,pass:pass,ref:codeOf(name),sponsor:(new URLSearchParams(location.search).get("ref")||el("su-ref").value.trim())};
+  pending={user:name,email:email,pass:pass,ref:codeOf(),sponsor:(new URLSearchParams(location.search).get("ref")||el("su-ref").value.trim())};
   el("otp-hint").textContent="Code sent to "+email+" · valid 10 minutes"; showBox("box-otp");
-  if(EJ_PUB&&EJ_SVC&&EJ_TPL){emailjs.send(EJ_SVC,EJ_TPL,{to_email:email,user_name:name,otp_code:otpCode,message:"NIVO OTP "+otpCode}).then(function(){pop("OTP sent","Check email")}).catch(function(){pop("Mail error","Test OTP: "+otpCode)});}
+  if(EJ_PUB&&EJ_SVC&&EJ_TPL){emailjs.send(EJ_SVC,EJ_TPL,{to_email:email,user_name:name,otp_code:otpCode,message:"NIVO OTP "+otpCode}).then(function(){pop("OTP sent","Check your email")}).catch(function(){pop("Mail error","Test OTP: "+otpCode)});}
   else pop("OTP","EmailJS not set. Test code: "+otpCode);
 }
 function verifyOtp(){
@@ -180,21 +253,39 @@ function adminLogin(){if(el("ad-user").value.trim()!==ADMIN_ID||el("ad-pass").va
 function logout(){u=null;hideAll();el("auth").classList.remove("hidden");showBox("box-login")}
 function enterUser(){hideAll();el("app").classList.remove("hidden");drawWheel();draw();tab("home")}
 function tab(id){["home","wallet","deposit","withdraw","spin","game","team","profile"].forEach(function(t){el("tab-"+t).classList.toggle("hidden",t!==id)});document.querySelectorAll(".side-btn[data-tab]").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-tab")===id)});draw();}
-function copyRef(){navigator.clipboard.writeText(location.origin+location.pathname+"?ref="+u.ref);pop("Copied","Referral link copied.")}
+function copyRef(){navigator.clipboard.writeText(location.origin+location.pathname+"?ref="+u.ref);pop("Copied","Invite link copied.")}
 function copyAddr(){navigator.clipboard.writeText(ADDR).then(function(){el("copy-ok").classList.remove("hidden");pop("Copied","Address copied.")})}
-function sendDep(){var amt=Number(el("dep-amt").value),f=el("dep-shot").files[0];if(!amt||amt<45){pop("Minimum","$45 USDT BEP20");return}if(!f){pop("Screenshot","Upload payment screenshot");return}u.deps.unshift({id:"D"+Date.now(),amt:amt,st:"PENDING",t:Date.now(),file:f.name});saveU(u);draw();el("dep-note").textContent="Pending admin approval. Credit after OK.";pop("Submitted","Pending until admin OK");}
+function sendDep(){var amt=Number(el("dep-amt").value),f=el("dep-shot").files[0];if(!amt||amt<45){pop("Minimum","$45 USDT BEP20");return}if(!f){pop("Screenshot","Upload payment screenshot");return}u.deps.unshift({id:"D"+Date.now(),amt:amt,st:"PENDING",t:Date.now(),file:f.name});saveU(u);draw();el("dep-note").textContent="Pending admin approval.";pop("Submitted","Pending until admin OK");}
 function saveAddr(){var a=el("wd-addr").value.trim();if(a.indexOf("0x")!==0||a.length<20){pop("Address","Valid BEP20");return}u.addr=a;saveU(u);draw();pop("Saved","Address stored");}
-function askWd(){if(!u.addr){pop("Address","Save address first");return}var amt=Number(el("wd-amt").value);if(!amt||amt>u.profit+0.0001){pop("Limit","Profit only");return}u.profit-=amt;u.bal-=amt;u.wds.unshift({id:"W"+Date.now(),amt:amt,st:"PENDING",t:Date.now(),addr:u.addr});saveU(u);draw();pop("Pending","10 min after admin approval");}
+function askWd(){if(!u.addr){pop("Address","Save address first");return}var amt=Number(el("wd-amt").value);if(!amt||amt>u.profit+0.0001){pop("Limit","Income only");return}u.profit-=amt;u.bal-=amt;u.wds.unshift({id:"W"+Date.now(),amt:amt,st:"PENDING",t:Date.now(),addr:u.addr});saveU(u);draw();pop("Pending","10 min after admin approval");}
 function findUser(name){return allUsers().filter(function(x){return x.user===name})[0]}
 function adDep(user,id,ok){var p=findUser(user);if(!p)return;var d=p.deps.filter(function(x){return x.id===id})[0];if(!d||d.st!=="PENDING")return;if(ok){d.st="SUCCESSFUL";p.bal+=d.amt;p.lock+=d.amt;if(p.spins===0&&p.lock>=45)p.spins=1;if(p.sponsor){var sp=allUsers().filter(function(x){return x.ref===p.sponsor})[0];if(sp){var b=+(d.amt*0.10).toFixed(2);sp.bal+=b;sp.profit+=b;if(sp.teamA.indexOf(p.user)<0)sp.teamA.push(p.user);saveU(sp);}}}else d.st="REJECTED";saveU(p);if(u&&u.user===p.user)u=p;renderAdmin();pop(ok?"Approved":"Rejected",user);}
 function adWd(user,id,ok){var p=findUser(user);if(!p)return;var d=p.wds.filter(function(x){return x.id===id})[0];if(!d||d.st!=="PENDING")return;if(ok)d.st="APPROVED";else{d.st="REJECTED";p.profit+=d.amt;p.bal+=d.amt;}saveU(p);if(u&&u.user===p.user)u=p;renderAdmin();pop(ok?"Approved":"Rejected",user);}
-function renderAdmin(){var list=allUsers(),pd=0,pw=0,depH="",wdH="",mem="";list.forEach(function(p){(p.deps||[]).forEach(function(d){if(d.st==="PENDING"){pd++;depH+='<div class="flex justify-between py-2"><div>$'+money(d.amt)+' · '+p.user+'</div><div><button class="btn px-3 py-1 mr-1" onclick="adDep(\''+p.user+'\',\''+d.id+'\',true)">OK</button><button class="ghost rounded-lg px-3 py-1" onclick="adDep(\''+p.user+'\',\''+d.id+'\',false)">No</button></div></div>';}});(p.wds||[]).forEach(function(d){if(d.st==="PENDING"){pw++;wdH+='<div class="flex justify-between py-2"><div>$'+money(d.amt)+' · '+p.user+'</div><div><button class="btn px-3 py-1 mr-1" onclick="adWd(\''+p.user+'\',\''+d.id+'\',true)">OK</button><button class="ghost rounded-lg px-3 py-1" onclick="adWd(\''+p.user+'\',\''+d.id+'\',false)">No</button></div></div>';}});mem+="<tr><td>"+p.user+"</td><td>"+p.email+"</td><td>$"+money(p.bal)+"</td><td>L"+p.level+"</td><td>"+p.ref+"</td></tr>";});el("ad-users").textContent=list.length;el("ad-pd").textContent=pd;el("ad-pw").textContent=pw;el("ad-deps").innerHTML="<b>Pending deposits</b><br>"+(depH||"None");el("ad-wds").innerHTML="<b>Pending withdrawals</b><br>"+(wdH||"None");el("ad-mem").innerHTML="<b>Members</b><table><tr><th>User</th><th>Email</th><th>Wallet</th><th>Lv</th><th>Code</th></tr>"+mem+"</table>";}
-function levelOf(){var A=u.teamA.length;if(A>=50)return 4;if(A>=30)return 3;if(A>=18)return 2;return 1}
-function applyLevel(){var lv=levelOf(),gifts={2:25,3:50,4:100},spins={1:1,2:2,3:3,4:4};if(lv>u.level){var g=gifts[lv]||0;if(g&&u.paidLevels.indexOf(lv)<0){u.bal+=g;u.profit+=g;u.paidLevels.push(lv);}u.level=lv;saveU(u);}}
+function renderAdmin(){var list=allUsers(),pd=0,pw=0,depH="",wdH="",mem="";list.forEach(function(p){(p.deps||[]).forEach(function(d){if(d.st==="PENDING"){pd++;depH+='<div class="flex justify-between py-2"><div>$'+money(d.amt)+' · '+p.user+'</div><div><button class="btn px-3 py-1 mr-1" onclick="adDep(\''+p.user+'\',\''+d.id+'\',true)">OK</button><button class="ghost rounded-lg px-3 py-1" onclick="adDep(\''+p.user+'\',\''+d.id+'\',false)">No</button></div></div>';}});(p.wds||[]).forEach(function(d){if(d.st==="PENDING"){pw++;wdH+='<div class="flex justify-between py-2"><div>$'+money(d.amt)+' · '+p.user+'</div><div><button class="btn px-3 py-1 mr-1" onclick="adWd(\''+p.user+'\',\''+d.id+'\',true)">OK</button><button class="ghost rounded-lg px-3 py-1" onclick="adWd(\''+p.user+'\',\''+d.id+'\',false)">No</button></div></div>';}});mem+="<tr><td>"+p.user+"</td><td>"+p.email+"</td><td>$"+money(p.bal)+"</td><td>L"+p.level+"</td><td>"+p.ref+"</td></tr>";});el("ad-users").textContent=list.length;el("ad-pd").textContent=pd;el("ad-pw").textContent=pw;el("ad-deps").innerHTML="<b>Pending deposits</b><br>"+(depH||"None");el("ad-wds").innerHTML="<b>Pending withdrawals</b><br>"+(wdH||"None");el("ad-mem").innerHTML="<b>Members</b><table style='width:100%'><tr><th>User</th><th>Email</th><th>Wallet</th><th>Lv</th><th>Code</th></tr>"+mem+"</table>";}
+function levelOf(L){var A=L.A.length,BCD=L.B.length+L.C.length+L.D.length; if(A>=50&&BCD>=120)return 5; if(A>=50&&BCD>=60)return 4; if(A>=30&&BCD>=25)return 3; if(A>=18&&BCD>=10)return 2; return 1;}
+function applyLevel(L){var lv=levelOf(L),gifts={2:25,3:50,4:100,5:200}; if(lv>u.level){var g=gifts[lv]||0; if(g&&u.paidLevels.indexOf(lv)<0){u.bal+=g;u.profit+=g;u.paidLevels.push(lv);pop("Level "+lv,"Company gift $"+g+" added.");} u.level=lv; saveU(u);} }
 function drawWheel(){var w=el("wheel");if(!w)return;w.innerHTML="";SLICES.forEach(function(s,i){var d=document.createElement("div");d.style.cssText="position:absolute;inset:0;clip-path:polygon(50% 50%,50% 0,100% 0,100% 50%);transform:rotate("+(i*60)+"deg);background:"+s.c;var lab=document.createElement("div");lab.style.cssText="position:absolute;left:62%;top:18%;color:#fff;font-size:12px;font-weight:800";lab.textContent=s.l;d.appendChild(lab);w.appendChild(d);});}
 function doSpin(){if(u.lock<45){pop("Entry","Wait for admin deposit OK");return}if(u.spins<=0){pop("No spin","No spins");return}u.spins-=1;saveU(u);var i=Math.floor(Math.random()*SLICES.length),s=SLICES[i];el("wheel").style.transform="rotate("+(360*6+i*-60-30)+"deg)";setTimeout(function(){if(s.m>0){var add=+((u.lock*s.m)-u.lock).toFixed(2);u.profit+=add;u.bal=+(u.lock+u.profit).toFixed(2);saveU(u);draw();pop("Congratulations",s.l+" +$"+money(add));}else{draw();pop("No win","Locked stays");}},4100);}
-function gzStart(){var amt=Number(el("gz-amt").value);if(!amt||amt<10){pop("Gamezone","Min $10");return}if(u.profit<amt){pop("Funds","Profit only");return}u.profit-=amt;u.bal-=amt;saveU(u);gzLive=true;var winAt=Math.floor(Math.random()*6),odd=Math.random()>.5?2:3,box=el("gz-board");box.innerHTML="";for(var i=0;i<6;i++){(function(ix){var b=document.createElement("button");b.className="card-tile";b.textContent="?";b.onclick=function(){if(!gzLive)return;gzLive=false;if(ix===winAt){var win=amt*odd;u.bal+=win;u.profit+=win;saveU(u);b.textContent="◆ "+odd+"x";pop("Diamond","$"+money(win));}else{b.textContent="✕";pop("No diamond","Try again");}draw();};box.appendChild(b);})(i);}draw();}
-function draw(){if(!u)return;applyLevel();el("dep-addr").textContent=ADDR;el("h-bal").textContent=money(u.bal);el("w-bal").textContent=money(u.bal);el("h-profit").textContent=money(u.profit);el("w-lock").textContent=money(u.lock);el("w-free").textContent=money(u.profit);el("h-lv").textContent=u.level;el("h-lvn").textContent="A-team "+u.teamA.length+" · Spins "+u.spins;el("h-code").textContent=u.ref;el("h-link").textContent=location.origin+location.pathname+"?ref="+u.ref;el("sp-left").textContent=u.spins;el("wd-saved").textContent=u.addr||"No address";el("dep-hist").innerHTML=u.deps.map(function(d){return '<div class="py-2">$'+money(d.amt)+' · '+d.st+'</div>'}).join("");el("wd-hist").innerHTML=u.wds.map(function(d){return '<div class="py-2">$'+money(d.amt)+' · '+d.st+'</div>'}).join("");el("t-counts").innerHTML="A-team <b>"+u.teamA.length+"</b> · Level <b>"+u.level+"</b>";el("t-plan").innerHTML="A-team 10% first deposit";el("p-box").innerHTML="User <b>"+u.user+"</b><br>Email "+u.email+"<br>Code "+u.ref;}
+function gzStart(){var amt=Number(el("gz-amt").value);if(!amt||amt<10){pop("Gamezone","Min $10");return}if(u.profit<amt){pop("Funds","Income only");return}u.profit-=amt;u.bal-=amt;saveU(u);gzLive=true;var winAt=Math.floor(Math.random()*6),odd=Math.random()>.5?2:3,box=el("gz-board");box.innerHTML="";for(var i=0;i<6;i++){(function(ix){var b=document.createElement("button");b.className="card-tile";b.textContent="?";b.onclick=function(){if(!gzLive)return;gzLive=false;if(ix===winAt){var win=amt*odd;u.bal+=win;u.profit+=win;saveU(u);b.textContent="◆ "+odd+"x";pop("Diamond","$"+money(win));}else{b.textContent="✕";pop("No diamond","Try again");}draw();};box.appendChild(b);})(i);}draw();}
+function listNames(arr){return arr.map(function(p){return p.user}).join(", ")||"—"}
+function draw(){
+  if(!u)return;
+  var L=layers(); applyLevel(L);
+  el("h-name").textContent=u.user;
+  el("dep-addr").textContent=ADDR;
+  el("h-bal").textContent=money(u.bal); el("w-bal").textContent=money(u.bal);
+  el("h-profit").textContent=money(u.profit); el("w-lock").textContent=money(u.lock); el("w-free").textContent=money(u.profit);
+  el("h-lv").textContent=u.level; el("h-lvn").textContent=L.A.length+" in A-team · "+u.spins+" spins";
+  el("nA").textContent=L.A.length; el("nB").textContent=L.B.length; el("nC").textContent=L.C.length; el("nD").textContent=L.D.length;
+  el("tA").textContent=L.A.length; el("tB").textContent=L.B.length; el("tC").textContent=L.C.length; el("tD").textContent=L.D.length;
+  el("h-code").textContent=u.ref; el("h-link").textContent=location.origin+location.pathname+"?ref="+u.ref;
+  el("sp-left").textContent=u.spins; el("wd-saved").textContent=u.addr||"No address";
+  el("dep-hist").innerHTML=u.deps.map(function(d){return '<div class="py-2">$'+money(d.amt)+' · '+d.st+'</div>'}).join("");
+  el("wd-hist").innerHTML=u.wds.map(function(d){return '<div class="py-2">$'+money(d.amt)+' · '+d.st+'</div>'}).join("");
+  el("t-plan").innerHTML="<b>Direct A</b> — 10% of first deposit.<br><b>L2</b> A18 + BCD10 · gift $25 · 2 spins · share A12 B10 C8 D6<br><b>L3</b> A30 + BCD25 · $50 · 3 spins · A13 B11 C9 D7<br><b>L4</b> A50 + BCD60 · $100 · 4 spins · A15 B13 C10 D8<br><b>L5</b> A50 + BCD120 · $200 · 5 spins · A18 B15 C12 D10";
+  el("t-list").innerHTML="<b>A</b> "+listNames(L.A)+"<br><b>B</b> "+listNames(L.B)+"<br><b>C</b> "+listNames(L.C)+"<br><b>D</b> "+listNames(L.D);
+  el("p-box").innerHTML="<div class='serif text-3xl mb-2'>Profile</div>User <b>"+u.user+"</b><br>Email "+u.email+"<br>Code "+u.ref+"<br>Sponsor "+(u.sponsor||"—")+"<br>Level "+u.level;
+}
 window.addEventListener("load",function(){var q=new URLSearchParams(location.search).get("ref");if(q){showBox("box-signup");el("su-ref").value=q}if(location.hash==="#admin")showBox("box-admin");});
 </script>
 </body>
