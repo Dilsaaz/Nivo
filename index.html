@@ -142,7 +142,9 @@ th,td{padding:8px 6px;border-bottom:1px solid #e8eef6;text-align:left}
 var ADDR="0x4E58b3522112BA59621d808E3687a566A87d7623";
 var ADMIN_ID="nivoadmin";
 var ADMIN_PW="Nivo@2026";
-var EJ_PUB="", EJ_SVC="", EJ_TPL="";
+var EJ_PUB="k0dCrs4f9E7VKwgMY";
+var EJ_SVC="service_hdyma9x";
+var EJ_TPL="template_al6v76j";
 var SLICES=[{l:"1.1x",m:1.1,c:"#1a73e8"},{l:"1.3x",m:1.3,c:"#0b1f3a"},{l:"1.5x",m:1.5,c:"#3b82f6"},{l:"1.8x",m:1.8,c:"#0b1f3a"},{l:"2.0x",m:2.0,c:"#1a73e8"},{l:"No win",m:0,c:"#64748b"}];
 var u=null, pending=null, otpCode="", otpAt=0, gzLive=false;
 if(EJ_PUB) try{emailjs.init({publicKey:EJ_PUB})}catch(e){}
@@ -153,7 +155,7 @@ function allUsers(){var out=[]; for(var i=0;i<localStorage.length;i++){var k=loc
 function pop(t,m){el("pop-t").textContent=t;el("pop-m").textContent=m||"";el("pop").classList.remove("hidden")}
 function closePop(){el("pop").classList.add("hidden")}
 function money(n){return Number(n||0).toFixed(2)}
-function codeOf(name){return "NV-"+String(name||"USER").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,10)}
+function codeOf(){var c="NIVO23456789ABCDEFGHJKMNPQRSTUVWXYZ",s="";for(var i=0;i<8;i++)s+=c.charAt(Math.floor(Math.random()*c.length));return s;}
 function showBox(id){["box-login","box-signup","box-otp","box-admin"].forEach(function(x){el(x).classList.toggle("hidden",x!==id)})}
 function hideAll(){el("auth").classList.add("hidden");el("app").classList.add("hidden");el("admin").classList.add("hidden")}
 function doLogin(){var name=el("li-user").value.trim(),pass=el("li-pass").value;u=load(name);if(!u||u.pass!==pass){pop("Error","Wrong username or password");return}enterUser();}
