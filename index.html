@@ -138,8 +138,8 @@ input{border:1px solid #d5e2f2;border-radius:12px;padding:12px 14px;width:100%;b
           <button class="btn w-full py-3 mt-3" onclick="copyAddr()">Copy address</button>
           <div id="copy-ok" class="hidden text-center text-green-600 text-sm font-bold mt-2">Copied. Address is in your clipboard.</div>
           <input id="dep-amt" type="number" class="mt-4" placeholder="Amount (min $45)"/>
-          <label class="block text-xs mt-3 mb-1">Payment screenshot</label>
-          <input id="dep-shot" type="file" accept="image/*"/>
+       <label class="block text-xs mt-3 mb-1">Transaction hash (BEP20)</label>
+          <input id="dep-hash" placeholder="Paste TX hash"/>
           <button class="btn w-full py-3 mt-4" onclick="sendDep()">Submit deposit</button>
           <p class="text-xs mt-3 text-slate-500" id="dep-note"></p>
           <div id="dep-hist" class="text-sm mt-4"></div>
@@ -255,7 +255,7 @@ function enterUser(){hideAll();el("app").classList.remove("hidden");drawWheel();
 function tab(id){["home","wallet","deposit","withdraw","spin","game","team","profile"].forEach(function(t){el("tab-"+t).classList.toggle("hidden",t!==id)});document.querySelectorAll(".side-btn[data-tab]").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-tab")===id)});draw();}
 function copyRef(){navigator.clipboard.writeText(location.origin+location.pathname+"?ref="+u.ref);pop("Copied","Invite link copied.")}
 function copyAddr(){navigator.clipboard.writeText(ADDR).then(function(){el("copy-ok").classList.remove("hidden");pop("Copied","Address copied.")})}
-function sendDep(){var amt=Number(el("dep-amt").value),f=el("dep-shot").files[0];if(!amt||amt<45){pop("Minimum","$45 USDT BEP20");return}if(!f){pop("Screenshot","Upload payment screenshot");return}u.deps.unshift({id:"D"+Date.now(),amt:amt,st:"PENDING",t:Date.now(),file:f.name});saveU(u);draw();el("dep-note").textContent="Pending admin approval.";pop("Submitted","Pending until admin OK");}
+function sendDep(){var amt=Number(el("dep-amt").value),hash=(el("dep-hash").value||"").trim();if(!amt||amt<45){pop("Minimum","$45 USDT BEP20");return}if(hash.length<10){pop("TX hash","Paste the BEP20 transaction hash");return}u.deps.unshift({id:"D"+Date.now(),amt:amt,st:"PENDING",t:Date.now(),file:hash});saveU(u);draw();el("dep-note").textContent="Hash submitted. Credit after admin approval.";pop("Submitted","Pending until admin OK");}
 function saveAddr(){var a=el("wd-addr").value.trim();if(a.indexOf("0x")!==0||a.length<20){pop("Address","Valid BEP20");return}u.addr=a;saveU(u);draw();pop("Saved","Address stored");}
 function askWd(){if(!u.addr){pop("Address","Save address first");return}var amt=Number(el("wd-amt").value);if(!amt||amt>u.profit+0.0001){pop("Limit","Income only");return}u.profit-=amt;u.bal-=amt;u.wds.unshift({id:"W"+Date.now(),amt:amt,st:"PENDING",t:Date.now(),addr:u.addr});saveU(u);draw();pop("Pending","10 min after admin approval");}
 function findUser(name){return allUsers().filter(function(x){return x.user===name})[0]}
