@@ -130,7 +130,7 @@ input{border:1px solid #d5e2f2;border-radius:12px;padding:12px 14px;width:100%;b
           <div class="serif text-3xl mb-2">Wallet</div>
           <div class="text-3xl font-extrabold mb-3">$<span id="w-bal">0.00</span></div>
         <div class="text-sm text-blue">Withdrawable income $<span id="w-free">0.00</span></div>
-          <div class="text-sm text-blue">Withdrawable income $<span id="w-free">0.00</span></div>
+  
         </div>
       </section>
       <section id="tab-deposit" class="hidden">
@@ -278,7 +278,7 @@ function draw(){
   el("h-name").textContent=u.user;
   el("dep-addr").textContent=ADDR;
   el("h-bal").textContent=money(u.bal); el("w-bal").textContent=money(u.bal);
-  el("h-profit").textContent=money(u.profit); el("w-lock").textContent=money(u.lock); el("w-free").textContent=money(u.profit);
+  el("h-profit").textContent=money(u.profit); if(el("w-free"))el("w-free").textContent=money(u.profit);
   el("h-lv").textContent=u.level; el("h-lvn").textContent=L.A.length+" in A-team · "+u.spins+" spins";
   el("nA").textContent=L.A.length; el("nB").textContent=L.B.length; el("nC").textContent=L.C.length; el("nD").textContent=L.D.length;
   el("tA").textContent=L.A.length; el("tB").textContent=L.B.length; el("tC").textContent=L.C.length; el("tD").textContent=L.D.length;
