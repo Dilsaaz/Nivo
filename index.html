@@ -36,6 +36,12 @@ input{border:1px solid #d5e2f2;border-radius:12px;padding:12px 14px;width:100%;b
 @keyframes mar{0%{transform:translateX(40px)}100%{transform:translateX(-40px)}}
 .pulse-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;margin-right:6px;animation:pul 1.2s ease infinite}
 @keyframes pul{50%{opacity:.3;transform:scale(.8)}}
+  .gz-lights{display:flex;gap:6px;margin:8px 0 12px;justify-content:center}
+.gz-dot{width:10px;height:10px;border-radius:50%;background:#1a73e8;animation:winlight 1s linear infinite}
+.gz-dot:nth-child(2){animation-delay:.15s}.gz-dot:nth-child(3){animation-delay:.3s}.gz-dot:nth-child(4){animation-delay:.45s}.gz-dot:nth-child(5){animation-delay:.6s}
+@keyframes winlight{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:1;transform:scale(1.25)}}
+#tab-game .card{animation:gzpop .45s ease}
+@keyframes gzpop{from{transform:scale(.96);opacity:0}to{transform:none;opacity:1}}
 </style>
 </head>
 <body>
@@ -208,6 +214,8 @@ input{border:1px solid #d5e2f2;border-radius:12px;padding:12px 14px;width:100%;b
       <section id="tab-game" class="hidden">
         <div class="card p-5">
           <div class="serif text-3xl">Gamezone</div>
+          <div class="gz-lights"><span class="gz-dot"></span><span class="gz-dot"></span><span class="gz-dot"></span><span class="gz-dot"></span><span class="gz-dot"></span></div>
+<div class="text-xs tracking-widest text-center text-blue-600 mb-2">WINNER DESK</div>
           <div class="flex gap-2 mt-3"><input id="gz-amt" type="number" placeholder="Min $10"/><button class="btn px-5" onclick="gzStart()">Play</button></div>
           <div id="gz-board" class="grid grid-cols-3 gap-3 mt-5"></div>
           <div id="gz-msg" class="text-center font-bold mt-4"></div>
