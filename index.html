@@ -286,6 +286,8 @@ function draw(){
   el("tA").textContent=L.A.length; el("tB").textContent=L.B.length; el("tC").textContent=L.C.length; el("tD").textContent=L.D.length;
   el("h-code").textContent=u.ref; el("h-link").textContent=location.origin+location.pathname+"?ref="+u.ref;
   el("sp-left").textContent=u.spins; el("wd-saved").textContent=u.addr||"No address";
+  u.deps=(u.deps||[]).filter(function(d){return d.st==="PENDING"||(d.t&&(Date.now()-d.t)<300000);});
+u.wds=(u.wds||[]).filter(function(d){return d.st==="PENDING"||(d.t&&(Date.now()-d.t)<300000);});
   el("dep-hist").innerHTML=u.deps.map(function(d){return '<div class="py-2">$'+money(d.amt)+' · '+d.st+'</div>'}).join("");
   el("wd-hist").innerHTML=u.wds.map(function(d){return '<div class="py-2">$'+money(d.amt)+' · '+d.st+'</div>'}).join("");
   el("t-plan").innerHTML="<b>Direct A</b> — 10% of first deposit.<br><b>L2</b> A18 + BCD10 + wallet $500 · gift $25 · 2 spins<br><b>L3</b> A30 + BCD25 + wallet $1000 · $50 · 3 spins<br><b>L4</b> A50 + BCD60 + wallet $5000 · $100 · 4 spins<br><b>L5</b> A50 + BCD120 + wallet $10000 · $200 · 5 spins";
