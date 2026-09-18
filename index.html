@@ -6,6 +6,7 @@
 <title>NIVO — One spin. Real desk.</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>tailwind.config={theme:{extend:{colors:{ink:"#071428",blue:"#1a73e8",sky:"#eaf2ff"}}}}</script>
 <style>
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Cormorant+Garamond:wght@600;700&display=swap");
@@ -259,11 +260,16 @@ var ADMIN_PW="Nivo@2026";
 var EJ_PUB="k0dCrs4f9E7VKwgMY";
 var EJ_SVC="service_hdyma9x";
 var EJ_TPL="template_al6v76j";
+  var SB_URL="https://adpubgmpuyqobsvftmou.supabase.co";
+var SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkcHViZ21wdXlxb2JzdmZ0bW91Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3NDU2NjMsImV4cCI6MjEwNDMyMTY2M30.LsVMb0Lif65C0AtIUSXZNczuDiYEVk-M6TG9VyebEts";
+var sb=null;try{sb=supabase.createClient(SB_URL,SB_KEY)}catch(e){}
+function pushCloud(obj){if(!sb||!obj||!obj.user)return;sb.from("nivo_users").upsert({user_name:obj.user,data:obj,updated_at:new Date().toISOString()}).then(function(){});}
+function pullCloud(done){if(!sb){if(done)done();return}sb.from("nivo_users").select("user_name,data").then(function(r){if(r.data)r.data.forEach(function(row){if(row.data)localStorage.setItem("nivo_"+row.user_name,JSON.stringify(row.data))});if(done)done();});}
 var SLICES=[{l:"1.02x",m:1.02,c:"#1a73e8"},{l:"1.04x",m:1.04,c:"#071428"},{l:"1.06x",m:1.06,c:"#3b82f6"},{l:"1.08x",m:1.08,c:"#071428"},{l:"1.10x",m:1.10,c:"#1a73e8"},{l:"No win",m:0,c:"#64748b"}];
 var u=null, pending=null, otpCode="", otpAt=0, gzLive=false;
 if(EJ_PUB) try{emailjs.init({publicKey:EJ_PUB})}catch(e){}
 function el(id){return document.getElementById(id)}
-function saveU(obj){localStorage.setItem("nivo_"+obj.user, JSON.stringify(obj)); if(u&&u.user===obj.user) u=obj;}
+function saveU(obj){localStorage.setItem("nivo_"+obj.user, JSON.stringify(obj)); if(u&&u.user===obj.user) u=obj; pushCloud(obj);}
 function load(name){try{return JSON.parse(localStorage.getItem("nivo_"+name)||"null")}catch(e){return null}}
 function allUsers(){var out=[]; for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i); if(k&&k.indexOf("nivo_")==0){try{out.push(JSON.parse(localStorage.getItem(k)))}catch(e){}}} return out;}
 function pop(t,m){el("pop-t").textContent=t;el("pop-m").textContent=m||"";el("pop").classList.remove("hidden")}
@@ -295,9 +301,9 @@ function verifyOtp(){
   u={user:pending.user,email:pending.email,pass:pending.pass,ref:pending.ref,sponsor:pending.sponsor,bal:0,profit:0,lock:0,spins:0,level:1,addr:"",deps:[],wds:[],teamA:[],gifts:0,paidLevels:[]};
   saveU(u); pending=null; enterUser();
 }
-function adminLogin(){if(el("ad-user").value.trim()!==ADMIN_ID||el("ad-pass").value!==ADMIN_PW){pop("Denied","Wrong admin login");return}hideAll();el("admin").classList.remove("hidden");renderAdmin();}
+function adminLogin(){if(el("ad-user").value.trim()!==ADMIN_ID||el("ad-pass").value!==ADMIN_PW){pop("Denied","Wrong admin login");return}pullCloud(function(){hideAll();el("admin").classList.remove("hidden");renderAdmin();});}
 function logout(){u=null;hideAll();el("auth").classList.remove("hidden");showBox("box-login")}
-function enterUser(){hideAll();el("app").classList.remove("hidden");drawWheel();draw();tab("home")}
+function enterUser(){pullCloud(function(){hideAll();el("app").classList.remove("hidden");drawWheel();draw();tab("home");});}
 function tab(id){["home","wallet","deposit","withdraw","spin","game","team","profile"].forEach(function(t){el("tab-"+t).classList.toggle("hidden",t!==id)});document.querySelectorAll(".side-btn[data-tab]").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-tab")===id)});draw();}
 function copyRef(){navigator.clipboard.writeText(location.origin+location.pathname+"?ref="+u.ref);pop("Copied","Invite link copied.")}
 function copyAddr(){navigator.clipboard.writeText(ADDR).then(function(){el("copy-ok").classList.remove("hidden");pop("Copied","Address copied.")})}
