@@ -278,14 +278,15 @@ function doLogin(){var name=el("li-user").value.trim(),pass=el("li-pass").value;
   function sendFg(){var name=el("fg-user").value.trim(),email=el("fg-email").value.trim(),p=load(name);if(!p||String(p.email||"").toLowerCase()!==email.toLowerCase()){pop("Not found","Username and email do not match");return}otpCode=String(Math.floor(100000+Math.random()*900000));otpAt=Date.now();pending={user:name,email:email,mode:"fg"};el("fg-step2").classList.remove("hidden");if(EJ_PUB&&EJ_SVC&&EJ_TPL){emailjs.send(EJ_SVC,EJ_TPL,{user_name:name,otp_code:otpCode,email:email});pop("OTP","Code sent to email");}else pop("OTP","Test code: "+otpCode);}
 function okFg(){if(!pending||pending.mode!=="fg"){pop("Error","Send OTP first");return}if(Date.now()-otpAt>600000){pop("Expired","Send again");return}if(el("fg-otp").value.trim()!==otpCode){pop("Wrong","OTP incorrect");return}var np=el("fg-pass").value;if(!np||np.length<4){pop("Password","Min 4 letters");return}var p=load(pending.user);p.pass=np;saveU(p);pending=null;pop("Done","Password updated. Sign in.");showBox("box-login");}
 function sendOtp(){
-  var name=el("su-user").value.trim(),email=el("su-email").value.trim(),pass=el("su-pass").value;
+  var name=el("su-user").value.trim(),email=el("su-email").value.trim(),phone=(el("su-phone")&&el("su-phone").value||"").trim(),pass=el("su-pass").value,ref=(el("su-ref")&&el("su-ref").value||"").trim().toUpperCase();
   if(!name||!email||!phone||!pass){pop("Required","Username, email, phone, password");return}
   if(load(name)){pop("Error","Username taken");return}
-  otpCode=String(Math.floor(100000+Math.random()*900000)); otpAt=Date.now();
-  pending={user:name,email:email,pass:pass,ref:codeOf(),sponsor:(new URLSearchParams(location.search).get("ref")||el("su-ref").value.trim())};
-  el("otp-hint").textContent="Code sent to "+email+" · valid 10 minutes"; showBox("box-otp");
-  if(EJ_PUB&&EJ_SVC&&EJ_TPL){emailjs.send(EJ_SVC,EJ_TPL,{to_email:email,user_name:name,otp_code:otpCode,message:"NIVO OTP "+otpCode}).then(function(){pop("OTP sent","Check your email")}).catch(function(){pop("Mail error","Test OTP: "+otpCode)});}
-  else pop("OTP","EmailJS not set. Test code: "+otpCode);
+  otpCode=String(Math.floor(100000+Math.random()*900000));otpAt=Date.now();
+  pending={user:name,email:email,phone:phone,pass:pass,ref:codeOf(),sponsor:ref||(new URLSearchParams(location.search).get("ref")||"")};
+  if(el("otp-hint"))el("otp-hint").textContent="Code sent to "+email+" · valid 10 minutes";
+  showBox("box-otp");
+  if(EJ_PUB&&EJ_SVC&&EJ_TPL){emailjs.send(EJ_SVC,EJ_TPL,{email:email,to_email:email,user_name:name,otp_code:otpCode,message:"NIVO OTP "+otpCode}).then(function(){pop("OTP sent","Check inbox")}).catch(function(){pop("Mail error","Test OTP: "+otpCode)});}
+  else pop("OTP","Test code: "+otpCode);
 }
 function verifyOtp(){
   if(!pending){pop("Error","Start signup again");return}
