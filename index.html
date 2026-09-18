@@ -19,6 +19,8 @@ body{font-family:Manrope,system-ui;background:#eef3f9;color:#071428}
 .hidden{display:none!important}
 .side-btn{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;width:100%;font-weight:700;color:#3d4f66}
 .side-btn.on{background:#e8f1ff;color:#1557c7}
+  .side-btn.gz{background:#08332f;color:#2ee6d6;border:1px solid #2ee6d6;animation:gzblink 1.4s ease-in-out infinite;}
+@keyframes gzblink{0%,100%{box-shadow:0 0 0 0 rgba(46,230,214,.35)}50%{box-shadow:0 0 14px 2px rgba(46,230,214,.7);background:#0c4f48}}
 .hero{background:radial-gradient(circle at 80% 20%,rgba(80,160,255,.35),transparent 40%),linear-gradient(135deg,#071428 0%,#12315c 55%,#1a73e8 130%);color:#fff;border-radius:24px;overflow:hidden;position:relative}
 .hero img{position:absolute;right:-20px;bottom:-30px;width:210px;opacity:.28;pointer-events:none}
 .logo{width:44px;height:44px}
@@ -115,7 +117,7 @@ input{border:1px solid #d5e2f2;border-radius:12px;padding:12px 14px;width:100%;b
       <button class="side-btn" data-tab="deposit" onclick="tab('deposit')">Deposit</button>
       <button class="side-btn" data-tab="withdraw" onclick="tab('withdraw')">Withdraw</button>
       <button class="side-btn" data-tab="spin" onclick="tab('spin')">Daily Spin</button>
-      <button class="side-btn" data-tab="game" onclick="tab('game')">Gamezone</button>
+    <button class="side-btn gz" data-tab="game">
       <button class="side-btn" data-tab="team" onclick="tab('team')">Team A B C D</button>
       <button class="side-btn" data-tab="profile" onclick="tab('profile')">Profile</button>
       <button class="side-btn mt-6 text-slate-400" onclick="logout()">Logout</button>
