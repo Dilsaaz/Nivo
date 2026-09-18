@@ -198,6 +198,13 @@ input{border:1px solid #d5e2f2;border-radius:12px;padding:12px 14px;width:100%;b
           <div class="card p-3 text-center"><span class="text-[10px]">C</span><b id="tC">0</b></div>
           <div class="card p-3 text-center"><span class="text-[10px]">D</span><b id="tD">0</b></div>
         </div>
+        <div class="grid grid-cols-3 gap-3 mb-3">
+  <div class="card p-3 text-center"><span class="text-[10px] text-slate-500">TOTAL</span><b id="nTot">0</b></div>
+  <div class="card p-3 text-center"><span class="text-[10px] text-slate-500">ACTIVE</span><b id="nAct">0</b></div>
+  <div class="card p-3 text-center"><span class="text-[10px] text-slate-500">INACTIVE</span><b id="nIna">0</b></div>
+</div>
+<button class="btn w-full py-3 mb-3" onclick="showCom()">Community</button>
+<div id="com-box" class="card p-4 mb-3 text-sm hidden"></div>
         <div class="card p-4 text-sm leading-7" id="t-plan"></div>
         <div class="card p-4 mt-3 text-sm" id="t-list"></div>
       </section>
@@ -275,6 +282,9 @@ function saveAddr(){var a=(el("wd-addr").value||"").trim();if(a.indexOf("0x")!==
 function askWd(){if(!u.addr){pop("Address","Save address first");return}if((u.wds||[]).some(function(x){return x.st==="PENDING"})){pop("Pending","One withdraw is already pending. Wait for admin approval.");return}var amt=Number(el("wd-amt").value);if(!amt||amt<10){pop("Minimum","Withdraw minimum $10");return}if(amt>u.profit+0.0001){pop("Limit","Income only");return}var fee=+(amt*0.10).toFixed(2),net=+(amt-fee).toFixed(2);u.profit-=amt;u.bal-=amt;u.wds.unshift({id:"W"+Date.now(),amt:net,fee:fee,st:"PENDING",t:Date.now(),addr:u.addr});saveU(u);draw();pop("Pending","Requested $"+money(amt)+" · Fee 10% ($"+money(fee)+") · You get $"+money(net)+" · Time 2 hours after admin OK");}
 function findUser(name){return allUsers().filter(function(x){return x.user===name})[0]}
 function adDep(user,id,ok){var p=findUser(user);if(!p)return;var d=p.deps.filter(function(x){return x.id===id})[0];if(!d||d.st!=="PENDING")return;if(ok){d.st="SUCCESSFUL";p.bal+=d.amt;p.lock+=d.amt;if(p.spins===0&&p.lock>=45)p.spins=1;if(p.sponsor){var sp=allUsers().filter(function(x){return x.ref===p.sponsor})[0];if(sp){var b=+(d.amt*0.10).toFixed(2);sp.bal+=b;sp.profit+=b;if(sp.teamA.indexOf(p.user)<0)sp.teamA.push(p.user);saveU(sp);}}}else d.st="REJECTED";saveU(p);if(u&&u.user===p.user)u=p;renderAdmin();pop(ok?"Approved":"Rejected",user);}
+  function maskName(n){n=String(n||"");if(n.length<3)return n[0]+"***";return n[0]+"****"+n.slice(-2);}
+function isOn(p){return Number(p.lock||0)>=45;}
+function showCom(){var L=layers(),all=L.A.concat(L.B,L.C,L.D),box=el("com-box");box.classList.remove("hidden");box.innerHTML=all.length?all.map(function(p){return "<div class='py-2 border-b border-slate-100'><b>"+maskName(p.user)+"</b> · "+(isOn(p)?"Active":"Inactive")+" · "+p.ref+"</div>"}).join(""):"No members";}
 function adWd(user,id,ok){var p=findUser(user);if(!p)return;var d=p.wds.filter(function(x){return x.id===id})[0];if(!d||d.st!=="PENDING")return;if(ok)d.st="APPROVED";else{d.st="REJECTED";p.profit+=d.amt;p.bal+=d.amt;}saveU(p);if(u&&u.user===p.user)u=p;renderAdmin();pop(ok?"Approved":"Rejected",user);}
 function renderAdmin(){var list=allUsers(),pd=0,pw=0,depH="",wdH="",mem="";list.forEach(function(p){(p.deps||[]).forEach(function(d){if(d.st==="PENDING"){pd++;depH+='<div class="flex justify-between py-2"><div>$'+money(d.amt)+' · '+p.user+'</div><div><button class="btn px-3 py-1 mr-1" onclick="adDep(\''+p.user+'\',\''+d.id+'\',true)">OK</button><button class="ghost rounded-lg px-3 py-1" onclick="adDep(\''+p.user+'\',\''+d.id+'\',false)">No</button></div></div>';}});(p.wds||[]).forEach(function(d){if(d.st==="PENDING"){pw++;wdH+='<div class="flex justify-between py-2"><div>$'+money(d.amt)+' · '+p.user+'</div><div><button class="btn px-3 py-1 mr-1" onclick="adWd(\''+p.user+'\',\''+d.id+'\',true)">OK</button><button class="ghost rounded-lg px-3 py-1" onclick="adWd(\''+p.user+'\',\''+d.id+'\',false)">No</button></div></div>';}});mem+="<tr><td>"+p.user+"</td><td>"+p.email+"</td><td>$"+money(p.bal)+"</td><td>L"+p.level+"</td><td>"+p.ref+"</td></tr>";});el("ad-users").textContent=list.length;el("ad-pd").textContent=pd;el("ad-pw").textContent=pw;el("ad-deps").innerHTML="<b>Pending deposits</b><br>"+(depH||"None");el("ad-wds").innerHTML="<b>Pending withdrawals</b><br>"+(wdH||"None");el("ad-mem").innerHTML="<b>Members</b><table style='width:100%'><tr><th>User</th><th>Email</th><th>Wallet</th><th>Lv</th><th>Code</th></tr>"+mem+"</table>";}
 function levelOf(L){var A=L.A.length,BCD=L.B.length+L.C.length+L.D.length,w=Number(u.bal||0); if(A>=50&&BCD>=120&&w>=10000)return 5; if(A>=50&&BCD>=60&&w>=5000)return 4; if(A>=30&&BCD>=25&&w>=1000)return 3; if(A>=18&&BCD>=10&&w>=500)return 2; return 1;}
@@ -301,7 +311,7 @@ function draw(){
   el("dep-hist").innerHTML=u.deps.map(function(d){return '<div class="py-2">$'+money(d.amt)+' · '+d.st+'</div>'}).join("");
   el("wd-hist").innerHTML=u.wds.map(function(d){return '<div class="py-2">$'+money(d.amt)+' · '+d.st+'</div>'}).join("");
   el("t-plan").innerHTML="<b>Direct A</b> — 10% of first deposit.<br><b>L2</b> A18 + BCD10 + wallet $500 · gift $25 · 2 spins<br><b>L3</b> A30 + BCD25 + wallet $1000 · $50 · 3 spins<br><b>L4</b> A50 + BCD60 + wallet $5000 · $100 · 4 spins<br><b>L5</b> A50 + BCD120 + wallet $10000 · $200 · 5 spins";
-  el("t-list").innerHTML="<b>A</b> "+listNames(L.A)+"<br><b>B</b> "+listNames(L.B)+"<br><b>C</b> "+listNames(L.C)+"<br><b>D</b> "+listNames(L.D);
+  var all=L.A.concat(L.B,L.C,L.D),act=all.filter(isOn);if(el("nTot"))el("nTot").textContent=all.length;if(el("nAct"))el("nAct").textContent=act.length;if(el("nIna"))el("nIna").textContent=all.length-act.length;el("t-list").innerHTML="<b>A</b> "+L.A.map(function(p){return maskName(p.user)}).join(", ")+"<br><b>B</b> "+L.B.map(function(p){return maskName(p.user)}).join(", ")+"<br><b>C</b> "+L.C.map(function(p){return maskName(p.user)}).join(", ")+"<br><b>D</b> "+L.D.map(function(p){return maskName(p.user)}).join(", ");
   el("p-box").innerHTML="<div class='serif text-3xl mb-2'>Profile</div>User <b>"+u.user+"</b><br>Email "+u.email+"<br>Code "+u.ref+"<br>Sponsor "+(u.sponsor||"—")+"<br>Level "+u.level;
 }
 window.addEventListener("load",function(){var q=new URLSearchParams(location.search).get("ref");if(q){showBox("box-signup");el("su-ref").value=q}if(location.hash==="#admin")showBox("box-admin");});
