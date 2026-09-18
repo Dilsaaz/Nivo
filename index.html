@@ -285,7 +285,7 @@ function draw(){
   el("nA").textContent=L.A.length; el("nB").textContent=L.B.length; el("nC").textContent=L.C.length; el("nD").textContent=L.D.length;
   el("tA").textContent=L.A.length; el("tB").textContent=L.B.length; el("tC").textContent=L.C.length; el("tD").textContent=L.D.length;
   el("h-code").textContent=u.ref; el("h-link").textContent=location.origin+location.pathname+"?ref="+u.ref;
-  el("sp-left").textContent=u.spins; if(el("wd-saved"))el("wd-saved").textContent=u.addr||"No address";
+  el("sp-left").textContent=u.spins; if(el("wd-saved"))el("wd-saved").textContent=u.addr?"Address saved":"No address yet";
   u.deps=(u.deps||[]).filter(function(d){return d.st==="PENDING"||(d.t&&(Date.now()-d.t)<300000);});
   el("dep-hist").innerHTML=u.deps.map(function(d){return '<div class="py-2">$'+money(d.amt)+' · '+d.st+'</div>'}).join("");
   el("wd-hist").innerHTML=u.wds.map(function(d){return '<div class="py-2">$'+money(d.amt)+' · '+d.st+'</div>'}).join("");
