@@ -29,6 +29,11 @@ input{border:1px solid #d5e2f2;border-radius:12px;padding:12px 14px;width:100%;b
 .lvl b{display:block;font-size:20px}
   .spin-dot{width:36px;height:36px;border:3px solid #d5e2f2;border-top-color:#1a73e8;border-radius:50%;animation:sp .7s linear infinite;margin:0 auto 10px}
 @keyframes sp{to{transform:rotate(360deg)}}
+  .live-strip{display:flex;gap:10px;overflow:hidden;margin:12px 0 16px}
+.live-chip{flex:0 0 auto;background:#fff;border:1px solid #d7e3f4;border-radius:999px;padding:8px 14px;font-size:12px;font-weight:700;animation:mar 8s linear infinite}
+@keyframes mar{0%{transform:translateX(40px)}100%{transform:translateX(-40px)}}
+.pulse-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;margin-right:6px;animation:pul 1.2s ease infinite}
+@keyframes pul{50%{opacity:.3;transform:scale(.8)}}
 </style>
 </head>
 <body>
@@ -99,6 +104,12 @@ input{border:1px solid #d5e2f2;border-radius:12px;padding:12px 14px;width:100%;b
         <div class="hero p-6 mb-4 min-h-[168px]">
           <div class="relative z-10">
             <div class="text-[11px] tracking-[.3em] text-blue-200">WELCOME TO THE DESK</div>
+            <div class="live-strip">
+  <div class="live-chip"><span class="pulse-dot"></span>Live desk</div>
+  <div class="live-chip">Daily spin open</div>
+  <div class="live-chip">Gamezone 1.5x</div>
+  <div class="live-chip">Team A B C D</div>
+</div>
             <div class="serif text-4xl mt-1">Hello, <span id="h-name">Member</span></div>
             <div class="text-sm text-blue-100 mt-1">Level <span id="h-lv">1</span> · <span id="h-lvn"></span></div>
           </div>
