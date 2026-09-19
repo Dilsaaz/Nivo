@@ -61,7 +61,7 @@ input{border:1px solid #d5e2f2;border-radius:12px;padding:12px 14px;width:100%;b
 </svg>
 <div id="auth" class="max-w-md mx-auto px-4 py-10">
   <div class="text-center mb-7">
- <svg class="logo mx-auto mb-3"><use href="#nivo-mark"/></svg>
+<svg class="logo mx-auto mb-3" onclick="adTap()"><use href="#nivo-mark"/>
     <div class="serif text-5xl">NIVO</div>
     <div class="text-[11px] tracking-[.35em] text-blue mt-1">ONE SPIN · REAL DESK</div>
   </div>
@@ -286,6 +286,8 @@ var u=null, pending=null, otpCode="", otpAt=0, gzLive=false;
 if(EJ_PUB) try{emailjs.init({publicKey:EJ_PUB})}catch(e){}
 function el(id){return document.getElementById(id)}
 function saveU(obj){localStorage.setItem("nivo_"+obj.user, JSON.stringify(obj)); if(u&&u.user===obj.user) u=obj; pushCloud(obj);}
+  var _adT=0;
+function adTap(){_adT++;if(_adT>=5){_adT=0;showBox("box-admin");el("auth").classList.remove("hidden");}}
   function dayKey(){return new Date().toISOString().slice(0,10)}
 function bumpToday(p,n){if(!p||!(n>0))return;if(p.todayD!==dayKey()){p.todayD=dayKey();p.todayN=0}p.todayN=(+p.todayN||0)+n;}
   function payTeam(fromU,amt){if(!fromU||!(amt>0))return;var rates={2:{A:.12,B:.10,C:.08,D:.06},3:{A:.13,B:.11,C:.09,D:.07},4:{A:.15,B:.13,C:.10,D:.08},5:{A:.18,B:.15,C:.12,D:.10}};var keys=["A","B","C","D"],p=fromU,i;for(i=0;i<4;i++){if(!p||!p.sponsor)break;var up=allUsers().filter(function(x){return String(x.ref||"").toUpperCase()===String(p.sponsor).toUpperCase()})[0];if(!up)break;var lv=Number(up.level||1);if(lv>=2&&rates[Math.min(lv,5)]){var cut=+(amt*rates[Math.min(lv,5)][keys[i]]).toFixed(2);if(cut>0){up.profit=(+up.profit||0)+cut;up.bal=(+up.bal||0)+cut;saveU(up);}}p=up;}}
