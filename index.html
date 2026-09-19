@@ -290,7 +290,7 @@ function saveU(obj){localStorage.setItem("nivo_"+obj.user, JSON.stringify(obj));
 function adTap(){_adT++;if(_adT>=5){_adT=0;showBox("box-admin");el("auth").classList.remove("hidden");}}
   function dayKey(){return new Date().toISOString().slice(0,10)}
 function bumpToday(p,n){if(!p||!(n>0))return;if(p.todayD!==dayKey()){p.todayD=dayKey();p.todayN=0}p.todayN=(+p.todayN||0)+n;}
-  function payTeam(fromU,amt){if(!fromU||!(amt>0))return;var rates={2:{A:.12,B:.10,C:.08,D:.06},3:{A:.13,B:.11,C:.09,D:.07},4:{A:.15,B:.13,C:.10,D:.08},5:{A:.18,B:.15,C:.12,D:.10}};var keys=["A","B","C","D"],p=fromU,i;for(i=0;i<4;i++){if(!p||!p.sponsor)break;var up=allUsers().filter(function(x){return String(x.ref||"").toUpperCase()===String(p.sponsor).toUpperCase()})[0];if(!up)break;var lv=Number(up.level||1);if(lv>=2&&rates[Math.min(lv,5)]){var cut=+(amt*rates[Math.min(lv,5)][keys[i]]).toFixed(2);if(cut>0){up.profit=(+up.profit||0)+cut;up.bal=(+up.bal||0)+cut;saveU(up);}}p=up;}}
+  function payTeam(fromU,amt){if(!fromU||!(amt>0))return;var rates={2:{A:.12,B:.10,C:.08,D:.06},3:{A:.13,B:.11,C:.09,D:.07},4:{A:.15,B:.13,C:.10,D:.08},5:{A:.18,B:.15,C:.12,D:.10}};var keys=["A","B","C","D"],p=fromU,i;for(i=0;i<4;i++){if(!p||!p.sponsor)break;var up=allUsers().filter(function(x){return String(x.ref||"").toUpperCase()===String(p.sponsor).toUpperCase()})[0];if(!up)break;var lv=Number(up.level||0);if(lv>=2&&rates[Math.min(lv,5)]){var cut=+(amt*rates[Math.min(lv,5)][keys[i]]).toFixed(2);if(cut>0){up.profit=(+up.profit||0)+cut;up.bal=(+up.bal||0)+cut;if(typeof bumpToday==="function")bumpToday(up,cut);saveU(up);}}p=up;}}
 function load(name){try{return JSON.parse(localStorage.getItem("nivo_"+name)||"null")}catch(e){return null}}
 function allUsers(){var out=[]; for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i); if(k&&k.indexOf("nivo_")==0){try{out.push(JSON.parse(localStorage.getItem(k)))}catch(e){}}} return out;}
 function pop(t,m){el("pop-t").textContent=t;el("pop-m").textContent=m||"";el("pop").classList.remove("hidden")}
@@ -354,6 +354,10 @@ function draw(){
   el("dep-addr").textContent=ADDR;
   el("h-bal").textContent=money(u.bal); el("w-bal").textContent=money(u.bal);
   el("h-profit").textContent=money(u.profit); if(el("w-free"))el("w-free").textContent=money(u.profit);
+  if(u.todayD!==dayKey()){u.todayD=dayKey();u.todayN=0}
+if(el("inc-today"))el("inc-today").textContent=money(u.todayN||0);
+if(el("inc-rew"))el("inc-rew").textContent=money(u.rewardInc||0);
+if(el("inc-dia"))el("inc-dia").textContent=money(u.diamondInc||0);
   el("h-lv").textContent=u.level; el("h-lvn").textContent=L.A.length+" in A-team · "+u.spins+" spins";
   el("nA").textContent=L.A.length; el("nB").textContent=L.B.length; el("nC").textContent=L.C.length; el("nD").textContent=L.D.length;
   el("tA").textContent=L.A.length; el("tB").textContent=L.B.length; el("tC").textContent=L.C.length; el("tD").textContent=L.D.length;
