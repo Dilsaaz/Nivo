@@ -323,7 +323,7 @@ function verifyOtp(){
   u={user:pending.user,email:pending.email,pass:pending.pass,ref:pending.ref,sponsor:pending.sponsor,bal:0,profit:0,lock:0,spins:0,level:1,addr:"",deps:[],wds:[],teamA:[],gifts:0,paidLevels:[]};
   saveU(u); pending=null; enterUser();
 }
-function adminLogin(){if(el("ad-user").value.trim()!==ADMIN_ID||el("ad-pass").value!==ADMIN_PW){pop("Denied","Wrong admin login");return}pullCloud(function(){hideAll();el("admin").classList.remove("hidden");renderAdmin();});}
+function adminLogin(){if(el("ad-user").value.trim()!==ADMIN_ID||el("ad-pass").value!==ADMIN_PW){pop("Denied","Wrong admin login");return}hideAll();el("admin").classList.remove("hidden");try{renderAdmin();}catch(e){}try{pullCloud(function(){try{renderAdmin();}catch(e){}})}catch(e){}}
 function logout(){u=null;hideAll();el("auth").classList.remove("hidden");showBox("box-login")}
 function enterUser(){pullCloud(function(){hideAll();el("app").classList.remove("hidden");drawWheel();draw();tab("home");});}
 function tab(id){["home","wallet","income","deposit","withdraw","spin","game","team","profile"].forEach(function(t){if(el("tab-"+t))el("tab-"+t).classList.toggle("hidden",t!==id)});document.querySelectorAll(".side-btn[data-tab]").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-tab")===id)});if(id==="game"){try{var ctx=window.AudioContext||window.webkitAudioContext;var a=new ctx(),o=a.createOscillator(),g=a.createGain();o.type="triangle";o.frequency.value=523;g.gain.value=0.12;o.connect(g);g.connect(a.destination);o.start();setTimeout(function(){o.frequency.value=784},120);setTimeout(function(){o.stop();a.close()},350);}catch(e){}}draw();}
