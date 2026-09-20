@@ -331,6 +331,16 @@ function copyAddr(){navigator.clipboard.writeText(ADDR).then(function(){el("copy
 function sendDep(){if(!u){pop("Login","Sign in first");return}var box=el("dep-hash");if(!box){pop("Refresh","Close the site and open again");return}var amt=Number(el("dep-amt").value),hash=(box.value||"").trim();if(!amt||amt<45){pop("Minimum","Enter amount $45 or more");return}if(hash.length<10){pop("TX hash","Paste full BEP20 hash (10+ letters)");return}if(el("pop-spin"))el("pop-spin").classList.remove("hidden");pop("Checking hash","Please wait 2 seconds");setTimeout(function(){if(el("pop-spin"))el("pop-spin").classList.add("hidden");u.deps=u.deps||[];u.deps.unshift({id:"D"+Date.now(),amt:amt,st:"PENDING",t:Date.now(),file:hash});saveU(u);if(el("dep-note"))el("dep-note").textContent="PENDING — waiting for admin.";draw();pop("Pending","Deposit submitted. Status: Pending. Credit after admin approval.");},2000);}
 function saveAddr(){var a=(el("wd-addr").value||"").trim();if(a.indexOf("0x")!==0||a.length<20){pop("Address","Paste full BEP20 address starting with 0x");return}u.addr=a;saveU(u);if(el("wd-saved"))el("wd-saved").textContent=a;pop("Saved","Address updated");}
 function askWd(){if(!u.addr){pop("Address","Save address first");return}if((u.wds||[]).some(function(x){return x.st==="PENDING"})){pop("Pending","One withdraw is already pending. Wait for admin approval.");return}var amt=Number(el("wd-amt").value);if(!amt||amt<10){pop("Minimum","Withdraw minimum $10");return}if(amt>u.profit+0.0001){pop("Limit","Income only");return}var fee=+(amt*0.10).toFixed(2),net=+(amt-fee).toFixed(2);u.profit-=amt;u.bal-=amt;u.wds.unshift({id:"W"+Date.now(),amt:net,fee:fee,st:"PENDING",t:Date.now(),addr:u.addr});saveU(u);draw();pop("Pending","Requested $"+money(amt)+" · Fee 10% ($"+money(fee)+") · You get $"+money(net)+" · Time 2 hours after admin OK");}
+  function undoWd(user,id){
+  var p=findUser(user);if(!p)return;
+  var d=(p.wds||[]).filter(function(x){return x.id===id})[0];
+  if(!d)return;
+  if(d.st!=="APPROVED"&&d.st!=="SUCCESSFUL")return;
+  d.st="PENDING";
+  saveU(p);
+  renderAdmin();
+  pop("Back to pending",user+" · $"+money(d.amt));
+}
 function findUser(name){return allUsers().filter(function(x){return x.user===name})[0]}
 function adDep(user,id,ok){var p=findUser(user);if(!p)return;var d=p.deps.filter(function(x){return x.id===id})[0];if(!d||d.st!=="PENDING")return;if(ok){d.st="SUCCESSFUL";p.bal+=d.amt;p.lock+=d.amt;if(p.spins===0&&p.lock>=45)p.spins=1;if(p.sponsor){var sp=allUsers().filter(function(x){return x.ref===p.sponsor})[0];if(sp){var b=+(d.amt*0.10).toFixed(2);sp.bal+=b;sp.profit+=b;sp.rewardInc=(+sp.rewardInc||0)+b;if(typeof bumpToday==="function")bumpToday(sp,b);if(!sp.teamA)sp.teamA=[];if(sp.teamA.indexOf(p.user)<0)sp.teamA.push(p.user);saveU(sp);}}}else d.st="REJECTED";saveU(p);if(u&&u.user===p.user)u=p;renderAdmin();pop(ok?"Approved":"Rejected",user);}
   function maskName(n){n=String(n||"");if(n.length<3)return n[0]+"***";return n[0]+"****"+n.slice(-2);}
@@ -346,11 +356,13 @@ function renderAdmin(){
         depH+='<div class="py-3 border-b"><div class="font-bold">$'+money(d.amt)+' · '+p.user+'</div><div class="text-xs break-all mt-1">'+(d.file||"—")+'</div><div class="mt-2"><button class="btn px-3 py-1 mr-1" onclick="adDep(\''+p.user+'\',\''+d.id+'\',true)">OK</button><button class="ghost rounded-lg px-3 py-1" onclick="adDep(\''+p.user+'\',\''+d.id+'\',false)">No</button></div></div>';
       }
     });
-    (p.wds||[]).forEach(function(d){
+     (p.wds||[]).forEach(function(d){
+      var a=d.addr||p.addr||"—";
       if(d.st==="PENDING"){
         pw++;
-        var a=d.addr||p.addr||"—";
-        wdH+='<div class="py-3 border-b"><div class="font-bold">$'+money(d.amt)+' net · '+p.user+(d.fee?" · fee $"+money(d.fee):"")+'</div><div class="text-xs break-all mt-1 font-mono">'+a+'</div><button class="ghost rounded-lg px-3 py-1 mt-1 text-xs" onclick="navigator.clipboard.writeText(\''+a+'\').then(function(){pop(\'Copied\',\''+p.user+'\')})">Copy address</button><div class="mt-2"><button class="btn px-3 py-1 mr-1" onclick="adWd(\''+p.user+'\',\''+d.id+'\',true)">Paid OK</button><button class="ghost rounded-lg px-3 py-1" onclick="adWd(\''+p.user+'\',\''+d.id+'\',false)">No</button></div></div>';
+        wdH+='<div class="py-3 border-b"><div class="font-bold">PENDING $'+money(d.amt)+' net · '+p.user+(d.fee?" · fee $"+money(d.fee):"")+'</div><div class="text-xs break-all mt-1 font-mono">'+a+'</div><button class="ghost rounded-lg px-3 py-1 mt-1 text-xs" onclick="navigator.clipboard.writeText(\''+a+'\').then(function(){pop(\'Copied\',\''+p.user+'\')})">Copy address</button><div class="mt-2"><button class="btn px-3 py-1 mr-1" onclick="adWd(\''+p.user+'\',\''+d.id+'\',true)">Paid OK</button><button class="ghost rounded-lg px-3 py-1" onclick="adWd(\''+p.user+'\',\''+d.id+'\',false)">No</button></div></div>';
+      } else {
+        wdH+='<div class="py-2 border-b text-sm"><b>'+d.st+'</b> $'+money(d.amt)+' · '+p.user+'<div class="text-xs break-all font-mono">'+a+'</div>'+(d.st==="APPROVED"||d.st==="SUCCESSFUL"?'<button class="ghost rounded-lg px-3 py-1 mt-1 text-xs" onclick="undoWd(\''+p.user+'\',\''+d.id+'\')">Undo → Pending</button>':'')+'</div>';
       }
     });
     mem+="<tr><td>"+p.user+"</td><td>"+p.email+"</td><td>$"+money(p.bal)+"</td><td>L"+(p.level||0)+"</td><td class='text-xs break-all font-mono'>"+(p.addr||"—")+"</td></tr>";
