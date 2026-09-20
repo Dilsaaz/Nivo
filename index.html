@@ -374,6 +374,14 @@ function renderAdmin(){
   el("ad-wds").innerHTML="<b>Pending withdrawals</b><br>"+(wdH||"None");
   el("ad-mem").innerHTML="<b>Members</b><table style='width:100%'><tr><th>User</th><th>Email</th><th>Wallet</th><th>Lv</th><th>Withdraw 0x</th></tr>"+mem+"</table>";
 }
+  function levelOf(L){
+  var A=L.A.length,BCD=L.B.length+L.C.length+L.D.length;
+  if(A>=50&&BCD>=120)return 5;
+  if(A>=50&&BCD>=60)return 4;
+  if(A>=30&&BCD>=25)return 3;
+  if(A>=18&&BCD>=10)return 2;
+  return 1;
+}
 function applyLevel(L){if(!u)return;if(!(u.lock>=45)){u.level=0;return;}var lv=levelOf(L),gifts={2:25,3:50,4:100,5:200};if(!u.paidLevels)u.paidLevels=[];if(lv>u.level){var g=gifts[lv]||0;if(g&&u.paidLevels.indexOf(lv)<0){u.bal+=g;u.profit+=g;u.paidLevels.push(lv);pop("Level "+lv,"Company gift $"+g+" added.");}u.level=lv;saveU(u);}if((u.level||0)<1)u.level=1;}
   if(u.todayD!==dayKey()){u.todayD=dayKey();u.todayN=0}
 if(el("inc-today"))el("inc-today").textContent=money(u.todayN||0);
