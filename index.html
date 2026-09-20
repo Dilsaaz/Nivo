@@ -415,7 +415,7 @@ if(el("inc-dia"))el("inc-dia").textContent=money(u.diamondInc||0);
       var wdRows=(u.wds||[]).map(function(d){
     var req=d.req!=null?d.req:+(Number(d.amt||0)+Number(d.fee||0)).toFixed(2);
     var got=d.amt;
-    return '<div class="py-3 border-b"><div class="font-bold">'+d.st+'</div><div>Lagaya $'+money(req)+'</div><div>Fee $'+money(d.fee||0)+'</div><div>Mila $'+money(got)+'</div></div>';
+        return '<div class="py-3 border-b"><div class="font-bold">'+d.st+'</div><div>Requested $'+money(req)+'</div><div>Fee $'+money(d.fee||0)+'</div><div>Received $'+money(got)+'</div></div>';
   }).join("")||'<div class="text-slate-500">No withdraw yet.</div>';
   if(el("wd-hist"))el("wd-hist").innerHTML=wdRows;
   if(el("wd-hist-box"))el("wd-hist-box").innerHTML=wdRows;
