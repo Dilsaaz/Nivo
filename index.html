@@ -412,10 +412,19 @@ if(el("inc-dia"))el("inc-dia").textContent=money(u.diamondInc||0);
   el("sp-left").textContent=u.spins; if(el("wd-saved"))el("wd-saved").textContent=u.addr?"Address saved":"No address yet";
   u.deps=(u.deps||[]).filter(function(d){return d.st==="PENDING"||(d.t&&(Date.now()-d.t)<300000);});
   el("dep-hist").innerHTML=u.deps.map(function(d){return '<div class="py-2">$'+money(d.amt)+' · '+d.st+'</div>'}).join("");
+    function wdWhen(t){
+    if(!t)return "—";
+    var d=new Date(t);
+    var mon=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][d.getMonth()];
+    var h=d.getHours(),m=d.getMinutes(),ampm=h>=12?"PM":"AM";
+    h=h%12;if(!h)h=12;
+    var mm=(m<10?"0":"")+m;
+    return d.getDate()+" "+mon+" "+d.getFullYear()+", "+h+":"+mm+" "+ampm;
+  }
       var wdRows=(u.wds||[]).map(function(d){
     var req=d.req!=null?d.req:+(Number(d.amt||0)+Number(d.fee||0)).toFixed(2);
     var got=d.amt;
-        return '<div class="py-3 border-b"><div class="font-bold">'+d.st+'</div><div>Requested $'+money(req)+'</div><div>Fee $'+money(d.fee||0)+'</div><div>Received $'+money(got)+'</div></div>';
+            return '<div class="py-3 border-b"><div class="font-bold">'+wdWhen(d.t)+' · '+d.st+'</div><div>Requested $'+money(req)+'</div><div>Fee $'+money(d.fee||0)+'</div><div>Received $'+money(got)+'</div></div>';
   }).join("")||'<div class="text-slate-500">No withdraw yet.</div>';
   if(el("wd-hist"))el("wd-hist").innerHTML=wdRows;
   if(el("wd-hist-box"))el("wd-hist-box").innerHTML=wdRows;
