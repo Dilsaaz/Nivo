@@ -331,7 +331,7 @@ function copyAddr(){navigator.clipboard.writeText(ADDR).then(function(){el("copy
 function sendDep(){if(!u){pop("Login","Sign in first");return}var box=el("dep-hash");if(!box){pop("Refresh","Close the site and open again");return}var amt=Number(el("dep-amt").value),hash=(box.value||"").trim();if(!amt||amt<45){pop("Minimum","Enter amount $45 or more");return}if(hash.length<10){pop("TX hash","Paste full BEP20 hash (10+ letters)");return}if(el("pop-spin"))el("pop-spin").classList.remove("hidden");pop("Checking hash","Please wait 2 seconds");setTimeout(function(){if(el("pop-spin"))el("pop-spin").classList.add("hidden");u.deps=u.deps||[];u.deps.unshift({id:"D"+Date.now(),amt:amt,st:"PENDING",t:Date.now(),file:hash});saveU(u);if(el("dep-note"))el("dep-note").textContent="PENDING — waiting for admin.";draw();pop("Pending","Deposit submitted. Status: Pending. Credit after admin approval.");},2000);}
 function saveAddr(){var a=(el("wd-addr").value||"").trim();if(a.indexOf("0x")!==0||a.length<20){pop("Address","Paste full BEP20 address starting with 0x");return}u.addr=a;saveU(u);if(el("wd-saved"))el("wd-saved").textContent=a;pop("Saved","Address updated");}
 function askWd(){if(!u.addr){pop("Address","Save address first");return}if((u.wds||[]).some(function(x){return x.st==="PENDING"})){pop("Pending","One withdraw is already pending. Wait for admin approval.");return}var amt=Number(el("wd-amt").value);if(!amt||amt<10){pop("Minimum","Withdraw minimum $10");return}if(amt>u.profit+0.0001){pop("Limit","Income only");return}var fee=+(amt*0.10).toFixed(2),net=+(amt-fee).toFixed(2);u.profit-=amt;u.bal-=amt;u.wds.unshift({id:"W"+Date.now(),amt:net,fee:fee,st:"PENDING",t:Date.now(),addr:u.addr});saveU(u);draw();pop("Pending","Requested $"+money(amt)+" · Fee 10% ($"+money(fee)+") · You get $"+money(net)+" · Time 2 hours after admin OK");}
-  function undoWd(user,id){
+function undoWd(user,id){
   var p=findUser(user);if(!p)return;
   var d=(p.wds||[]).filter(function(x){return x.id===id})[0];
   if(!d)return;
@@ -412,19 +412,10 @@ if(el("inc-dia"))el("inc-dia").textContent=money(u.diamondInc||0);
   el("sp-left").textContent=u.spins; if(el("wd-saved"))el("wd-saved").textContent=u.addr?"Address saved":"No address yet";
   u.deps=(u.deps||[]).filter(function(d){return d.st==="PENDING"||(d.t&&(Date.now()-d.t)<300000);});
   el("dep-hist").innerHTML=u.deps.map(function(d){return '<div class="py-2">$'+money(d.amt)+' · '+d.st+'</div>'}).join("");
-    function wdWhen(t){
-    if(!t)return "—";
-    var d=new Date(t);
-    var mon=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][d.getMonth()];
-    var h=d.getHours(),m=d.getMinutes(),ampm=h>=12?"PM":"AM";
-    h=h%12;if(!h)h=12;
-    var mm=(m<10?"0":"")+m;
-    return d.getDate()+" "+mon+" "+d.getFullYear()+", "+h+":"+mm+" "+ampm;
-  }
-  var wdRows=(u.wds||[]).map(function(d){
+      var wdRows=(u.wds||[]).map(function(d){
     var req=d.req!=null?d.req:+(Number(d.amt||0)+Number(d.fee||0)).toFixed(2);
-    var st=d.st==="SUCCESSFUL"||d.st==="APPROVED"?"Approved":d.st;
-    return '<div class="py-3 border-b text-sm leading-6">'+wdWhen(d.t)+'  ·  Requested $'+money(req)+'  ·  Approved $'+money(d.st==="REJECTED"?0:d.amt)+'  ·  '+st+'</div>';
+    var got=d.amt;
+    return '<div class="py-3 border-b"><div class="font-bold">'+d.st+'</div><div>Lagaya $'+money(req)+'</div><div>Fee $'+money(d.fee||0)+'</div><div>Mila $'+money(got)+'</div></div>';
   }).join("")||'<div class="text-slate-500">No withdraw yet.</div>';
   if(el("wd-hist"))el("wd-hist").innerHTML=wdRows;
   if(el("wd-hist-box"))el("wd-hist-box").innerHTML=wdRows;
