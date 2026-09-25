@@ -326,7 +326,14 @@ function pop(t,m){el("pop-t").textContent=t;el("pop-m").textContent=m||"";el("po
 function closePop(){el("pop").classList.add("hidden");if(el("pop-spin"))el("pop-spin").classList.add("hidden")}
 function money(n){return Number(n||0).toFixed(2)}
 function codeOf(){var c="NIVO23456789ABCDEFGHJKMNPQRSTUVWXYZ",s="";for(var i=0;i<8;i++)s+=c.charAt(Math.floor(Math.random()*c.length));return s;}
-function showBox(id){["box-login","box-signup","box-otp","box-admin","box-forgot"].forEach(function(x){el(x).classList.toggle("hidden",x!==id)});}
+function showBox(id){
+  ["box-login","box-signup","box-forgot","box-otp","box-admin"].forEach(function(x){var e=el(x);if(e)e.classList.add("hidden");});
+  var b=el(id);if(b)b.classList.remove("hidden");
+  if(id==="box-signup"){
+    var r=(new URLSearchParams(location.search).get("ref")||localStorage.getItem("nivo_ref")||"").trim();
+    if(r&&el("su-ref"))el("su-ref").value=r;
+  }
+}
 function hideAll(){el("auth").classList.add("hidden");el("app").classList.add("hidden");el("admin").classList.add("hidden")}
 function kidsOf(ref){return allUsers().filter(function(p){return String(p.sponsor||"").toUpperCase()===String(ref||"").toUpperCase()})}
 function layers(){var A=kidsOf(u.ref);var B=[];A.forEach(function(a){B=B.concat(kidsOf(a.ref))});var C=[];B.forEach(function(b){C=C.concat(kidsOf(b.ref))});var D=[];C.forEach(function(c){D=D.concat(kidsOf(c.ref))});return {A:A,B:B,C:C,D:D};}
@@ -485,7 +492,13 @@ if(el("inc-dia"))el("inc-dia").textContent=money(u.diamondInc||0);
   el("p-box").innerHTML="<div class='serif text-3xl mb-2'>Profile</div>User <b>"+u.user+"</b><br>Email "+u.email+"<br>Code "+u.ref+"<br>Sponsor "+(u.sponsor||"—")+"<br>Level "+u.level;
 }
   setInterval(function(){if(u&&el("sp-next")&&u.nextSpin&&Date.now()<u.nextSpin){var s=Math.ceil((u.nextSpin-Date.now())/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;el("sp-next").textContent="Next pack in "+h+"h "+m+"m "+sec+"s";if(el("sp-left"))el("sp-left").textContent=u.spins;}else if(u&&u.nextSpin&&Date.now()>=u.nextSpin){try{draw();}catch(e){}}},1000);
-window.addEventListener("load",function(){var q=new URLSearchParams(location.search).get("ref");if(q){showBox("box-signup");el("su-ref").value=q}if(location.hash==="#admin")showBox("box-admin");});
+window.addEventListener("load",function(){
+  var q=(new URLSearchParams(location.search).get("ref")||"").trim();
+  if(q)localStorage.setItem("nivo_ref",q);
+  var r=q||localStorage.getItem("nivo_ref")||"";
+  if(r&&el("su-ref")){showBox("box-signup");el("su-ref").value=r;}
+  if(location.hash==="#admin")showBox("box-admin");
+});
 </script>
 </body>
 </html>
