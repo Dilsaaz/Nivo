@@ -517,7 +517,20 @@ if(el("inc-today"))el("inc-today").textContent=money(u.todayN||0);
 if(el("inc-rew"))el("inc-rew").textContent=money(u.rewardInc||0);
 if(el("inc-dia"))el("inc-dia").textContent=money(u.diamondInc||0);
 if(el("h-lv"))el("h-lv").textContent=u.level;
-
+function drawWheel(){
+  var w=el("wheel");if(!w)return;
+  var stops=[];
+  SLICES.forEach(function(s,i){stops.push(s.c+" "+(i*60)+"deg "+((i+1)*60)+"deg");});
+  w.innerHTML="";
+  w.style.background="conic-gradient("+stops.join(",")+")";
+  SLICES.forEach(function(s,i){
+    var ang=i*60+30;
+    var lab=document.createElement("div");
+    lab.style.cssText="position:absolute;left:50%;top:50%;width:56px;margin-left:-28px;text-align:center;color:#fff;font-size:11px;font-weight:800;text-shadow:0 1px 3px #000;transform:rotate("+ang+"deg) translateY(-92px) rotate("+(-ang)+"deg)";
+    lab.textContent=s.l;
+    w.appendChild(lab);
+  });
+}
 function doSpin(){
   function tone(f,ms,type){try{var a=new(window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.type=type||"square";o.frequency.value=f;g.gain.value=0.08;o.connect(g);g.connect(a.destination);o.start();setTimeout(function(){o.stop();a.close();},ms||120);}catch(e){}}
   if(!u||u.lock<45){pop("Deposit first","Minimum $45 USDT BEP20 deposit is required before you can spin.");return}
