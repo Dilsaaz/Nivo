@@ -70,7 +70,9 @@ input{border:1px solid #d5e2f2;border-radius:12px;padding:12px 14px;width:100%;b
     <input id="li-user" class="mb-2" placeholder="Username"/>
 <div style="position:relative">
 <input id="li-pass" type="password" class="mb-2 w-full" placeholder="Password"/>
-<button type="button" onclick="togPw('li-pass',this)" style="position:absolute;right:10px;top:8px;background:none;border:0;cursor:pointer">👁</button>
+<button type="button" onclick="togPw('li-pass',this)" aria-label="Show password" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:0;padding:4px;cursor:pointer;opacity:.55">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+</button>
 </div>
     <button class="btn w-full py-3" onclick="doLogin()">Continue</button>
     <button class="w-full mt-3 text-sm text-blue" onclick="showBox('box-signup')">Create account with OTP</button>
@@ -83,7 +85,9 @@ input{border:1px solid #d5e2f2;border-radius:12px;padding:12px 14px;width:100%;b
     <input id="su-phone" class="mb-2" placeholder="Phone number" type="tel"/>
  <div style="position:relative">
 <input id="su-pass" type="password" class="mb-2 w-full" placeholder="Password"/>
-<button type="button" onclick="togPw('su-pass',this)" style="position:absolute;right:10px;top:8px;background:none;border:0;cursor:pointer">👁</button>
+<button type="button" onclick="togPw('li-pass',this)" aria-label="Show password" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:0;padding:4px;cursor:pointer;opacity:.55">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+</button>
 </div>
     <input id="su-ref" class="mb-3" placeholder="Referral code (optional)"/>
     <button class="btn w-full py-3" onclick="sendOtp()">Send OTP</button>
@@ -323,7 +327,7 @@ function togPw(id,btn){
   var i=el(id);if(!i)return;
   var on=i.type==="password";
   i.type=on?"text":"password";
-  btn.textContent=on?"🙈":"👁";
+  btn.style.opacity=on?"1":".55";
 }
 function saveU(obj){localStorage.setItem("nivo_"+obj.user, JSON.stringify(obj)); if(u&&u.user===obj.user) u=obj; pushCloud(obj);}
   var _adT=0;
