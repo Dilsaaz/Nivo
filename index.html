@@ -573,7 +573,7 @@ function doSpin(){
       msg="No win";
       pop("No win","Nothing added to wallet");
     }
-    if(el("sp-res"))el("sp-res").textContent=msg;
+    if(el("sp-res"))el("sp-res").textContent="";
     try{draw();}catch(e){}
   },7600);
 }
