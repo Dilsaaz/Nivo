@@ -68,7 +68,10 @@ input{border:1px solid #d5e2f2;border-radius:12px;padding:12px 14px;width:100%;b
   <div id="box-login" class="card p-5 mb-3">
     <div class="font-bold mb-3">Sign in</div>
     <input id="li-user" class="mb-2" placeholder="Username"/>
-    <input id="li-pass" type="password" class="mb-3" placeholder="Password"/>
+<div style="position:relative">
+<input id="li-pass" type="password" class="mb-2 w-full" placeholder="Password"/>
+<button type="button" onclick="togPw('li-pass',this)" style="position:absolute;right:10px;top:8px;background:none;border:0;cursor:pointer">👁</button>
+</div>
     <button class="btn w-full py-3" onclick="doLogin()">Continue</button>
     <button class="w-full mt-3 text-sm text-blue" onclick="showBox('box-signup')">Create account with OTP</button>
   <button class="w-full mt-2 text-sm text-blue-700" onclick="showBox('box-forgot')">Forgot password</button>
@@ -78,7 +81,10 @@ input{border:1px solid #d5e2f2;border-radius:12px;padding:12px 14px;width:100%;b
     <input id="su-user" class="mb-2" placeholder="Username"/>
     <input id="su-email" class="mb-2" placeholder="Email"/>
     <input id="su-phone" class="mb-2" placeholder="Phone number" type="tel"/>
-    <input id="su-pass" type="password" class="mb-2" placeholder="Password"/>
+ <div style="position:relative">
+<input id="su-pass" type="password" class="mb-2 w-full" placeholder="Password"/>
+<button type="button" onclick="togPw('su-pass',this)" style="position:absolute;right:10px;top:8px;background:none;border:0;cursor:pointer">👁</button>
+</div>
     <input id="su-ref" class="mb-3" placeholder="Referral code (optional)"/>
     <button class="btn w-full py-3" onclick="sendOtp()">Send OTP</button>
     <button class="w-full mt-3 text-sm text-blue" onclick="showBox('box-login')">Back</button>
@@ -243,10 +249,9 @@ input{border:1px solid #d5e2f2;border-radius:12px;padding:12px 14px;width:100%;b
   <div class="card p-3 text-center"><span class="text-[10px] text-slate-500">ACTIVE</span><b id="nAct">0</b></div>
   <div class="card p-3 text-center"><span class="text-[10px] text-slate-500">INACTIVE</span><b id="nIna">0</b></div>
 </div>
-<button class="btn w-full py-3 mb-3" onclick="showCom()">Community</button>
+<button class="btn w-full py-3 mb-3" onclick="showCom('A')">Community</button>
 <div id="com-box" class="card p-4 mb-3 text-sm hidden"></div>
         <div class="card p-4 text-sm leading-7" id="t-plan"></div>
-        <div class="card p-4 mt-3 text-sm" id="t-list"></div>
       </section>
       <section id="tab-profile" class="hidden"><div class="card p-5" id="p-box"></div></section>
     </main>
@@ -314,6 +319,12 @@ function slabHtml(){
 var u=null, pending=null, otpCode="", otpAt=0, gzLive=false;
 if(EJ_PUB) try{emailjs.init({publicKey:EJ_PUB})}catch(e){}
 function el(id){return document.getElementById(id)}
+function togPw(id,btn){
+  var i=el(id);if(!i)return;
+  var on=i.type==="password";
+  i.type=on?"text":"password";
+  btn.textContent=on?"🙈":"👁";
+}
 function saveU(obj){localStorage.setItem("nivo_"+obj.user, JSON.stringify(obj)); if(u&&u.user===obj.user) u=obj; pushCloud(obj);}
   var _adT=0;
 function adTap(){_adT++;if(_adT>=5){_adT=0;showBox("box-admin");el("auth").classList.remove("hidden");}}
@@ -399,7 +410,18 @@ function findUser(name){return allUsers().filter(function(x){return x.user===nam
 function adDep(user,id,ok){var p=findUser(user);if(!p)return;var d=p.deps.filter(function(x){return x.id===id})[0];if(!d||d.st!=="PENDING")return;if(ok){d.st="SUCCESSFUL";p.bal+=d.amt;p.lock+=d.amt;if(p.spins===0&&p.lock>=45)p.spins=1;if(p.sponsor){var sp=allUsers().filter(function(x){return x.ref===p.sponsor})[0];if(sp){var b=+(d.amt*0.10).toFixed(2);sp.bal+=b;sp.profit+=b;sp.rewardInc=(+sp.rewardInc||0)+b;if(typeof bumpToday==="function")bumpToday(sp,b);if(!sp.teamA)sp.teamA=[];if(sp.teamA.indexOf(p.user)<0)sp.teamA.push(p.user);saveU(sp);}}}else d.st="REJECTED";saveU(p);if(u&&u.user===p.user)u=p;renderAdmin();pop(ok?"Approved":"Rejected",user);}
   function maskName(n){n=String(n||"");if(n.length<3)return n[0]+"***";return n[0]+"****"+n.slice(-2);}
 function isOn(p){return Number(p.lock||0)>=45;}
-function showCom(){var L=layers(),all=L.A.concat(L.B,L.C,L.D),box=el("com-box");box.classList.remove("hidden");box.innerHTML=all.length?all.map(function(p){return "<div class='py-2 border-b text-sm'>"+p.user+" · "+(Number(p.lock||0)>=45?"Active":"Inactive")+" · "+(p.ref||"")+"</div>"}).join(""):"No members";}
+function showCom(layer){
+  var L=layers(),box=el("com-box");if(!box)return;
+  box.classList.remove("hidden");
+  var k=layer||"A";
+  var tabs=["A","B","C","D"].map(function(x){
+    return '<button class="ghost px-3 py-1 mr-1 mb-2 text-sm" onclick="showCom(\''+x+'\')">'+x+' team</button>';
+  }).join("");
+  var rows=(L[k]||[]).map(function(p){
+    return "<tr class='border-b'><td class='py-2 pr-2'>"+p.user+"</td><td>"+(isOn(p)?"Active":"Inactive")+"</td><td class='break-all'>"+(p.ref||"—")+"</td></tr>";
+  }).join("")||"<tr><td class='py-3' colspan='3'>No "+k+" members</td></tr>";
+  box.innerHTML=tabs+"<div class='font-bold mb-2'>"+k+" team</div><table class='w-full text-sm'><thead><tr class='text-slate-500 text-left'><th class='py-1'>Name</th><th>Status</th><th>Code</th></tr></thead><tbody>"+rows+"</tbody></table>";
+}
 function adWd(user,id,ok){var p=findUser(user);if(!p)return;var d=p.wds.filter(function(x){return x.id===id})[0];if(!d||d.st!=="PENDING")return;if(ok)d.st="APPROVED";else{d.st="REJECTED";p.profit+=d.amt;p.bal+=d.amt;}saveU(p);if(u&&u.user===p.user)u=p;renderAdmin();pop(ok?"Approved":"Rejected",user);}
 function renderAdmin(){
   var list=allUsers(),pd=0,pw=0,depH="",wdH="",mem="";
@@ -487,8 +509,9 @@ if(el("inc-dia"))el("inc-dia").textContent=money(u.diamondInc||0);
   }).join("")||'<div class="text-slate-500">No withdraw yet.</div>';
   if(el("wd-hist"))el("wd-hist").innerHTML=wdRows;
   if(el("wd-hist-box"))el("wd-hist-box").innerHTML=wdRows;
-  el("t-plan").innerHTML="<b>Direct A</b> — 10% of first deposit.<br><b>Slab 2</b> Wallet $200 + A 10 / Down 25 / Tot 35 · gift $25<br><b>Slab 3</b> $500 + 15 / 80 / 95 · gift $50<br><b>Slab 4</b> $1000 + 25 / 200 / 225 · gift $100<br><b>Slab 5</b> $2000 + 50 / 500 / 550 · gift $200";
+  el("t-plan").innerHTML="<b>Direct A</b> — 10% of first deposit.<br><b>Slab 2</b> Wallet $200 + A 18 / Down 25 / Tot 35 · gift $25<br><b>Slab 3</b> $500 + A 30 / Down 80 / Tot 95 · gift $50<br><b>Slab 4</b> $1000 + A 50 / Down 200 / Tot 225 · gift $100<br><b>Slab 5</b> $2000 + A 50 / Down 500 / Tot 550 · gift $200";
   var all=L.A.concat(L.B,L.C,L.D),act=all.filter(isOn),off=all.filter(function(p){return !isOn(p)});if(el("nTot"))el("nTot").textContent=act.length;if(el("nAct"))el("nAct").textContent=act.length;if(el("nIna"))el("nIna").textContent=off.length;el("nA").textContent=L.A.filter(isOn).length;el("nB").textContent=L.B.filter(isOn).length;el("nC").textContent=L.C.filter(isOn).length;el("nD").textContent=L.D.filter(isOn).length;el("tA").textContent=L.A.filter(isOn).length;el("tB").textContent=L.B.filter(isOn).length;el("tC").textContent=L.C.filter(isOn).length;el("tD").textContent=L.D.filter(isOn).length;el("t-list").innerHTML="<b>A</b> "+L.A.filter(isOn).map(function(p){return maskName(p.user)}).join(", ")+"<br><b>B</b> "+L.B.filter(isOn).map(function(p){return maskName(p.user)}).join(", ")+"<br><b>C</b> "+L.C.filter(isOn).map(function(p){return maskName(p.user)}).join(", ")+"<br><b>D</b> "+L.D.filter(isOn).map(function(p){return maskName(p.user)}).join(", ");
+  if(el("t-list"))el("t-list").innerHTML="";
   el("p-box").innerHTML="<div class='serif text-3xl mb-2'>Profile</div>User <b>"+u.user+"</b><br>Email "+u.email+"<br>Code "+u.ref+"<br>Sponsor "+(u.sponsor||"—")+"<br>Level "+u.level;
 }
   setInterval(function(){if(u&&el("sp-next")&&u.nextSpin&&Date.now()<u.nextSpin){var s=Math.ceil((u.nextSpin-Date.now())/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;el("sp-next").textContent="Next pack in "+h+"h "+m+"m "+sec+"s";if(el("sp-left"))el("sp-left").textContent=u.spins;}else if(u&&u.nextSpin&&Date.now()>=u.nextSpin){try{draw();}catch(e){}}},1000);
@@ -496,7 +519,10 @@ window.addEventListener("load",function(){
   var q=(new URLSearchParams(location.search).get("ref")||"").trim();
   if(q)localStorage.setItem("nivo_ref",q);
   var r=q||localStorage.getItem("nivo_ref")||"";
-  if(r&&el("su-ref")){showBox("box-signup");el("su-ref").value=r;}
+  if(r){
+    showBox("box-signup");
+    if(el("su-ref"))el("su-ref").value=r;
+  }
   if(location.hash==="#admin")showBox("box-admin");
 });
 </script>
