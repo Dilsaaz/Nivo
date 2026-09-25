@@ -72,17 +72,7 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
     <div class="text-[11px] tracking-[.35em] text-blue mt-1">ONE SPIN · REAL DESK</div>
   </div>
   <div id="box-login" class="card p-5 mb-3">
-    <script>
-(function(){
-  var r=(new URLSearchParams(location.search).get("ref")||"").trim();
-  if(!r)return;
-  localStorage.setItem("nivo_ref",r);
-  var a=document.getElementById("box-login");
-  var b=document.getElementById("box-signup");
-  if(a)a.classList.add("hidden");
-  if(b)b.classList.remove("hidden");
-})();
-</script>
+ 
     <div class="font-bold mb-3">Sign in</div>
     <input id="li-user" class="mb-2" placeholder="Username"/>
 <div style="position:relative">
@@ -110,6 +100,19 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
     <button class="btn w-full py-3" onclick="sendOtp()">Send OTP</button>
     <button class="w-full mt-3 text-sm text-blue" onclick="showBox('box-login')">Back</button>
   </div>
+  <script>
+(function(){
+  var r=(new URLSearchParams(location.search).get("ref")||"").trim();
+  if(!r)return;
+  localStorage.setItem("nivo_ref",r);
+  var a=document.getElementById("box-login");
+  var b=document.getElementById("box-signup");
+  var c=document.getElementById("su-ref");
+  if(a)a.classList.add("hidden");
+  if(b)b.classList.remove("hidden");
+  if(c)c.value=r;
+})();
+</script>
   <div id="box-forgot" class="card p-5 mb-3 hidden">
   <div class="font-bold mb-3">Forgot password</div>
   <input id="fg-user" class="mb-2" placeholder="Username"/>
