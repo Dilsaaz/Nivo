@@ -419,7 +419,17 @@ function verifyOtp(){
 }
 function adminLogin(){if(el("ad-user").value.trim()!==ADMIN_ID||el("ad-pass").value!==ADMIN_PW){pop("Denied","Wrong admin login");return}hideAll();el("admin").classList.remove("hidden");try{renderAdmin();}catch(e){}try{pullCloud(function(){try{renderAdmin();}catch(e){}})}catch(e){}}
 function logout(){u=null;hideAll();el("auth").classList.remove("hidden");showBox("box-login")}
-function enterUser(){pullCloud(function(){hideAll();el("app").classList.remove("hidden");drawWheel();draw();tab("home");});}
+function enterUser(){
+  if(!u||!u.user){pop("Login","Open Sign in");showBox("box-login");return}
+  pullCloud(function(){
+    var nu=load(u.user);if(nu)u=nu;
+    if(!u||!u.user){pop("Error","Login again");return}
+    hideAll();el("app").classList.remove("hidden");
+    if(el("h-name"))el("h-name").textContent=u.user;
+    if(el("h-bal"))el("h-bal").textContent=money(u.bal);
+    drawWheel();draw();tab("home");
+  });
+}
 function tab(id){["home","wallet","income","deposit","withdraw","spin","game","team","profile"].forEach(function(t){if(el("tab-"+t))el("tab-"+t).classList.toggle("hidden",t!==id)});document.querySelectorAll(".side-btn[data-tab]").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-tab")===id)});if(id==="game"){try{var ctx=window.AudioContext||window.webkitAudioContext;var a=new ctx(),o=a.createOscillator(),g=a.createGain();o.type="triangle";o.frequency.value=523;g.gain.value=0.12;o.connect(g);g.connect(a.destination);o.start();setTimeout(function(){o.frequency.value=784},120);setTimeout(function(){o.stop();a.close()},350);}catch(e){}}draw();}
 function copyRef(){navigator.clipboard.writeText(location.origin+location.pathname+"?ref="+u.ref);pop("Copied","Invite link copied.")}
 function copyAddr(){navigator.clipboard.writeText(ADDR).then(function(){el("copy-ok").classList.remove("hidden");pop("Copied","Address copied.")})}
@@ -556,12 +566,13 @@ function doSpin(){
 function gzStart(){function beep(f,ms){try{var a=new(window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.type="sine";o.frequency.value=f;g.gain.value=0.1;o.connect(g);g.connect(a.destination);o.start();setTimeout(function(){o.stop();a.close();},ms||160);}catch(e){}}function ding(){beep(880,140);setTimeout(function(){beep(1174,140);},140);setTimeout(function(){beep(1568,220);},280);}function say(t){try{var u=new SpeechSynthesisUtterance(t);u.rate=1;speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}}var amt=Number(el("gz-amt").value);if(!amt||amt<10){pop("Gamezone","Min $10");return}if(!u||u.profit<amt){pop("Funds","Income only");return}u.profit-=amt;u.bal-=amt;saveU(u);window.gzLive=true;beep(520,160);var slots=[0,1,2,3,4,5,6,7];slots.sort(function(){return Math.random()-0.5});var map={};map[slots[0]]=1.5;map[slots[1]]=2;map[slots[2]]=3;var box=el("gz-board");if(!box)return;box.innerHTML="";for(var i=0;i<8;i++){(function(ix){var b=document.createElement("button");b.className="card-tile";b.textContent="?";b.onclick=function(){if(!window.gzLive)return;window.gzLive=false;if(map[ix]){var odd=map[ix],win=+(amt*odd).toFixed(2),net=+(win-amt).toFixed(2);u.bal+=win;u.profit+=win;u.diamondInc=(+u.diamondInc||0)+net;if(typeof bumpToday==="function")bumpToday(u,net);saveU(u);if(typeof payTeam==="function")payTeam(u,net);b.textContent="◆ "+odd+"x";ding();say("Congratulations");pop("Diamond","Congratulations · $"+money(win)+" · "+odd+"x");}else{b.textContent="✕";beep(180,280);say("Ooh try again");pop("No diamond","Ooh try again");}draw();};box.appendChild(b);})(i);}draw();}
 function draw(){
   if(!u)return;
+  if(el("h-name"))el("h-name").textContent=u.user||"";
   var need={1:1,2:2,3:3,4:4,5:5}[u.level||1]||1;if(u.lock>=45&&u.nextSpin&&Date.now()>=u.nextSpin){u.spins=need;u.nextSpin=0;saveU(u);}if(u.lock>=45&&!u.nextSpin&&!u.packUsed){u.spins=need;saveU(u);}if(el("sp-next")){if(u.nextSpin&&Date.now()<u.nextSpin){var s=Math.ceil((u.nextSpin-Date.now())/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;el("sp-next").textContent="Next pack in "+h+"h "+m+"m "+sec+"s";}else el("sp-next").textContent=(u.spins||0)+" spin(s) ready";}
     if(u.deps&&u.deps[0]&&u.deps[0].st==="SUCCESSFUL"&&!u.deps[0].seen){u.deps[0].seen=true;saveU(u);pop("Successful","Deposit approved. $"+money(u.deps[0].amt)+" added to wallet.");}
   var L=layers(); applyLevel(L);
   if(el("h-lv"))el("h-lv").textContent=u.level||0;
   if(el("h-name"))el("h-name").textContent=u.user;
-  el("dep-addr").textContent=ADDR;
+  if(el("dep-addr"))el("dep-addr").textContent=ADDR;
   el("h-bal").textContent=money(u.bal); el("w-bal").textContent=money(u.bal);
   el("h-profit").textContent=money(u.profit); if(el("w-free"))el("w-free").textContent=money(u.profit);
   if(el("slab-home"))el("slab-home").innerHTML=slabHtml();
