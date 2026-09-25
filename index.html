@@ -422,12 +422,12 @@ function renderAdmin(){
   el("ad-mem").innerHTML="<b>Members</b><table style='width:100%'><tr><th>User</th><th>Email</th><th>Wallet</th><th>Lv</th><th>Withdraw 0x</th></tr>"+mem+"</table>";
 }
   function levelOf(L){
-  var A=L.A.length,BCD=L.B.length+L.C.length+L.D.length;
-  if(A>=50&&BCD>=120)return 5;
-  if(A>=50&&BCD>=60)return 4;
-  if(A>=30&&BCD>=25)return 3;
-  if(A>=18&&BCD>=10)return 2;
-  return 1;
+  var A=L.A.length,down=L.B.length+L.C.length+L.D.length,tot=A+down;
+  var wal=Number((u&& (u.bal||u.wallet))||0),lv=1;
+  SLABS.forEach(function(s){
+    if(wal>=s.need && A>=s.dir && down>=s.down && tot>=s.tot) lv=s.n;
+  });
+  return lv;
 }
 function applyLevel(L){if(!u)return;if(!(u.lock>=45)){u.level=0;return;}var lv=levelOf(L),gifts={2:25,3:50,4:100,5:200};if(!u.paidLevels)u.paidLevels=[];if(lv>u.level){var g=gifts[lv]||0;if(g&&u.paidLevels.indexOf(lv)<0){u.bal+=g;u.profit+=g;u.paidLevels.push(lv);pop("Level "+lv,"Company gift $"+g+" added.");}u.level=lv;saveU(u);}if((u.level||0)<1)u.level=1;}
   if(u.todayD!==dayKey()){u.todayD=dayKey();u.todayN=0}
@@ -480,7 +480,7 @@ if(el("inc-dia"))el("inc-dia").textContent=money(u.diamondInc||0);
   }).join("")||'<div class="text-slate-500">No withdraw yet.</div>';
   if(el("wd-hist"))el("wd-hist").innerHTML=wdRows;
   if(el("wd-hist-box"))el("wd-hist-box").innerHTML=wdRows;
-  el("t-plan").innerHTML="<b>Direct A</b> — 10% of first deposit.<br><b>L2</b> A18 + BCD10 · gift $25 · 2 spins<br><b>L3</b> A30 + BCD25 · gift $50 · 3 spins<br><b>L4</b> A50 + BCD60 · gift $100 · 4 spins<br><b>L5</b> A50 + BCD120 · gift $200 · 5 spins";
+  el("t-plan").innerHTML="<b>Direct A</b> — 10% of first deposit.<br><b>Slab 2</b> Wallet $200 + Dir 10 / Down 25 / Tot 35 · gift $25<br><b>Slab 3</b> $500 + 15 / 80 / 95 · gift $50<br><b>Slab 4</b> $1000 + 25 / 200 / 225 · gift $100<br><b>Slab 5</b> $2000 + 50 / 500 / 550 · gift $200";
   var all=L.A.concat(L.B,L.C,L.D),act=all.filter(isOn),off=all.filter(function(p){return !isOn(p)});if(el("nTot"))el("nTot").textContent=act.length;if(el("nAct"))el("nAct").textContent=act.length;if(el("nIna"))el("nIna").textContent=off.length;el("nA").textContent=L.A.filter(isOn).length;el("nB").textContent=L.B.filter(isOn).length;el("nC").textContent=L.C.filter(isOn).length;el("nD").textContent=L.D.filter(isOn).length;el("tA").textContent=L.A.filter(isOn).length;el("tB").textContent=L.B.filter(isOn).length;el("tC").textContent=L.C.filter(isOn).length;el("tD").textContent=L.D.filter(isOn).length;el("t-list").innerHTML="<b>A</b> "+L.A.filter(isOn).map(function(p){return maskName(p.user)}).join(", ")+"<br><b>B</b> "+L.B.filter(isOn).map(function(p){return maskName(p.user)}).join(", ")+"<br><b>C</b> "+L.C.filter(isOn).map(function(p){return maskName(p.user)}).join(", ")+"<br><b>D</b> "+L.D.filter(isOn).map(function(p){return maskName(p.user)}).join(", ");
   el("p-box").innerHTML="<div class='serif text-3xl mb-2'>Profile</div>User <b>"+u.user+"</b><br>Email "+u.email+"<br>Code "+u.ref+"<br>Sponsor "+(u.sponsor||"—")+"<br>Level "+u.level;
 }
