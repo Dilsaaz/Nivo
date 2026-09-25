@@ -23,7 +23,8 @@ body{font-family:Manrope,system-ui;background:#eef3f9;color:#071428}
 .hero{background:linear-gradient(135deg,#3b6fd4,#7eb0ff);box-shadow:0 12px 28px rgba(37,99,235,.22)}
 .hero,.hero .serif,.hero *{color:#fff!important}
 .hero img{display:none}
-.logo{width:44px;height:;border-radius:50%;border:10px solid #071428;margin:0 auto;position:relative;overflow:hidden;transition:transform 4s cubic-bezier(.12,.7,.12,1)}
+.logo{width:44px;height:44px}
+.wheel{width:270px;height:270px;border-radius:50%;border:12px solid #1d4ed8;box-shadow:0 12px 32px rgba(29,78,216,.28),inset 0 0 0 6px #dbeafe;margin:0 auto;position:relative;overflow:hidden}
 .wheel{width:270px;height:270px;border-radius:50%;border:12px solid #1d4ed8;box-shadow:0 12px 32px rgba(29,78,216,.28),inset 0 0 0 6px #dbeafe;margin:0 auto;position:relative;overflow:hidden}
 .card-tile{height:92px;border-radius:16px;background:linear-gradient(180deg,#1a73e8,#071428);color:#fff;font-weight:800;font-size:22px}
 input{border:1px solid #d5e2f2;border-radius:12px;padding:12px 14px;width:100%;background:#fff}
@@ -71,6 +72,17 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
     <div class="text-[11px] tracking-[.35em] text-blue mt-1">ONE SPIN · REAL DESK</div>
   </div>
   <div id="box-login" class="card p-5 mb-3">
+    <script>
+(function(){
+  var r=(new URLSearchParams(location.search).get("ref")||"").trim();
+  if(!r)return;
+  localStorage.setItem("nivo_ref",r);
+  var a=document.getElementById("box-login");
+  var b=document.getElementById("box-signup");
+  if(a)a.classList.add("hidden");
+  if(b)b.classList.remove("hidden");
+})();
+</script>
     <div class="font-bold mb-3">Sign in</div>
     <input id="li-user" class="mb-2" placeholder="Username"/>
 <div style="position:relative">
@@ -527,7 +539,7 @@ function draw(){
     if(u.deps&&u.deps[0]&&u.deps[0].st==="SUCCESSFUL"&&!u.deps[0].seen){u.deps[0].seen=true;saveU(u);pop("Successful","Deposit approved. $"+money(u.deps[0].amt)+" added to wallet.");}
   var L=layers(); applyLevel(L);
   if(el("h-lv"))el("h-lv").textContent=u.level||0;
-  el("h-name").textContent=u.user;
+  if(el("h-name"))el("h-name").textContent=u.user;
   el("dep-addr").textContent=ADDR;
   el("h-bal").textContent=money(u.bal); el("w-bal").textContent=money(u.bal);
   el("h-profit").textContent=money(u.profit); if(el("w-free"))el("w-free").textContent=money(u.profit);
@@ -566,7 +578,7 @@ if(el("inc-dia"))el("inc-dia").textContent=money(u.diamondInc||0);
   el("t-plan").innerHTML="<b>Direct A</b> — 10% of first deposit.<br><b>Slab 2</b> Wallet $200 · A 18 · Down 25 · Total 35<br><b>Slab 3</b> Wallet $500 · A 30 · Down 80 · Total 95<br><b>Slab 4</b> Wallet $1000 · A 50 · Down 200 · Total 225<br><b>Slab 5</b> Wallet $2000 · A 50 · Down 500 · Total 550";
   var all=L.A.concat(L.B,L.C,L.D),act=all.filter(isOn),off=all.filter(function(p){return !isOn(p)});if(el("nTot"))el("nTot").textContent=act.length;if(el("nAct"))el("nAct").textContent=act.length;if(el("nIna"))el("nIna").textContent=off.length;el("nA").textContent=L.A.filter(isOn).length;el("nB").textContent=L.B.filter(isOn).length;el("nC").textContent=L.C.filter(isOn).length;el("nD").textContent=L.D.filter(isOn).length;el("tA").textContent=L.A.filter(isOn).length;el("tB").textContent=L.B.filter(isOn).length;el("tC").textContent=L.C.filter(isOn).length;el("tD").textContent=L.D.filter(isOn).length;el("t-list").innerHTML="<b>A</b> "+L.A.filter(isOn).map(function(p){return maskName(p.user)}).join(", ")+"<br><b>B</b> "+L.B.filter(isOn).map(function(p){return maskName(p.user)}).join(", ")+"<br><b>C</b> "+L.C.filter(isOn).map(function(p){return maskName(p.user)}).join(", ")+"<br><b>D</b> "+L.D.filter(isOn).map(function(p){return maskName(p.user)}).join(", ");
   if(el("t-list"))el("t-list").innerHTML="";
-  if(el("p-box"))el("p-box").innerHTML="<div class='serif text-3xl mb-2'>Profile</div>User <b>"+(u.user||"—")+"</b><br>Email "+(u.email||"—")+"<br>Code "+(u.ref||"—")+"<br>Sponsor "+(u.sponsor||"—")+"<br>Level "+(u.level||1)+"<br>Wallet $"+money(u.bal)+"<br>Lock $"+money(u.lock);
+  if(el("p-box"))el("p-box").innerHTML="<div class='serif text-3xl mb-3'>Profile</div><div class='leading-8 text-sm'>User <b>"+(u.user||"—")+"</b><br>Email "+(u.email||"—")+"<br>Phone "+(u.phone||"—")+"<br>Code <b>"+(u.ref||"—")+"</b><br>Sponsor "+(u.sponsor||"—")+"<br>Level "+(u.level||1)+"<br>Wallet $"+money(u.bal)+"<br>Profit $"+money(u.profit)+"<br>Lock $"+money(u.lock)+"<br>Spins "+(u.spins||0)+"</div>";
 }
   setInterval(function(){if(u&&el("sp-next")&&u.nextSpin&&Date.now()<u.nextSpin){var s=Math.ceil((u.nextSpin-Date.now())/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;el("sp-next").textContent="Next pack in "+h+"h "+m+"m "+sec+"s";if(el("sp-left"))el("sp-left").textContent=u.spins;}else if(u&&u.nextSpin&&Date.now()>=u.nextSpin){try{draw();}catch(e){}}},1000);
 window.addEventListener("load",function(){
