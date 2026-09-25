@@ -313,7 +313,25 @@ var ADMIN_MAIL="nivorealdesk@gmail.com";
 var SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkcHViZ21wdXlxb2JzdmZ0bW91Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3NDU2NjMsImV4cCI6MjEwNDMyMTY2M30.LsVMb0Lif65C0AtIUSXZNczuDiYEVk-M6TG9VyebEts";
 var sb=null;try{sb=supabase.createClient(SB_URL,SB_KEY)}catch(e){}
 function pushCloud(obj){if(!sb||!obj||!obj.user)return;sb.from("nivo_users").upsert({user_name:obj.user,data:obj,updated_at:new Date().toISOString()}).then(function(){});}
-function pullCloud(done){if(!sb){if(done)done();return}sb.from("nivo_users").select("user_name,data").then(function(r){if(r.data)r.data.forEach(function(row){if(row.data)localStorage.setItem("nivo_"+row.user_name,JSON.stringify(row.data))});if(done)done();});}
+function pullCloud(done){
+  if(!sb){if(done)done();return}
+  sb.from("nivo_users").select("user_name,data").then(function(r){
+    if(r.data)r.data.forEach(function(row){
+      if(!row||!row.user_name||!row.data)return;
+      var cloud=row.data;
+      if(typeof cloud==="string")try{cloud=JSON.parse(cloud)}catch(e){return}
+      if(!cloud||!cloud.user)return;
+      var key="nivo_"+row.user_name,local=null;
+      try{local=JSON.parse(localStorage.getItem(key)||"null")}catch(e){}
+      var lb=Number((local&&(local.bal||local.lock))||0);
+      var cb=Number(cloud.bal||cloud.lock||0);
+      if(local&&lb>cb)return;
+      localStorage.setItem(key,JSON.stringify(cloud));
+    });
+    if(u&&u.user){var nu=load(u.user);if(nu)u=nu;}
+    if(done)done();
+  });
+}
 var SLICES=[{l:"1.02x",m:1.02,c:"#1a73e8"},{l:"1.04x",m:1.04,c:"#071428"},{l:"1.06x",m:1.06,c:"#3b82f6"},{l:"1.08x",m:1.08,c:"#071428"},{l:"1.10x",m:1.10,c:"#1a73e8"},{l:"No win",m:0,c:"#64748b"}];
 var SLABS=[
   {n:1,name:"First",need:45,dir:0,down:0,tot:0},
