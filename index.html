@@ -29,6 +29,8 @@ body{font-family:Manrope,system-ui;background:#eef3f9;color:#071428}
 input{border:1px solid #d5e2f2;border-radius:12px;padding:12px 14px;width:100%;background:#fff}
 .lvl{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .lvl b{display:block;font-size:20px}
+  .lvl .card{border-radius:18px;box-shadow:0 8px 24px rgba(30,64,175,.08);border:1px solid #e8eef8}
+.lvl .card b{font-size:22px}
   .spin-dot{width:36px;height:36px;border:3px solid #d5e2f2;border-top-color:#1a73e8;border-radius:50%;animation:sp .7s linear infinite;margin:0 auto 10px}
 @keyframes sp{to{transform:rotate(360deg)}}
   .live-strip{display:flex;gap:10px;overflow:hidden;margin:12px 0 16px}
@@ -317,7 +319,7 @@ function slabHtml(){
   var cur=slabNow();
   return '<div class="card" style="margin:10px 0;padding:12px;border-radius:14px"><div style="font-weight:700;margin-bottom:8px">Account slab · '+cur.name+' · $'+cur.need+'</div>'+SLABS.map(function(s){
     var on=cur.n===s.n;
-    return '<div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid rgba(255,255,255,.08)"><span>Slab '+s.n+' · '+s.name+' · $'+s.need+(s.tot?(' · Team '+s.tot):' · No team')+'</span><span style="color:'+(on?'#3ddc84':'#888')+'">'+(on?'ACTIVE':'Locked')+'</span></div>';
+        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid #e8eef6"><span>Slab '+s.n+' · '+s.name+' · $'+s.need+'</span><span style="font-size:11px;color:'+(on?'#16a34a':'#94a3b8')+'">'+(on?'ACTIVE':'LOCKED')+'</span></div>';
   }).join("")+'</div>';
 }
 var u=null, pending=null, otpCode="", otpAt=0, gzLive=false;
@@ -419,7 +421,8 @@ function showCom(layer){
   box.classList.remove("hidden");
   var k=layer||"A";
   var tabs=["A","B","C","D"].map(function(x){
-    return '<button class="ghost px-3 py-1 mr-1 mb-2 text-sm" onclick="showCom(\''+x+'\')">'+x+' team</button>';
+        var on=x===k;
+    return '<button onclick="showCom(\''+x+'\')" style="border:0;border-radius:20px;padding:8px 14px;margin:0 6px 10px 0;font-size:12px;font-weight:600;background:'+(on?'#2563eb':'#eef2ff')+';color:'+(on?'#fff':'#1e3a8a')+'">'+x+' team</button>';
   }).join("");
   var rows=(L[k]||[]).map(function(p){
     return "<tr class='border-b'><td class='py-2 pr-2'>"+p.user+"</td><td>"+(isOn(p)?"Active":"Inactive")+"</td><td class='break-all'>"+(p.ref||"—")+"</td></tr>";
