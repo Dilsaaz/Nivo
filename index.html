@@ -489,7 +489,7 @@ if(el("inc-today"))el("inc-today").textContent=money(u.todayN||0);
 if(el("inc-rew"))el("inc-rew").textContent=money(u.rewardInc||0);
 if(el("inc-dia"))el("inc-dia").textContent=money(u.diamondInc||0);
 if(el("h-lv"))el("h-lv").textContent=u.level;
-function drawWheel(){var w=el("wheel");if(!w)return;w.innerHTML="";SLICES.forEach(function(s,i){var d=document.createElement("div");d.style.cssText="position:absolute;inset:0;clip-path:polygon(50% 50%,50% 0%,93% 25%);transform:rotate("+(i*60)+"deg);background:"+s.c;var lab=document.createElement("div");lab.style.cssText="position:absolute;left:56%;top:8%;transform:rotate(28deg);color:#fff;font-size:10px;font-weight:800;text-shadow:0 1px 2px #000;white-space:nowrap";lab.textContent=s.l;d.appendChild(lab);w.appendChild(d);});}
+
 function doSpin(){
   function tone(f,ms,type){try{var a=new(window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.type=type||"square";o.frequency.value=f;g.gain.value=0.08;o.connect(g);g.connect(a.destination);o.start();setTimeout(function(){o.stop();a.close();},ms||120);}catch(e){}}
   if(!u||u.lock<45){pop("Deposit first","Minimum $45 USDT BEP20 deposit is required before you can spin.");return}
@@ -510,7 +510,7 @@ function doSpin(){
   var pay=[];SLICES.forEach(function(x,n){if(x.m>0)pay.push(n)});
   var i=(Math.random()<0.28&&nw>=0)?nw:pay[Math.floor(Math.random()*pay.length)];
   var s=SLICES[i],w=el("wheel");
-  if(w){w.style.transition="none";w.style.transform="rotate(0deg)";void w.offsetWidth;w.style.transition="transform 4s cubic-bezier(.12,.7,.12,1)";w.style.transform="rotate("+(360*6+i*-60-30)+"deg)";}
+  if(w){w.style.transition="none";w.style.transform="rotate(0deg)";void w.offsetWidth;w.style.transition="transform 7.5s cubic-bezier(.12,.7,.12,1)";w.style.transform="rotate("+(360*6+i*-60-30)+"deg)";}
   setTimeout(function(){
     clearInterval(tick);
     var msg;
@@ -533,7 +533,7 @@ function doSpin(){
     }
     if(el("sp-res"))el("sp-res").textContent=msg;
     try{draw();}catch(e){}
-  },4100);
+  },7600);
 }
 function gzStart(){function beep(f,ms){try{var a=new(window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.type="sine";o.frequency.value=f;g.gain.value=0.1;o.connect(g);g.connect(a.destination);o.start();setTimeout(function(){o.stop();a.close();},ms||160);}catch(e){}}function ding(){beep(880,140);setTimeout(function(){beep(1174,140);},140);setTimeout(function(){beep(1568,220);},280);}function say(t){try{var u=new SpeechSynthesisUtterance(t);u.rate=1;speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}}var amt=Number(el("gz-amt").value);if(!amt||amt<10){pop("Gamezone","Min $10");return}if(!u||u.profit<amt){pop("Funds","Income only");return}u.profit-=amt;u.bal-=amt;saveU(u);window.gzLive=true;beep(520,160);var slots=[0,1,2,3,4,5,6,7];slots.sort(function(){return Math.random()-0.5});var map={};map[slots[0]]=1.5;map[slots[1]]=2;map[slots[2]]=3;var box=el("gz-board");if(!box)return;box.innerHTML="";for(var i=0;i<8;i++){(function(ix){var b=document.createElement("button");b.className="card-tile";b.textContent="?";b.onclick=function(){if(!window.gzLive)return;window.gzLive=false;if(map[ix]){var odd=map[ix],win=+(amt*odd).toFixed(2),net=+(win-amt).toFixed(2);u.bal+=win;u.profit+=win;u.diamondInc=(+u.diamondInc||0)+net;if(typeof bumpToday==="function")bumpToday(u,net);saveU(u);if(typeof payTeam==="function")payTeam(u,net);b.textContent="◆ "+odd+"x";ding();say("Congratulations");pop("Diamond","Congratulations · $"+money(win)+" · "+odd+"x");}else{b.textContent="✕";beep(180,280);say("Ooh try again");pop("No diamond","Ooh try again");}draw();};box.appendChild(b);})(i);}draw();}
 function draw(){
