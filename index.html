@@ -744,15 +744,13 @@ if(el("inc-dia"))el("inc-dia").textContent=money(u.diamondInc||0);
 
 }
   setInterval(function(){
-  if(!(u&&el("sp-next")))return;
+  if(!u||!el("sp-next"))return;
   if(u.nextSpin&&Date.now()<u.nextSpin){
-    var s=Math.ceil((u.nextSpin-Date.now())/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;
-    el("sp-next").textContent="Next pack in "+h+"h "+m+"m "+sec+"s";
-  }else if(u.spins<=0&&u.lock>=45){
-    var need=((u.level||1)>=2)?({2:2,3:3,4:4,5:5}[u.level]||2):1;
-    u.spins=need;u.nextSpin=0;saveU(u);draw();
+    var s=Math.max(0,Math.ceil((u.nextSpin-Date.now())/1000));
+    var h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;
+    el("sp-next").textContent="Next spin in "+h+"h "+m+"m "+sec+"s";
   }
-},1000);
+},250);
   setInterval(function(){
   if(!u||!u.user)return;
   pullCloud(function(){
