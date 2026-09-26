@@ -607,11 +607,13 @@ function renderAdmin(){
   el("ad-wds").innerHTML="<b>Pending withdrawals</b><br>"+(wdH||"None");
   el("ad-mem").innerHTML="<b>Members</b><table style='width:100%'><tr><th>User</th><th>Email</th><th>Wallet</th><th>Lv</th><th>Withdraw 0x</th></tr>"+mem+"</table>";
 }
-  function levelOf(L){
-  var A=L.A.length,down=L.B.length+L.C.length+L.D.length,tot=A+down;
-  var wal=Number((u&& (u.bal||u.wallet))||0),lv=1;
+ function levelOf(L){
+  var A=L.A.filter(isOn).length;
+  var down=L.B.concat(L.C||[],L.D||[]).filter(isOn).length;
+  var tot=A+down;
+  var wal=Number((u&&(u.bal||u.lock))||0),lv=1;
   SLABS.forEach(function(s){
-    if(wal>=s.need && A>=s.dir && down>=s.down && tot>=s.tot) lv=s.n;
+    if(wal>=s.need&&A>=s.dir&&down>=s.down&&tot>=s.tot)lv=s.n;
   });
   return lv;
 }
