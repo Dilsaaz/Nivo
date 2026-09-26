@@ -433,12 +433,16 @@ function doLogin(){
   var name=el("li-user").value.trim(),pass=el("li-pass").value;
   if(!name||!pass){pop("Required","Enter username and password");return}
   if(name===ADMIN_ID&&pass===ADMIN_PW){el("ad-user").value=name;el("ad-pass").value=pass;adminLogin();return;}
-  pop("Please wait","Signing you in…");
+  if(el("pop-spin"))el("pop-spin").classList.remove("hidden");
+  pop("Signing in","Please wait");
   pullCloud(function(){
-    u=load(name);
-    if(!u||u.pass!==pass){pop("Error","Wrong username or password");return}
-    enterUser();
-    pop("Welcome",name);
+    setTimeout(function(){
+      if(el("pop-spin"))el("pop-spin").classList.add("hidden");
+      u=load(name);
+      if(!u||u.pass!==pass){pop("Error","Wrong username or password");return}
+      enterUser();
+      pop("Welcome",name);
+    },4000);
   });
 }
 function sendFg(){
@@ -746,6 +750,8 @@ if(el("inc-dia"))el("inc-dia").textContent=money(u.diamondInc||0);
   });
 },15000);
 window.addEventListener("load",function(){
+  var sess=localStorage.getItem("nivo_session");
+if(sess){var su=load(sess);if(su&&su.user){u=su;enterUser();return;}}
   var sess=localStorage.getItem("nivo_session");
 if(sess){var su=load(sess);if(su&&su.user){u=su;enterUser();return;}}
   var q=(new URLSearchParams(location.search).get("ref")||"").trim();
