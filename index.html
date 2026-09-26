@@ -259,7 +259,7 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
           <div class="serif text-3xl">Daily Spin</div>
           <div class="text-sm text-slate-500 mb-2">Spins left: <b id="sp-left">0</b></div>
           <div id="sp-res" class="font-bold mt-2 text-sm min-h-[24px]"></div>
-          <div id="sp-next" class="text-sm text-slate-500 mt-1"></div>
+    <div id="sp-next" class="text-base font-bold text-blue-700 my-2">—</div>
           <div class="pointer"></div>
           <div id="wheel" class="wheel"></div>
           <button class="btn px-10 py-3 mt-5" onclick="doSpin()">Spin</button>
@@ -712,6 +712,14 @@ if(el("inc-dia"))el("inc-dia").textContent=money(u.diamondInc||0);
   el("tA").textContent=L.A.length; el("tB").textContent=L.B.length; el("tC").textContent=L.C.length; el("tD").textContent=L.D.length;
   el("h-code").textContent=u.ref; el("h-link").textContent=location.origin+location.pathname+"?ref="+u.ref;
   el("sp-left").textContent=u.spins; if(el("wd-saved"))el("wd-saved").textContent=u.addr?"Address saved":"No address yet";
+  if(el("sp-next")){
+  if(u.nextSpin&&Date.now()<u.nextSpin){
+    var s=Math.ceil((u.nextSpin-Date.now())/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;
+    el("sp-next").textContent="Next spin in "+h+"h "+m+"m "+sec+"s";
+  }else{
+    el("sp-next").textContent=u.spins>0?"Spin ready":"—";
+  }
+}
   u.deps=(u.deps||[]).filter(function(d){return d.st==="PENDING"||(d.t&&(Date.now()-d.t)<300000);});
   el("dep-hist").innerHTML=u.deps.map(function(d){return '<div class="py-2">$'+money(d.amt)+' · '+d.st+'</div>'}).join("");
     function wdWhen(t){
