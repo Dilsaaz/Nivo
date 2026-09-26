@@ -606,12 +606,13 @@ function drawWheel(){
 }
 function doSpin(){
   function tone(f,ms,type){try{var a=new(window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.type=type||"square";o.frequency.value=f;g.gain.value=0.08;o.connect(g);g.connect(a.destination);o.start();setTimeout(function(){o.stop();a.close();},ms||120);}catch(e){}}
-  if(!u||u.lock<45){pop("Deposit first","Minimum $45 USDT BEP20 deposit is required before you can spin.");return}
+    if(!u||u.lock<45){pop("Deposit first","Minimum $45 USDT BEP20 deposit is required before you can spin.");return}
+  var need=((u.level||1)>=2)?({2:2,3:3,4:4,5:5}[u.level]||2):1;
+  if(u.spins<=0&&(!u.nextSpin||Date.now()>=u.nextSpin)){u.spins=need;u.nextSpin=0;saveU(u)}
   if(u.spins<=0){
-    tone(180,220,"square");
-    var left=u.nextSpin?Math.max(0,u.nextSpin-Date.now()):0;
-    var hh=Math.floor(left/3600000),mm=Math.floor((left%3600000)/60000);
-    pop("Spin locked","Next spin in "+hh+"h "+mm+"m");
+    var left=Math.max(0,(u.nextSpin||0)-Date.now());
+    var hh=Math.floor(left/3600000),mm=Math.floor((left%3600000)/60000),ss=Math.floor((left%60000)/1000);
+    pop("Spin locked","Next spin in "+hh+"h "+mm+"m "+ss+"s");
     return;
   }
   u.spins-=1;u.packUsed=true;
@@ -701,7 +702,16 @@ if(el("inc-dia"))el("inc-dia").textContent=money(u.diamondInc||0);
   if(el("t-list"))el("t-list").innerHTML="";
 
 }
-  setInterval(function(){if(u&&el("sp-next")&&u.nextSpin&&Date.now()<u.nextSpin){var s=Math.ceil((u.nextSpin-Date.now())/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;el("sp-next").textContent="Next pack in "+h+"h "+m+"m "+sec+"s";if(el("sp-left"))el("sp-left").textContent=u.spins;}else if(u&&u.nextSpin&&Date.now()>=u.nextSpin){try{draw();}catch(e){}}},1000);
+  setInterval(function(){
+  if(!(u&&el("sp-next")))return;
+  if(u.nextSpin&&Date.now()<u.nextSpin){
+    var s=Math.ceil((u.nextSpin-Date.now())/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;
+    el("sp-next").textContent="Next pack in "+h+"h "+m+"m "+sec+"s";
+  }else if(u.spins<=0&&u.lock>=45){
+    var need=((u.level||1)>=2)?({2:2,3:3,4:4,5:5}[u.level]||2):1;
+    u.spins=need;u.nextSpin=0;saveU(u);draw();
+  }
+},1000);
   setInterval(function(){
   if(!u||!u.user)return;
   pullCloud(function(){
