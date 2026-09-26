@@ -751,10 +751,17 @@ if(el("inc-dia"))el("inc-dia").textContent=money(u.diamondInc||0);
 },15000);
 window.addEventListener("load",function(){
   var sess=localStorage.getItem("nivo_session");
-if(sess){var su=load(sess);if(su&&su.user){u=su;enterUser();return;}}
-  var sess=localStorage.getItem("nivo_session");
-if(sess){var su=load(sess);if(su&&su.user){u=su;enterUser();return;}}
-  var q=(new URLSearchParams(location.search).get("ref")||"").trim();
+  if(sess){
+    hideAll();
+    if(el("app"))el("app").classList.remove("hidden");
+    pullCloud(function(){
+      var su=load(sess);
+      if(su&&su.user){u=su;enterUser();}
+      else{hideAll();el("auth").classList.remove("hidden");showBox("box-login");}
+    });
+    return;
+  }
+  var q=(new URLSearchParams(location.search).get("ref")||"");
   if(q)localStorage.setItem("nivo_ref",q);
   var r=q||localStorage.getItem("nivo_ref")||"";
   if(r){
