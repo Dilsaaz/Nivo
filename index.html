@@ -735,6 +735,8 @@ if(el("inc-dia"))el("inc-dia").textContent=money(u.diamondInc||0);
   });
 },15000);
 window.addEventListener("load",function(){
+  var sess=localStorage.getItem("nivo_session");
+if(sess){var su=load(sess);if(su&&su.user){u=su;enterUser();return;}}
   var q=(new URLSearchParams(location.search).get("ref")||"").trim();
   if(q)localStorage.setItem("nivo_ref",q);
   var r=q||localStorage.getItem("nivo_ref")||"";
@@ -743,8 +745,6 @@ window.addEventListener("load",function(){
     if(el("su-ref"))el("su-ref").value=r;
   }
   if(location.hash==="#admin")showBox("box-admin");
-  var sess=localStorage.getItem("nivo_session");
-if(sess){var su=load(sess);if(su){u=su;enterUser();}}
 });
 </script>
 </body>
