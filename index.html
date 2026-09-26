@@ -197,11 +197,26 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
           <button class="ghost rounded-2xl py-3 font-bold" onclick="tab('deposit')">Deposit $45+</button>
         </div>
       </section>
-  <section id="tab-income" class="hidden">
-  <div class="card p-5 mb-3"><div class="text-sm font-bold tracking-widest text-blue-700">TODAY</div><div class="serif text-3xl mt-1" id="inc-today">0.00</div></div>
-  <div class="card p-5 mb-3"><div class="text-sm font-bold tracking-widest text-blue-700">REWARDS</div><div class="serif text-3xl mt-1" id="inc-rew">0.00</div></div>
-  <div class="card p-5"><div class="text-sm font-bold tracking-widest text-blue-700">DIAMOND BOX</div><div class="serif text-3xl mt-1" id="inc-dia">0.00</div></div>
-    <div class="card p-5 mb-3"><div class="text-sm font-bold tracking-widest text-blue-700">TEAM INCOME</div><div class="serif text-3xl mt-1" id="inc-team">0.00</div><div class="text-xs text-slate-500 mt-1">Level 2+ · daily A B C D %</div></div>
+<section id="tab-income" class="hidden">
+  <div class="card p-5 mb-3" style="background:linear-gradient(180deg,#eff6ff,#fff);border:1px solid #dbeafe">
+    <div class="text-xs font-bold tracking-widest text-blue-700">TODAY</div>
+    <div class="serif text-4xl mt-2" id="inc-today">0.00</div>
+    <div class="text-xs text-slate-500 mt-1">Resets every day</div>
+  </div>
+  <div class="card p-5 mb-3">
+    <div class="text-xs font-bold tracking-widest text-blue-700">REWARDS</div>
+    <div class="serif text-4xl mt-2" id="inc-rew">0.00</div>
+    <div class="text-xs text-slate-500 mt-1">Direct A · 10% first deposit</div>
+  </div>
+  <div class="card p-5 mb-3">
+    <div class="text-xs font-bold tracking-widest text-blue-700">DIAMOND BOX</div>
+    <div class="serif text-4xl mt-2" id="inc-dia">0.00</div>
+  </div>
+  <div class="card p-5 mb-3" style="background:linear-gradient(180deg,#071428,#1d4ed8);color:#fff">
+    <div class="text-xs font-bold tracking-widest" style="color:#93c5fd">TEAM INCOME</div>
+    <div class="serif text-4xl mt-2" id="inc-team">0.00</div>
+    <div class="text-xs mt-1" style="color:#bfdbfe">Level 2+ · A B C D daily %</div>
+  </div>
 </section>
       <section id="tab-wallet" class="hidden">
         <div class="card p-5">
