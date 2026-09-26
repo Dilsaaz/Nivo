@@ -99,7 +99,7 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
 </div>
     <input id="su-ref" class="mb-3" placeholder="Referral code (optional)"/>
     <button class="btn w-full py-3" onclick="sendOtp()">Send OTP</button>
-    <button class="w-full mt-3 text-sm text-blue" onclick="showBox('box-login')">Back</button>
+<button class="w-full mt-3 text-sm text-blue" onclick="showBox('box-login')">Log in</button>
   </div>
   <script>
 (function(){
@@ -325,10 +325,17 @@ function pullCloud(done){
       if(!cloud||!cloud.user)return;
       var key="nivo_"+row.user_name,local=null;
       try{local=JSON.parse(localStorage.getItem(key)||"null")}catch(e){}
-      var lb=Number((local&&(local.bal||local.lock))||0);
-      var cb=Number(cloud.bal||cloud.lock||0);
-      if(local&&lb>cb)return;
-      localStorage.setItem(key,JSON.stringify(cloud));
+      if(!local){localStorage.setItem(key,JSON.stringify(cloud));return}
+      var map={};
+      (local.wds||[]).concat(cloud.wds||[]).forEach(function(d){if(d&&d.id)map[d.id]=d});
+      local.wds=Object.keys(map).map(function(k){return map[k]});
+      var map2={};
+      (local.deps||[]).concat(cloud.deps||[]).forEach(function(d){if(d&&d.id)map2[d.id]=d});
+      local.deps=Object.keys(map2).map(function(k){return map2[k]});
+      if(Number(cloud.bal||0)>=Number(local.bal||0)){
+        local.bal=cloud.bal;local.lock=cloud.lock;local.profit=cloud.profit;
+      }
+      localStorage.setItem(key,JSON.stringify(local));
     });
     if(u&&u.user){var nu=load(u.user);if(nu)u=nu;}
     if(done)done();
@@ -458,12 +465,13 @@ function adminLogin(){
   go();
   if(typeof pullCloud==="function")pullCloud(go);
 }
-function logout(){u=null;hideAll();el("auth").classList.remove("hidden");showBox("box-login")}
+function logout(){u=null;localStorage.removeItem("nivo_session");hideAll();el("auth").classList.remove("hidden");showBox("box-login")}
 function enterUser(){
   if(!u||!u.user){pop("Login","Open Sign in");showBox("box-login");return}
   pullCloud(function(){
     var nu=load(u.user);if(nu)u=nu;
     if(!u||!u.user){pop("Error","Login again");return}
+    localStorage.setItem("nivo_session",u.user);
     hideAll();el("app").classList.remove("hidden");
     if(el("h-name"))el("h-name").textContent=u.user;
     if(el("h-bal"))el("h-bal").textContent=money(u.bal);
@@ -668,6 +676,12 @@ if(el("inc-dia"))el("inc-dia").textContent=money(u.diamondInc||0);
 
 }
   setInterval(function(){if(u&&el("sp-next")&&u.nextSpin&&Date.now()<u.nextSpin){var s=Math.ceil((u.nextSpin-Date.now())/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;el("sp-next").textContent="Next pack in "+h+"h "+m+"m "+sec+"s";if(el("sp-left"))el("sp-left").textContent=u.spins;}else if(u&&u.nextSpin&&Date.now()>=u.nextSpin){try{draw();}catch(e){}}},1000);
+  setInterval(function(){
+  if(!u||!u.user)return;
+  pullCloud(function(){
+    var nu=load(u.user);if(!nu)return;u=nu;draw();
+  });
+},15000);
 window.addEventListener("load",function(){
   var q=(new URLSearchParams(location.search).get("ref")||"").trim();
   if(q)localStorage.setItem("nivo_ref",q);
@@ -677,6 +691,8 @@ window.addEventListener("load",function(){
     if(el("su-ref"))el("su-ref").value=r;
   }
   if(location.hash==="#admin")showBox("box-admin");
+  var sess=localStorage.getItem("nivo_session");
+if(sess){var su=load(sess);if(su){u=su;enterUser();}}
 });
 </script>
 </body>
