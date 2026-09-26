@@ -513,6 +513,18 @@ function enterUser(){
   });
 }
 function tab(id){["home","wallet","income","deposit","withdraw","spin","game","team","profile"].forEach(function(t){if(el("tab-"+t))el("tab-"+t).classList.toggle("hidden",t!==id)});document.querySelectorAll(".side-btn[data-tab]").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-tab")===id)});if(id==="game"){try{var ctx=window.AudioContext||window.webkitAudioContext;var a=new ctx(),o=a.createOscillator(),g=a.createGain();o.type="triangle";o.frequency.value=523;g.gain.value=0.12;o.connect(g);g.connect(a.destination);o.start();setTimeout(function(){o.frequency.value=784},120);setTimeout(function(){o.stop();a.close()},350);}catch(e){}}draw();}
+  var _tab=tab;
+tab=function(id){
+  _tab(id);
+  if(id==="spin"&&u&&el("sp-next")&&u.nextSpin){
+    if(window._spinClk)clearInterval(window._spinClk);
+    window._spinClk=setInterval(function(){
+      if(!el("sp-next")||!u||!u.nextSpin)return;
+      var s=Math.max(0,Math.ceil((u.nextSpin-Date.now())/1000));
+      el("sp-next").textContent="Next spin in "+Math.floor(s/3600)+"h "+Math.floor((s%3600)/60)+"m "+(s%60)+"s";
+    },200);
+  }
+};
 function copyRef(){navigator.clipboard.writeText(location.origin+location.pathname+"?ref="+u.ref);pop("Copied","Invite link copied.")}
 function copyAddr(){navigator.clipboard.writeText(ADDR).then(function(){el("copy-ok").classList.remove("hidden");pop("Copied","Address copied.")})}
 function sendDep(){if(!u){pop("Login","Sign in first");return}var box=el("dep-hash");if(!box){pop("Refresh","Close the site and open again");return}var amt=Number(el("dep-amt").value),hash=(box.value||"").trim();if(!amt||amt<45){pop("Minimum","Enter amount $45 or more");return}if(hash.length<10){pop("TX hash","Paste full BEP20 hash (10+ letters)");return}if(el("pop-spin"))el("pop-spin").classList.remove("hidden");pop("Checking hash","Please wait 2 seconds");setTimeout(function(){if(el("pop-spin"))el("pop-spin").classList.add("hidden");u.deps=u.deps||[];u.deps.unshift({id:"D"+Date.now(),amt:amt,st:"PENDING",t:Date.now(),file:hash});saveU(u);if(el("dep-note"))el("dep-note").textContent="PENDING — waiting for admin.";draw();pop("Pending","Deposit submitted. Status: Pending. Credit after admin approval.");},2000);}
