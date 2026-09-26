@@ -761,6 +761,9 @@ if(el("inc-dia"))el("inc-dia").textContent=money(u.diamondInc||0);
     var s=Math.max(0,Math.ceil((u.nextSpin-Date.now())/1000));
     var h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;
     el("sp-next").textContent="Next spin in "+h+"h "+m+"m "+sec+"s";
+    el("sp-next").style.opacity="0.99";
+void el("sp-next").offsetHeight;
+el("sp-next").style.opacity="1";
   }
 },250);
   (function tickClock(){
