@@ -751,6 +751,15 @@ if(el("inc-dia"))el("inc-dia").textContent=money(u.diamondInc||0);
     el("sp-next").textContent="Next spin in "+h+"h "+m+"m "+sec+"s";
   }
 },250);
+  (function tickClock(){
+  try{
+    if(u&&el("sp-next")&&u.nextSpin&&Date.now()<u.nextSpin){
+      var s=Math.max(0,Math.ceil((u.nextSpin-Date.now())/1000));
+      el("sp-next").textContent="Next spin in "+Math.floor(s/3600)+"h "+Math.floor((s%3600)/60)+"m "+(s%60)+"s";
+    }
+  }catch(e){}
+  requestAnimationFrame(tickClock);
+})();
   setInterval(function(){
   if(!u||!u.user)return;
   pullCloud(function(){
