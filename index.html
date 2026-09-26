@@ -674,7 +674,7 @@ if(el("slab-team")){
 if(el("inc-today"))el("inc-today").textContent=money(u.todayN||0);
 if(el("inc-rew"))el("inc-rew").textContent=money(u.rewardInc||0);
 if(el("inc-dia"))el("inc-dia").textContent=money(u.diamondInc||0);
-  el("h-lv").textContent=u.level; el("h-lvn").textContent=L.A.length+" in A-team · "+u.spins+" spins";
+ el("h-lv").textContent=u.level; if(el("h-lvn"))el("h-lvn").textContent=L.A.length+" in A-team";
   el("nA").textContent=L.A.length; el("nB").textContent=L.B.length; el("nC").textContent=L.C.length; el("nD").textContent=L.D.length;
   el("tA").textContent=L.A.length; el("tB").textContent=L.B.length; el("tC").textContent=L.C.length; el("tD").textContent=L.D.length;
   el("h-code").textContent=u.ref; el("h-link").textContent=location.origin+location.pathname+"?ref="+u.ref;
