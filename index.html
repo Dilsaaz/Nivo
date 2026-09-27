@@ -671,7 +671,7 @@ function doSpin(){
   var tick=setInterval(function(){tone(180+Math.random()*220,70,"sawtooth")},90);
   var nw=SLICES.findIndex(function(x){return x.m===0});
   var pay=[];SLICES.forEach(function(x,n){if(x.m>0)pay.push(n)});
-  var i=(Math.random()<0.28&&nw>=0)?nw:pay[Math.floor(Math.random()*pay.length)];
+  var i=(Math.random()<0.55&&nw>=0)?nw:pay[Math.floor(Math.random()*pay.length)];
   var s=SLICES[i],w=el("wheel");
   if(w){w.style.transition="none";w.style.transform="rotate(0deg)";void w.offsetWidth;w.style.transition="transform 7.5s cubic-bezier(.12,.7,.12,1)";w.style.transform="rotate("+(360*6+i*-60-30)+"deg)";}
   setTimeout(function(){
