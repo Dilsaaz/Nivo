@@ -632,8 +632,7 @@ function renderAdmin(){
   });
   return lv;
 }
-function applyLevel(L){if(!u)return;if(!(u.lock>=45)){u.level=0;return;}var lv=levelOf(L),gifts={2:25,3:50,4:100,5:200};if(!u.paidLevels)u.paidLevels=[];if(lv>u.level){var g=gifts[lv]||0;if(g&&u.paidLevels.indexOf(lv)<0){u.bal+=g;u.profit+=g;u.paidLevels.push(lv);pop("Level "+lv,"Company gift $"+g+" added.");}u.level=lv;saveU(u);}if((u.level||0)<1)u.level=1;}
-  if(u.todayD!==dayKey()){u.todayD=dayKey();u.todayN=0}
+function applyLevel(L){if(!u)return;if(!(u.lock>=45)){u.level=0;return;}var lv=levelOf(L),gifts={2:25,3:50,4:100,5:200};if(!u.paidLevels)u.paidLevels=[];if(lv>u.level){var g=gifts[lv]||0;if(g&&u.paidLevels.indexOf(lv)<0){u.bal+=g;u.profit+=g;u.paidLevels.push(lv);pop("Level "+lv,"Company gift $"+g+" added.");}u.level=lv;saveU(u);}u.level=lv||1;saveU(u);
 if(el("inc-today"))el("inc-today").textContent=money(u.todayN||0);
 if(el("inc-rew"))el("inc-rew").textContent=money(u.rewardInc||0);
 if(el("inc-dia"))el("inc-dia").textContent=money(u.diamondInc||0);
@@ -655,7 +654,11 @@ function drawWheel(){
 function doSpin(){
   function tone(f,ms,type){try{var a=new(window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.type=type||"square";o.frequency.value=f;g.gain.value=0.08;o.connect(g);g.connect(a.destination);o.start();setTimeout(function(){o.stop();a.close();},ms||120);}catch(e){}}
     if(!u||u.lock<45){pop("Deposit first","Minimum $45 USDT BEP20 deposit is required before you can spin.");return}
+    if(typeof layers==="function"&&typeof levelOf==="function"){
+    u.level=levelOf(layers())||1;
+  }
   var need=((u.level||1)>=2)?({2:2,3:3,4:4,5:5}[u.level]||2):1;
+    if((u.spins||0)>need){u.spins=need;saveU(u);}
   if(u.spins<=0&&(!u.nextSpin||Date.now()>=u.nextSpin)){u.spins=need;u.nextSpin=0;saveU(u)}
   if(u.spins<=0){
     var left=Math.max(0,(u.nextSpin||0)-Date.now());
@@ -704,13 +707,16 @@ function draw(){
   if(!u)return;
   if(el("p-box"))el("p-box").innerHTML="<div class='serif text-3xl mb-3'>Profile</div><div class='leading-8 text-sm'>User <b>"+(u.user||"—")+"</b><br>Email "+(u.email||"—")+"<br>Code <b>"+(u.ref||"—")+"</b><br>Sponsor "+(u.sponsor||"—")+"<br>Level "+(u.level||1)+"<br>Wallet $"+money(u.bal)+"<br>Lock $"+money(u.lock)+"</div>";
   if(el("h-name"))el("h-name").textContent=u.user||"";
-  var need=((u.level||1)>=2)?({2:2,3:3,4:4,5:5}[u.level]||2):1;
+  
     if(u.deps&&u.deps[0]&&u.deps[0].st==="SUCCESSFUL"&&!u.deps[0].seen){u.deps[0].seen=true;saveU(u);pop("Successful","Deposit approved. $"+money(u.deps[0].amt)+" added to wallet.");}
-  var L=layers(); applyLevel(L);
+      var L=layers(); applyLevel(L);
+    var need=((u.level|1)>=2)?({2:2,3:3,4:4,5:5}[u.level]||2):1;
+    if((u.spins||0)>need){u.spins=need;saveU(u);}
+  
   if(el("h-lv"))el("h-lv").textContent=u.level||0;
-  if(el("h-name"))el("h-name").textContent=u.user;
   if(el("dep-addr"))el("dep-addr").textContent=ADDR;
   if(el("h-bal"))el("h-bal").textContent=money(u.bal);
+  if(el("h-name"))el("h-name").textContent=u.user;
 if(el("w-bal"))el("w-bal").textContent=money(u.bal);
   el("h-profit").textContent=money(u.profit); if(el("w-free"))el("w-free").textContent=money(u.profit);
   if(el("slab-home"))el("slab-home").innerHTML=slabHtml();
