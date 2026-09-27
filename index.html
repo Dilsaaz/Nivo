@@ -353,9 +353,7 @@ function pullCloud(done){
       var map2={};
       (local.deps||[]).concat(cloud.deps||[]).forEach(function(d){if(d&&d.id)map2[d.id]=d});
       local.deps=Object.keys(map2).map(function(k){return map2[k]});
-      if(Number(cloud.bal||0)>=Number(local.bal||0)){
-        local.bal=cloud.bal;local.lock=cloud.lock;local.profit=cloud.profit;
-      }
+            local.bal=cloud.bal;local.lock=cloud.lock;local.profit=cloud.profit;
       localStorage.setItem(key,JSON.stringify(local));
     });
     if(u&&u.user){var nu=load(u.user);if(nu)u=nu;}
