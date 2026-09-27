@@ -255,6 +255,8 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
         </div>
         <div class="card p-5">
           <input id="wd-amt" type="number" placeholder="Income amount"/>
+                    <input id="wd-otp" placeholder="Email OTP"/>
+          <button type="button" class="ghost w-full py-2 mt-2 rounded-xl font-bold" onclick="sendWdOtp()">Send OTP</button>
           <button class="btn w-full py-3 mt-3" onclick="askWd()">Request withdraw</button>
           <div id="wd-hist" class="text-sm mt-4"></div>
         </div>
@@ -532,8 +534,24 @@ function copyRef(){navigator.clipboard.writeText(location.origin+location.pathna
 function copyAddr(){navigator.clipboard.writeText(ADDR).then(function(){el("copy-ok").classList.remove("hidden");pop("Copied","Address copied.")})}
 function sendDep(){if(!u){pop("Login","Sign in first");return}var box=el("dep-hash");if(!box){pop("Refresh","Close the site and open again");return}var amt=Number(el("dep-amt").value),hash=(box.value||"").trim();if(!amt||amt<45){pop("Minimum","Enter amount $45 or more");return}if(hash.length<10){pop("TX hash","Paste full BEP20 hash (10+ letters)");return}if(el("pop-spin"))el("pop-spin").classList.remove("hidden");pop("Checking hash","Please wait 2 seconds");setTimeout(function(){if(el("pop-spin"))el("pop-spin").classList.add("hidden");u.deps=u.deps||[];u.deps.unshift({id:"D"+Date.now(),amt:amt,st:"PENDING",t:Date.now(),file:hash});saveU(u);if(el("dep-note"))el("dep-note").textContent="PENDING — waiting for admin.";draw();pop("Pending","Deposit submitted. Status: Pending. Credit after admin approval.");},2000);}
 function saveAddr(){var a=(el("wd-addr").value||"").trim();if(a.indexOf("0x")!==0||a.length<20){pop("Address","Paste full BEP20 address starting with 0x");return}u.addr=a;saveU(u);if(el("wd-saved"))el("wd-saved").textContent=a;pop("Saved","Address updated");}
+var wdOtp="", wdOtpAt=0;
+function sendWdOtp(){
+  if(!u||!u.email){pop("Email","Login email missing");return;}
+  if((u.wds||[]).some(function(x){return x.st==="PENDING";})){pop("Wait","One withdraw pending");return;}
+  wdOtp=String(Math.floor(100000+Math.random()*900000));
+  wdOtpAt=Date.now();
+  if(!(EJ_PUB&&EJ_SVC&&EJ_TPL)){pop("OTP",wdOtp+" (mail off)");return;}
+  emailjs.send(EJ_SVC,EJ_TPL,{
+    email:u.email,to_email:u.email,user_name:u.user,
+    otp_code:wdOtp,message:"NIVO withdraw OTP "+wdOtp
+  }).then(function(){pop("OTP","Check email");})
+    .catch(function(){pop("Email failed","OTP not sent");});
+}
 function askWd(){
   if(!u.addr){pop("Address","Save address first");return;}
+    if(!wdOtp||Date.now()-wdOtpAt>300000){pop("OTP","Send OTP first");return;}
+  if((el("wd-otp")&&el("wd-otp").value.trim())!==wdOtp){pop("OTP","Wrong or expired OTP");return;}
+  wdOtp="";wdOtpAt=0;
   if((u.wds||[]).some(function(x){return x.st==="PENDING";})){pop("Wait","One withdraw already pending");return;}
   var amt=Number(el("wd-amt").value);
   if(!amt||amt<10){pop("Minimum","Withdraw minimum $10");return;}
