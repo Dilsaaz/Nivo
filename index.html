@@ -599,11 +599,11 @@ function askWd(){
   var fee=+(amt*0.10).toFixed(2),net=+(amt-fee).toFixed(2);
   u.profit-=amt;u.bal-=amt;
   if(!u.wds)u.wds=[];
-  u.wds.unshift({id:"W"+Date.now(),req:amt,  u.wds.unshift({id:"W"+Date.now(),req:amt,amt:net,fee:fee,st:"PENDING",addr:u.addr,t:Date.now()});amt:net,st:"PENDING",addr:u.addr,t:Date.now()});
-  saveU(u);    pop("Pending","Withdraw request $"+money(amt)+" submitted. Admin will review.");
-    if(el("wd-otp"))el("wd-otp").value="";
-    draw();draw();
-  pop("Pending","Requested $"+money(amt));
+      u.wds.unshift({id:"W"+Date.now(),req:amt,amt:net,fee:fee,st:"PENDING",addr:u.addr,t:Date.now()});
+  saveU(u);
+  if(el("wd-otp"))el("wd-otp").value="";
+  pop("Pending","Withdraw request $"+money(amt)+" submitted.");
+  draw();
 }
 function undoWd(user,id){
   var p=findUser(user);if(!p)return;
