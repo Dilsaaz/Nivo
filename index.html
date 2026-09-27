@@ -822,12 +822,12 @@ if(el("inc-dia"))el("inc-dia").textContent=money(u.diamondInc||0);
     var mm=(m<10?"0":"")+m;
     return d.getDate()+" "+mon+" "+d.getFullYear()+", "+h+":"+mm+" "+ampm;
   }
-      var wdRows=(u.wds||[]).map(function(d){
-    var req=d.req!=null?d.req:+(Number(d.amt||0)+Number(d.fee||0)).toFixed(2);
-    var got=d.amt;
-                   var fee=d.fee!=null?d.fee:+((Number(req)-Number(got||0)).toFixed(2));
-      return '<div class="py-3 border-b"><div>'+wdWhen(d.t)+' · '+d.st+'</div><div>Requested $'+money(req)+'</div><div>Fee $'+money(fee)+'</div><div>Received $'+money(got)+'</div></div>';
-  }).join("")||'<div class="text-slate-500">No withdraw yet.</div>';
+          var wdRows=(u.wds||[]).map(function(d){
+      var req=d.req!=null?d.req:+Number(d.amt||0);
+      var got=d.amt;
+      var fee=d.fee!=null?d.fee:+((Number(req)-Number(got||0)).toFixed(2));
+      return '<div class="py-3 border-b"><div>'+wdWhen(d.t)+' · '+(d.st||'')+'</div><div>Requested $'+money(req)+'</div><div>Fee $'+money(fee)+'</div><div>Received $'+money(got)+'</div></div>';
+    }).join("")||'<div class="text-slate-500">No withdraws</div>';
   if(el("wd-hist"))el("wd-hist").innerHTML=wdRows;
   if(el("wd-hist-box"))el("wd-hist-box").innerHTML=wdRows;
   el("t-plan").innerHTML="<b>Direct A</b> — 10% of first deposit.<br><b>Level 2</b> Wallet $200 · A 18 · Down 17 · Total 35<br><b>Level 3</b> Wallet $500 · A 30 · Down 65 · Total 95<br><b>Level 4</b> Wallet $1000 · A 50 · Down 175 · Total 225<br><b>Level 5</b> Wallet $2000 · A 50 · Down 500 · Total 550";
