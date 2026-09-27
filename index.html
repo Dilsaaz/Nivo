@@ -253,12 +253,17 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
           <input id="wd-addr" class="mt-3" placeholder="0x BEP20"/>
           <button class="ghost w-full py-2 mt-2 rounded-xl font-bold" onclick="saveAddr()">Save / Edit address</button>
         </div>
-        <div class="card p-5">
-          <input id="wd-amt" type="number" placeholder="Income amount"/>
-                    <input id="wd-otp" placeholder="Email OTP"/>
-          <button type="button" class="ghost w-full py-2 mt-2 rounded-xl font-bold" onclick="sendWdOtp()">Send OTP</button>
+                <div class="card p-5">
+          <div class="text-xs font-bold tracking-widest text-slate-500">WITHDRAW</div>
+          <input id="wd-amt" type="number" placeholder="Amount (profit only)" class="mt-3"/>
+          <div class="flex gap-2 mt-3">
+            <input id="wd-otp" placeholder="6-digit email OTP" class="flex-1"/>
+            <button type="button" class="ghost px-3 rounded-xl font-bold whitespace-nowrap" onclick="sendWdOtp()">Send OTP</button>
+          </div>
+          <p class="text-xs text-slate-500 mt-2">OTP 5 min. Package $45 stays locked.</p>
           <button class="btn w-full py-3 mt-3" onclick="askWd()">Request withdraw</button>
           <div id="wd-hist" class="text-sm mt-4"></div>
+        </div>
         </div>
       </section>
       <section id="tab-spin" class="hidden">
@@ -538,6 +543,10 @@ var wdOtp="", wdOtpAt=0;
 function sendWdOtp(){
   if(!u||!u.email){pop("Email","Login email missing");return;}
   if((u.wds||[]).some(function(x){return x.st==="PENDING";})){pop("Wait","One withdraw pending");return;}
+    if(wdOtp&&Date.now()-wdOtpAt<60000){
+    var s=Math.ceil((60000-(Date.now()-wdOtpAt))/1000);
+    pop("Wait","Next OTP in "+s+"s");return;
+  }
   wdOtp=String(Math.floor(100000+Math.random()*900000));
   wdOtpAt=Date.now();
   if(!(EJ_PUB&&EJ_SVC&&EJ_TPL)){pop("OTP",wdOtp+" (mail off)");return;}
@@ -549,7 +558,7 @@ function sendWdOtp(){
 }
 function askWd(){
   if(!u.addr){pop("Address","Save address first");return;}
-        if(!wdOtp||Date.now()-wdOtpAt>300000){pop("OTP","Send OTP first");return;}
+          if(!wdOtp||Date.now()-wdOtpAt>60000){pop("OTP","OTP expired. Send again");return;}
     if(!el("wd-otp")||el("wd-otp").value.trim()!==String(wdOtp)){pop("OTP","Wrong or expired OTP");return;}
     wdOtp="";wdOtpAt=0;
   if((u.wds||[]).some(function(x){return x.st==="PENDING";})){pop("Wait","One withdraw already pending");return;}
