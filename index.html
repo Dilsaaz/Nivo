@@ -251,7 +251,10 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
       <p class="text-sm text-slate-600">Income only. Pending until admin approval. Then 24 hours.</p>
           <p class="text-xs mt-2 break-all" id="wd-saved"></p>
           <input id="wd-addr" class="mt-3" placeholder="0x BEP20"/>
-          <button class="ghost w-full py-2 mt-2 rounded-xl font-bold" onclick="saveAddr()">Save / Edit address</button>
+               <div class="flex gap-2 mt-2">
+            <button class="btn flex-1 py-2 rounded-xl font-bold" onclick="saveAddr()">Save</button>
+            <button class="ghost flex-1 py-2 rounded-xl font-bold" onclick="editAddr()">Edit</button>
+          </div>
         </div>
                 <div class="card p-5">
           <div class="text-xs font-bold tracking-widest text-slate-500">WITHDRAW</div>
@@ -538,7 +541,21 @@ tab=function(id){
 function copyRef(){navigator.clipboard.writeText(location.origin+location.pathname+"?ref="+u.ref);pop("Copied","Invite link copied.")}
 function copyAddr(){navigator.clipboard.writeText(ADDR).then(function(){el("copy-ok").classList.remove("hidden");pop("Copied","Address copied.")})}
 function sendDep(){if(!u){pop("Login","Sign in first");return}var box=el("dep-hash");if(!box){pop("Refresh","Close the site and open again");return}var amt=Number(el("dep-amt").value),hash=(box.value||"").trim();if(!amt||amt<45){pop("Minimum","Enter amount $45 or more");return}if(hash.length<10){pop("TX hash","Paste full BEP20 hash (10+ letters)");return}if(el("pop-spin"))el("pop-spin").classList.remove("hidden");pop("Checking hash","Please wait 2 seconds");setTimeout(function(){if(el("pop-spin"))el("pop-spin").classList.add("hidden");u.deps=u.deps||[];u.deps.unshift({id:"D"+Date.now(),amt:amt,st:"PENDING",t:Date.now(),file:hash});saveU(u);if(el("dep-note"))el("dep-note").textContent="PENDING — waiting for admin.";draw();pop("Pending","Deposit submitted. Status: Pending. Credit after admin approval.");},2000);}
-function saveAddr(){var a=(el("wd-addr").value||"").trim();if(a.indexOf("0x")!==0||a.length<20){pop("Address","Paste full BEP20 address starting with 0x");return}u.addr=a;saveU(u);if(el("wd-saved"))el("wd-saved").textContent=a;pop("Saved","Address updated");}
+var addrEdit=false;
+function saveAddr(){
+  var a=(el("wd-addr")&&el("wd-addr").value||"").trim();
+  if(!a||a.indexOf("0x")!==0||a.length<20){pop("Address","Enter valid BEP20 0x address");return;}
+  u.addr=a;saveU(u);addrEdit=false;
+  if(el("wd-addr"))el("wd-addr").disabled=true;
+  if(el("wd-saved"))el("wd-saved").textContent="Saved";
+  pop("Saved","Address locked. Edit to change.");
+}
+function editAddr(){
+  if(!u)return;
+  addrEdit=true;
+  if(el("wd-addr")){el("wd-addr").disabled=false;el("wd-addr").focus();}
+  pop("Edit","Change then press Save");
+}
 var wdOtp="", wdOtpAt=0;
 function sendWdOtp(){
   if(!u||!u.email){pop("Email","Login email missing");return;}
@@ -549,6 +566,15 @@ function sendWdOtp(){
   }
   wdOtp=String(Math.floor(100000+Math.random()*900000));
   wdOtpAt=Date.now();
+    var b=el("wd-otp-btn");
+  if(window._wdOtpClk)clearInterval(window._wdOtpClk);
+  window._wdOtpClk=setInterval(function(){
+    var left=60000-(Date.now()-wdOtpAt);
+    if(!b)return;
+    if(left<=0){clearInterval(window._wdOtpClk);b.textContent="Send OTP";b.disabled=false;return;}
+    b.disabled=true;
+    b.textContent=Math.ceil(left/1000)+"s";
+  },250);
   if(!(EJ_PUB&&EJ_SVC&&EJ_TPL)){pop("OTP",wdOtp+" (mail off)");return;}
   emailjs.send(EJ_SVC,EJ_TPL,{
     email:u.email,to_email:u.email,user_name:u.user,
@@ -574,7 +600,9 @@ function askWd(){
   u.profit-=amt;u.bal-=amt;
   if(!u.wds)u.wds=[];
   u.wds.unshift({id:"W"+Date.now(),req:amt,amt:net,st:"PENDING",addr:u.addr,t:Date.now()});
-  saveU(u);draw();
+  saveU(u);    pop("Pending","Withdraw request $"+money(amt)+" submitted. Admin will review.");
+    if(el("wd-otp"))el("wd-otp").value="";
+    draw();draw();
   pop("Pending","Requested $"+money(amt));
 }
 function undoWd(user,id){
@@ -757,6 +785,7 @@ function draw(){
   if(el("h-lv"))el("h-lv").textContent=u.level||0;
   if(el("dep-addr"))el("dep-addr").textContent=ADDR;
   if(el("h-bal"))el("h-bal").textContent=money(u.bal);
+      if(el("wd-addr")&&u.addr){el("wd-addr").value=u.addr;el("wd-addr").disabled=!addrEdit;}
   if(el("h-name"))el("h-name").textContent=u.user;
 if(el("w-bal"))el("w-bal").textContent=money(u.bal);
   el("h-profit").textContent=money(u.profit); if(el("w-free"))el("w-free").textContent=money(u.profit);
