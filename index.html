@@ -537,7 +537,12 @@ function askWd(){
   if((u.wds||[]).some(function(x){return x.st==="PENDING"})){pop("Pending","One withdraw is already pending. Wait for admin approval.");return}
   var amt=Number(el("wd-amt").value);
   if(!amt||amt<10){pop("Minimum","Withdraw minimum $10");return}
-  if(amt>u.profit+0.0001){pop("Limit","Income only");return}
+    var locked=Math.max(45, Number(u.lock||0));
+  var maxW=Math.min(Number(u.profit||0), Number(u.bal||0)-locked);
+  if(amt>maxW+0.0001){
+    pop("Locked","Package $"+locked+" stays locked. You can withdraw $"+money(Math.max(0,maxW)));
+    return;
+  }
   var fee=+(amt*0.10).toFixed(2),net=+(amt-fee).toFixed(2);
   u.profit-=amt;u.bal-=amt;
   u.wds.unshift({id:"W"+Date.now(),req:amt,amt:net,fee:fee,st:"PENDING",t:Date.now(),addr:u.addr});
