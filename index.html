@@ -549,9 +549,9 @@ function sendWdOtp(){
 }
 function askWd(){
   if(!u.addr){pop("Address","Save address first");return;}
-    if(!wdOtp||Date.now()-wdOtpAt>300000){pop("OTP","Send OTP first");return;}
-  if((el("wd-otp")&&el("wd-otp").value.trim())!==wdOtp){pop("OTP","Wrong or expired OTP");return;}
-  wdOtp="";wdOtpAt=0;
+        if(!wdOtp||Date.now()-wdOtpAt>300000){pop("OTP","Send OTP first");return;}
+    if(!el("wd-otp")||el("wd-otp").value.trim()!==String(wdOtp)){pop("OTP","Wrong or expired OTP");return;}
+    wdOtp="";wdOtpAt=0;
   if((u.wds||[]).some(function(x){return x.st==="PENDING";})){pop("Wait","One withdraw already pending");return;}
   var amt=Number(el("wd-amt").value);
   if(!amt||amt<10){pop("Minimum","Withdraw minimum $10");return;}
