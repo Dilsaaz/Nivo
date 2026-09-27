@@ -413,7 +413,7 @@ function saveU(obj){localStorage.setItem("nivo_"+obj.user, JSON.stringify(obj));
 function adTap(){_adT++;if(_adT>=5){_adT=0;showBox("box-admin");el("auth").classList.remove("hidden");}}
   function dayKey(){return new Date().toISOString().slice(0,10)}
 function bumpToday(p,n){if(!p||!(n>0))return;if(p.todayD!==dayKey()){p.todayD=dayKey();p.todayN=0}p.todayN=(+p.todayN||0)+n;}
-  function payTeam(fromU,amt){if(!fromU||!(amt>0))return;var rates={2:{A:.12,B:.10,C:.08,D:.06},3:{A:.13,B:.11,C:.09,D:.07},4:{A:.15,B:.13,C:.10,D:.08},5:{A:.18,B:.15,C:.12,D:.10}};var keys=["A","B","C","D"],p=fromU,i;for(i=0;i<4;i++){if(!p||!p.sponsor)break;var up=allUsers().filter(function(x){return String(x.ref||"").toUpperCase()===String(p.sponsor).toUpperCase()})[0];if(!up)break;var lv=Number(up.level||0);if(lv>=2&&rates[Math.min(lv,5)]){var cut=+(amt*rates[Math.min(lv,5)][keys[i]]).toFixed(2);if(cut>0){up.profit=(+up.profit||0)+cut;up.bal=(+up.bal||0)+cut;if(typeof bumpToday==="function")bumpToday(up,cut);saveU(up);}}p=up;}}
+  function payTeam(fromU,amt){if(!fromU||!(amt>0))return;var rates={2:{A:.12,B:.10,C:.08,D:.06},3:{A:.13,B:.11,C:.09,D:.07},4:{A:.15,B:.13,C:.10,D:.08},5:{A:.18,B:.15,C:.12,D:.10}};var keys=["A","B","C","D"],p=fromU,i;for(i=0;i<4;i++){if(!p||!p.sponsor)break;var up=allUsers().filter(function(x){return String(x.ref||"").toUpperCase()===String(p.sponsor).toUpperCase()})[0];if(!up)break;var lv=Number(up.level||0);if(lv>=2&&rates[Math.min(lv,5)]){var cut=+(amt*rates[Math.min(lv,5)][keys[i]]).toFixed(2);if(cut>0){up.profit=(+up.profit||0)+cut;up.bal=(+up.bal||0)+cut;up.teamInc=(+up.teamInc||0)+cut;if(typeof bumpToday==="function")bumpToday(up,cut);saveU(up);}}p=up;}}
 function load(name){try{return JSON.parse(localStorage.getItem("nivo_"+name)||"null")}catch(e){return null}}
 function allUsers(){
   var out=[];
@@ -794,7 +794,15 @@ if(el("slab-team")){
   var s=slabNow();
   el("slab-team").innerHTML="Active slab · <b>"+s.name+"</b> · $"+s.need;
 }
-  if(u.todayD!==dayKey()){u.todayD=dayKey();u.todayN=0}
+      if(u.todayD!==dayKey()){
+      u.todayD=dayKey();
+      u.todayN=0;u.rewardInc=0;u.diamondInc=0;u.teamInc=0;
+      saveU(u);
+    }
+    if(el("inc-today"))el("inc-today").textContent=money(u.todayN||0);
+    if(el("inc-rew"))el("inc-rew").textContent=money(u.rewardInc||0);
+    if(el("inc-dia"))el("inc-dia").textContent=money(u.diamondInc||0);
+    if(el("inc-team"))el("inc-team").textContent=money(u.teamInc||0);
 if(el("inc-today"))el("inc-today").textContent=money(u.todayN||0);
 if(el("inc-rew"))el("inc-rew").textContent=money(u.rewardInc||0);
 if(el("inc-dia"))el("inc-dia").textContent=money(u.diamondInc||0);
