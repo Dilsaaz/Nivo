@@ -551,7 +551,25 @@ function sendDep(){
   u.deps=u.deps||[];
   u.deps.unshift({id:depId,amt:amt,st:"PENDING",t:Date.now(),file:hash});
   saveU(u);draw();
-    pop("Pending","Admin will approve");
+      pop("Checking","Verifying TX…");
+  fetch("/.netlify/functions/check-tx",{
+    method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({hash:hash,amt:amt})
+  }).then(function(r){return r.json();}).then(function(res){
+    var d=(u.deps||[]).filter(function(x){return x.id===depId;})[0];
+    if(!d)return;
+    if(res&&res.ok){
+      d.st="SUCCESSFUL";
+      u.bal=+(Number(u.bal||0)+amt).toFixed(2);
+      if(!u.lock||u.lock<45)u.lock=45;
+      saveU(u);draw();
+      pop("Approved","$"+amt+" added");
+    }else{
+      pop("Pending",(res&&res.msg)||"Admin will check");
+    }
+  }).catch(function(){
+    pop("Pending","Admin will check");
+  });
 }
 var addrEdit=false;
 function saveAddr(){
