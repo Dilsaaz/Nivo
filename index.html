@@ -551,25 +551,33 @@ function sendDep(){
   u.deps=u.deps||[];
   u.deps.unshift({id:depId,amt:amt,st:"PENDING",t:Date.now(),file:hash});
   saveU(u);draw();
-      pop("Checking","Verifying TX…");
-  fetch("/.netlify/functions/check-tx",{
-    method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({hash:hash,amt:amt})
-  }).then(function(r){return r.json();}).then(function(res){
-    var d=(u.deps||[]).filter(function(x){return x.id===depId;})[0];
-    if(!d)return;
-    if(res&&res.ok){
-      d.st="SUCCESSFUL";
+    pop("Checking","Verifying TX…");
+    fetch("https://bsc-dataseed.binance.org/",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({jsonrpc:"2.0",id:1,method:"eth_getTransactionReceipt",params:[hash]})
+    }).then(function(r){return r.json();}).then(function(j){
+    var rec=j.result;
+    var ADDR="0x4e58b3522112ba59621d808e3687a566a87d7623";
+    var USDT="0x55d398326f99059ff775485246999027b3197955";
+    var TOPIC="0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
+     var ok=false;
+     if(rec&&rec.status==="0x1"){
+      (rec.logs||[]).forEach(function(l){
+        var t=String((l.topics&&l.topics[0])||"").toLowerCase();
+        var d=("0x"+String((l.topics&&l.topics[2])||"").slice(-40)).toLowerCase();
+        if(t===TOPIC&&d===ADDR&&String(l.address||"").toLowerCase()===USDT)ok=true;
+      });
+    }
+    var row=(u.deps||[]).filter(function(x){return x.id===depId;})[0];
+    if(ok&&row){
+      row.st="SUCCESSFUL";
       u.bal=+(Number(u.bal||0)+amt).toFixed(2);
       if(!u.lock||u.lock<45)u.lock=45;
       saveU(u);draw();
       pop("Approved","$"+amt+" added");
-    }else{
-      pop("Pending",(res&&res.msg)||"Admin will check");
-    }
-  }).catch(function(){
-    pop("Pending","Admin will check");
-  });
+    }else pop("Pending","Hash / address check fail");
+  }).catch(function(){pop("Pending","Admin will check");});    
 }
 var addrEdit=false;
 function saveAddr(){
