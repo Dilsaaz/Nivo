@@ -555,8 +555,8 @@ function sendDep(){
   fetch("/.netlify/functions/check-tx",{
     method:"POST",
     headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({hash:hash,user:u.user,amt:amt})
-  }).then(function(r){return r.json();}).then(function(res){
+    body:JSON.stringify({hash:hash,user:u.user,amt:(r){return r.json();}).then(function(res){
+      }).then(function(r){return r.json();}).then(function(res){
     var d=(u.deps||[]).filter(function(x){return x.id===depId;})[0];
     if(!d){pop("Error","Deposit row missing");return;}
     if(res&&res.ok){
