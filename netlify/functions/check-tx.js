@@ -42,4 +42,6 @@ exports.handler = async function (event) {
     }
     return { statusCode: 200, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ok: true, got: got }) };
   } catch (e) {
-    return { statusCode: 200, headers
+    return { statusCode: 200, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ok: false, reason: "Scan error" }) };
+  }
+};
