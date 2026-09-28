@@ -551,31 +551,7 @@ function sendDep(){
   u.deps=u.deps||[];
   u.deps.unshift({id:depId,amt:amt,st:"PENDING",t:Date.now(),file:hash});
   saveU(u);draw();
-  pop("Checking","Verifying on BSC 5–10 sec");
-  fetch("/.netlify/functions/check-tx",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({hash:hash,user:u.user,amt:(r){return r.json();}).then(function(res){
-      }).then(function(r){return r.json();}).then(function(res){
-    var d=(u.deps||[]).filter(function(x){return x.id===depId;})[0];
-    if(!d){pop("Error","Deposit row missing");return;}
-    if(res&&res.ok){
-      if(d.st==="PENDING"){
-        d.st="SUCCESSFUL";
-        u.bal=(+u.bal||0)+d.amt;
-        u.lock=(+u.lock||0)+d.amt;
-        if((u.spins||0)===0&&u.lock>=45)u.spins=1;
-      }
-      saveU(u);draw();
-      pop("Approved","Deposit confirmed $"+d.amt);
-    }else{
-      d.st="REJECTED";
-      saveU(u);draw();
-      pop("Rejected",(res&&res.reason)||"Hash not valid");
-    }
-  }).catch(function(){
-    pop("Pending","Scan timeout. Admin will check.");
-  });
+    pop("Pending","Admin will approve");
 }
 var addrEdit=false;
 function saveAddr(){
