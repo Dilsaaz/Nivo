@@ -928,46 +928,48 @@ function nfCash(){
   pop("Cash out","+$"+get);
   nf={on:0,stake:0,mult:1,n:0};saveU(u);draw();nfShow();
 }
-  var gzBusy=0;
+var gzBusy=0,gzAmt=0,gzOpen=0;
 function gzStart(){
   if(!u){pop("Login","Sign in");return;}
-    if(gzBusy)return;
-  gzBusy=1;
-    var inp=el("gz-amt");
+  if(gzBusy)return;
+  var inp=el("gz-amt");
   var amt=Number((inp&&inp.value)||0);
-    if(amt<10){gzBusy=0;pop("Min","Minimum $10");return;}
-    if(amt>Number(u.bal||0)){gzBusy=0;pop("Balance","Not enough wallet");return;}
+  if(amt<10){pop("Min","Minimum $10");return;}
+  if(amt>Number(u.bal||0)){pop("Balance","Not enough wallet");return;}
+  gzBusy=1;gzOpen=1;gzAmt=amt;
+  u.bal=+(Number(u.bal||0)-amt).toFixed(2);saveU(u);draw();
   var board=el("gz-board"),msg=el("gz-msg");
-  if(board)board.innerHTML="";
-  if(msg)msg.textContent="Opening...";
-  u.bal=+(Number(u.bal||0)-amt).toFixed(2);
+  if(msg)msg.textContent="Tap one diamond";
+  if(!board){gzBusy=0;return;}
+  board.innerHTML="";
+  for(var i=0;i<6;i++){
+    var d=document.createElement("button");
+    d.type="button";
+    d.textContent="◆";
+    d.style.cssText="font-size:28px;color:#2563eb;background:#eff6ff;border:0;border-radius:16px;padding:14px";
+    d.onclick=function(){gzPick(this);};
+    board.appendChild(d);
+  }
+}
+function gzPick(btn){
+  if(!gzOpen)return;
+  gzOpen=0;
   var win=Math.random()<0.35;
-  var n=0;
-  var t=setInterval(function(){
-    n++;
-    if(board){
-      var d=document.createElement("div");
-      d.textContent="◆";
-      d.style.cssText="font-size:22px;color:"+(n%2?"#2563eb":"#94a3b8")+";text-align:center";
-      board.appendChild(d);
-    }
-    if(n>=6){
-      clearInterval(t);
-      if(win){
-        var get=+(amt*1.55).toFixed(2);
-        u.bal=+(Number(u.bal)+get).toFixed(2);
-        u.profit=+(Number(u.profit||0)+(get-amt)).toFixed(2);
-        if(typeof bumpToday==="function")bumpToday("rew",get-amt);
-        if(msg)msg.textContent="Win $"+get;
-        pop("Congratulations","Diamond +$"+get);
-      }else{
-        if(msg)msg.textContent="Empty box";
-        pop("Diamond","No win · stake gone");
-      }
-      saveU(u);draw();
-            gzBusy=0;
-    }
-  },180);
+  var msg=el("gz-msg");
+  btn.style.color=win?"#ca8a04":"#94a3b8";
+  if(win){
+    var get=+(gzAmt*1.55).toFixed(2);
+    u.bal=+(Number(u.bal)+get).toFixed(2);
+    u.profit=+(Number(u.profit||0)+(get-gzAmt)).toFixed(2);
+    if(typeof bumpToday==="function")bumpToday("rew",get-gzAmt);
+    if(msg)msg.textContent="Win $"+get;
+    pop("Congratulations","Diamond +$"+get);
+  }else{
+    if(msg)msg.textContent="Empty box";
+    pop("Diamond","No win · stake gone");
+  }
+  saveU(u);draw();
+  gzBusy=0;gzAmt=0;
 }
 function draw(){
   if(!u)return;
