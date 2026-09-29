@@ -852,7 +852,7 @@ function nfTone(f,ms,type){
 function nfDay(){
   var d=new Date().toDateString();
   if(u.nfDay!==d){u.nfDay=d;u.nfN=0;}
-  return 8-(u.nfN||0);
+  return 30-(u.nfN||0);
 }
 function nfShow(){
   if(el("nf-mult"))el("nf-mult").textContent=(nf.mult||1).toFixed(2)+"x";
@@ -871,7 +871,7 @@ function nfBet(){
     var can=Math.max(0,Number(u.bal||0));
   if(amt<5){pop("Min","Minimum $5");return;}
   if(amt>can){pop("Balance","Not enough wallet");return;}
-  if(nfDay()<=0){pop("Limit","10 rounds today");return;}
+    if(nfDay()<=0){pop("Limit","30 rounds today");return;}
   u.bal=+(u.bal-amt).toFixed(2);
     u.profit=+(Number(u.profit||0)-amt).toFixed(2);if(u.profit<0)u.profit=0;
   u.nfN=(u.nfN||0)+1;
