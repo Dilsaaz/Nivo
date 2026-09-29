@@ -931,8 +931,8 @@ function nfCash(){
 var gzBusy=0,gzAmt=0,gzOpen=0;
 function gzStart(){
   if(!u){pop("Login","Sign in");return;}
-  if(gzBusy)return;
   var inp=el("gz-amt");
+    gzBusy=0;gzOpen=0;
   var amt=Number((inp&&inp.value)||0);
   if(amt<10){pop("Min","Minimum $10");return;}
   if(amt>Number(u.bal||0)){pop("Balance","Not enough wallet");return;}
