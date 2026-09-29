@@ -873,6 +873,15 @@ function nfFlip(side){
   nfTone(240,80,"sawtooth");
   var win=Math.random()<0.45;
   var land=win?side:(side==="H"?"T":"H");
+    var ring=el("nf-ring");
+  if(ring){
+    ring.style.transition="transform .7s cubic-bezier(.2,.8,.2,1),background .2s,border-color .2s";
+    ring.style.transform="rotate("+(720+Math.random()*360)+"deg)";
+    setTimeout(function(){
+      ring.style.borderColor=land==="H"?"#f5a623":"#2563eb";
+      ring.style.background=land==="H"?"#fde68a":"#1e3a8a";
+    },700);
+  }
   u.nfH=u.nfH||[];u.nfH.unshift(win?1:0);u.nfH=u.nfH.slice(0,12);
   if(el("nf-hist"))el("nf-hist").innerHTML=u.nfH.map(function(x){
     return '<i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:'+(x?"#f5a623":"#cbd5e1")+'"></i>';
@@ -881,6 +890,7 @@ function nfFlip(side){
     nfTone(140,280,"square");
     pop("Lose",land+" · stake gone");
         nf={on:0,stake:0,mult:1,n:0};saveU(u);draw();nfShow();return;
+        return;
   }
   nf.n++;nf.mult=Math.min(100,+(nf.mult*1.90).toFixed(2));
   nfTone(880,120,"sine");
