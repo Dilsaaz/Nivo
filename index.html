@@ -281,6 +281,22 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
         </div>
       </section>
       <section id="tab-game" class="hidden">
+  <div class="card p-5 text-center">
+    <div class="serif text-3xl">Nivo Flip</div>
+    <div id="nf-ring" class="mx-auto my-5" style="width:96px;height:96px;border-radius:50%;border:12px solid #f5a623;background:#0f172a"></div>
+    <div class="text-3xl font-bold" id="nf-mult">1.00x</div>
+    <div class="text-sm text-slate-500 mb-3" id="nf-profit">Profit $0.00</div>
+    <div id="nf-hist" class="flex gap-1 justify-center mb-3"></div>
+    <input id="nf-amt" type="number" min="5" placeholder="Bet min $5" class="w-full rounded-2xl px-4 py-3 bg-slate-100 mb-3">
+    <button type="button" id="nf-cash" onclick="nfCash()" class="btn w-full py-3 mb-2 hidden">Cash out</button>
+    <div class="grid grid-cols-2 gap-2">
+      <button type="button" class="btn py-3" onclick="nfFlip('H')">Heads</button>
+      <button type="button" class="btn py-3" onclick="nfFlip('T')">Tails</button>
+    </div>
+    <div class="text-xs text-slate-400 mt-2">1.90x / flip · max 100x · 10 / day</div>
+  </div>
+</section>
+  <div class="card p-5 mt-4">
         <div class="card p-5">
       <div class="serif text-3xl">Diamond Box</div>
           <div class="gz-lights"><span class="gz-dot"></span><span class="gz-dot"></span><span class="gz-dot"></span><span class="gz-dot"></span><span class="gz-dot"></span></div>
@@ -810,9 +826,60 @@ var add=+((base*s.m)-base).toFixed(2);
     try{draw();}catch(e){}
   },7600);
 }
+  var nf={on:0,stake:0,mult:1,n:0};
+function nfDay(){
+  var d=new Date().toDateString();
+  if(u.nfDay!==d){u.nfDay=d;u.nfN=0;}
+  return 10-(u.nfN||0);
+}
+function nfShow(){
+  if(el("nf-mult"))el("nf-mult").textContent=(nf.mult||1).toFixed(2)+"x";
+  var p=nf.on?+(nf.stake*nf.mult-nf.stake).toFixed(2):0;
+  if(el("nf-profit"))el("nf-profit").textContent="Profit $"+p.toFixed(2);
+  if(el("nf-cash")){
+    if(nf.on&&nf.mult>1)el("nf-cash").classList.remove("hidden");
+    else el("nf-cash").classList.add("hidden");
+  }
+}
+function nfFlip(side){
+  if(!u){pop("Login","Sign in");return;}
+  if(!nf.on){
+    var amt=Number(el("nf-amt").value||0);
+    var can=Math.max(0,+(u.bal||0)-(u.lock||45));
+    if(amt<5){pop("Min","Minimum $5");return;}
+    if(amt>can){pop("Lock","Only above $45 lock");return;}
+    if(nfDay()<=0){pop("Limit","10 rounds today");return;}
+    u.bal=+(u.bal-amt).toFixed(2);
+    u.nfN=(u.nfN||0)+1;
+    nf={on:1,stake:amt,mult:1,n:0};
+  }
+  var win=Math.random()<0.45;
+  var land=win?side:(side==="H"?"T":"H");
+  u.nfH=u.nfH||[];u.nfH.unshift(win?1:0);u.nfH=u.nfH.slice(0,12);
+  if(el("nf-hist"))el("nf-hist").innerHTML=u.nfH.map(function(x){
+    return '<i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:'+(x?"#f5a623":"#cbd5e1")+'"></i>';
+  }).join("");
+  
+    if(!win){
+    pop("Lose",land+" · stake gone");
+    nf={on:0,stake:0,mult:1,n:0};saveU(u);draw();nfShow();
+    return;
+  }
+  nf.n++;nf.mult=Math.min(100,+(nf.mult*1.90).toFixed(2));
+  pop("Win",land+" · "+nf.mult.toFixed(2)+"x");
+  saveU(u);nfShow();
+}
+function nfCash(){
+  if(!nf.on||nf.mult<=1)return;
+  var get=+(nf.stake*nf.mult).toFixed(2);
+  u.bal=+(Number(u.bal||0)+get).toFixed(2);
+  pop("Cash out","+$"+get);
+  nf={on:0,stake:0,mult:1,n:0};saveU(u);draw();nfShow();
+}
 function gzStart(){function beep(f,ms){try{var a=new(window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.type="sine";o.frequency.value=f;g.gain.value=0.1;o.connect(g);g.connect(a.destination);o.start();setTimeout(function(){o.stop();a.close();},ms||160);}catch(e){}}function ding(){beep(880,140);setTimeout(function(){beep(1174,140);},140);setTimeout(function(){beep(1568,220);},280);}function say(t){try{var u=new SpeechSynthesisUtterance(t);u.rate=1;speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}}var amt=Number(el("gz-amt").value);if(!amt||amt<10){pop("Gamezone","Min $10");return}if(!u||u.profit<amt){pop("Funds","Income only");return}u.profit-=amt;u.bal-=amt;saveU(u);window.gzLive=true;beep(520,160);var slots=[0,1,2,3,4,5,6,7];slots.sort(function(){return Math.random()-0.5});var map={};map[slots[0]]=1.5;map[slots[1]]=2;map[slots[2]]=3;var box=el("gz-board");if(!box)return;box.innerHTML="";for(var i=0;i<8;i++){(function(ix){var b=document.createElement("button");b.className="card-tile";b.textContent="?";b.onclick=function(){if(!window.gzLive)return;window.gzLive=false;if(map[ix]){var odd=map[ix],win=+(amt*odd).toFixed(2),net=+(win-amt).toFixed(2);u.bal+=win;u.profit+=win;u.diamondInc=(+u.diamondInc||0)+net;if(typeof bumpToday==="function")bumpToday(u,net);saveU(u);if(typeof payTeam==="function")payTeam(u,net);b.textContent="◆ "+odd+"x";ding();say("Congratulations");pop("Diamond","Congratulations · $"+money(win)+" · "+odd+"x");}else{b.textContent="✕";beep(180,280);say("Ooh try again");pop("No diamond","Ooh try again");}draw();};box.appendChild(b);})(i);}draw();}
 function draw(){
   if(!u)return;
+    try{nfShow();}catch(e){}
   if(el("p-box"))el("p-box").innerHTML="<div class='serif text-3xl mb-3'>Profile</div><div class='leading-8 text-sm'>User <b>"+(u.user||"—")+"</b><br>Email "+(u.email||"—")+"<br>Code <b>"+(u.ref||"—")+"</b><br>Sponsor "+(u.sponsor||"—")+"<br>Level "+(u.level||1)+"<br>Wallet $"+money(u.bal)+"<br>Lock $"+money(u.lock)+"</div>";
   if(el("h-name"))el("h-name").textContent=u.user||"";
       var L=layers(); applyLevel(L);
