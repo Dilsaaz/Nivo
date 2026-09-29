@@ -282,7 +282,7 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
       </section>
    <div class="card p-5 text-center">
   <div class="serif text-3xl">Nivo Flip</div>
-  <div id="nf-ring" class="mx-auto my-5" style="width:96px;height:96px;border-radius:50%;border:12px solid #f5a623;background:#0f172a"></div>
+<div id="nf-ring" class="mx-auto my-5" style="width:110px;height:110px;border-radius:50%;border:10px solid #e8b84a;background:radial-gradient(circle at 35% 30%,#fff7d6,#f5a623 45%,#b45309);box-shadow:0 10px 28px rgba(180,83,9,.35),inset 0 -8px 16px rgba(0,0,0,.2)"></div>
   <div class="text-3xl font-bold" id="nf-mult">1.00x</div>
   <div class="text-sm text-slate-500 mb-3" id="nf-profit">Profit $0.00</div>
   <div id="nf-hist" class="flex gap-1 justify-center mb-3"></div>
@@ -876,14 +876,20 @@ function nfBet(){
     u.profit=+(Number(u.profit||0)-amt).toFixed(2);if(u.profit<0)u.profit=0;
   u.nfN=(u.nfN||0)+1;
   nf={on:1,stake:amt,mult:1,n:0};
-  nfTone(520,90,"square");
+    nfTone(180,40,"square");
+  setTimeout(function(){nfTone(320,50,"square");},70);
+  setTimeout(function(){nfTone(520,80,"triangle");},160);
+  setTimeout(function(){nfTone(780,120,"sine");},260);
   pop("Bet","$"+amt+" live · pick Heads or Tails");
   saveU(u);draw();nfShow();
 }
 function nfFlip(side){
   if(!u){pop("Login","Sign in");return;}
   if(!nf.on){pop("Bet first","Place bet then flip");nfTone(180,160,"square");return;}
-  nfTone(240,80,"sawtooth");
+    nfTone(180,40,"square");
+  setTimeout(function(){nfTone(320,50,"square");},70);
+  setTimeout(function(){nfTone(520,80,"triangle");},160);
+  setTimeout(function(){nfTone(780,120,"sine");},260);
   var win=Math.random()<0.38;
   var land=win?side:(side==="H"?"T":"H");
     var ring=el("nf-ring");
@@ -905,10 +911,10 @@ function nfFlip(side){
         nf={on:0,stake:0,mult:1,n:0};saveU(u);draw();nfShow();return;
         return;
   }
-    nf.mult=Math.min(15,+(nf.mult*1.85).toFixed(2));
+      nf.n++;nf.mult=Math.min(100,+(1.25+(nf.n-1)*0.25).toFixed(2));
   nfTone(880,120,"sine");
   setTimeout(function(){nfTone(1174,140,"sine");},80);
-  pop("Win",land+" · "+nf.mult.toFixed(2)+"x");
+    pop("Congratulations",land==="H"?"Heads · "+nf.mult.toFixed(2)+"x":"Tails · "+nf.mult.toFixed(2)+"x");
   saveU(u);nfShow();
 }
 function nfCash(){
@@ -921,7 +927,27 @@ function nfCash(){
   pop("Cash out","+$"+get);
   nf={on:0,stake:0,mult:1,n:0};saveU(u);draw();nfShow();
 }
-function gzStart(){function beep(f,ms){try{var a=new(window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.type="sine";o.frequency.value=f;g.gain.value=0.1;o.connect(g);g.connect(a.destination);o.start();setTimeout(function(){o.stop();a.close();},ms||160);}catch(e){}}function ding(){beep(880,140);setTimeout(function(){beep(1174,140);},140);setTimeout(function(){beep(1568,220);},280);}function say(t){try{var u=new SpeechSynthesisUtterance(t);u.rate=1;speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}}var amt=Number(el("gz-amt").value);if(!amt||amt<10){pop("Gamezone","Min $10");return}if(!u||u.profit<amt){pop("Funds","Income only");return}u.profit-=amt;u.bal-=amt;saveU(u);window.gzLive=true;beep(520,160);var slots=[0,1,2,3,4,5,6,7];slots.sort(function(){return Math.random()-0.5});var map={};map[slots[0]]=1.5;map[slots[1]]=2;map[slots[2]]=3;var box=el("gz-board");if(!box)return;box.innerHTML="";for(var i=0;i<8;i++){(function(ix){var b=document.createElement("button");b.className="card-tile";b.textContent="?";b.onclick=function(){if(!window.gzLive)return;window.gzLive=false;if(map[ix]){var odd=map[ix],win=+(amt*odd).toFixed(2),net=+(win-amt).toFixed(2);u.bal+=win;u.profit+=win;u.diamondInc=(+u.diamondInc||0)+net;if(typeof bumpToday==="function")bumpToday(u,net);saveU(u);if(typeof payTeam==="function")payTeam(u,net);b.textContent="◆ "+odd+"x";ding();say("Congratulations");pop("Diamond","Congratulations · $"+money(win)+" · "+odd+"x");}else{b.textContent="✕";beep(180,280);say("Ooh try again");pop("No diamond","Ooh try again");}draw();};box.appendChild(b);})(i);}draw();}
+function gzStart(){
+  if(!u){pop("Login","Sign in");return;}
+  var inp=document.querySelector("#tab-game input:not(#nf-amt)");
+  var amt=Number((inp&&inp.value)||0);
+  if(amt<10){pop("Min","Minimum $10");return;}
+  if(amt>Number(u.bal||0)){pop("Balance","Not enough wallet");return;}
+  u.bal=+(Number(u.bal||0)-amt).toFixed(2);
+  var win=Math.random()<0.35;
+  if(win){
+    var get=+(amt*1.55).toFixed(2);
+    u.bal=+(Number(u.bal)+get).toFixed(2);
+    u.profit=+(Number(u.profit||0)+(get-amt)).toFixed(2);
+    if(typeof bumpToday==="function")bumpToday("rew",get-amt);
+    if(el("gz-msg"))el("gz-msg").textContent="Win $"+get;
+    pop("Diamond","+$"+get);
+  }else{
+    if(el("gz-msg"))el("gz-msg").textContent="Empty box";
+    pop("Diamond","No win · stake gone");
+  }
+  saveU(u);draw();
+}
 function draw(){
   if(!u)return;
     try{nfShow();}catch(e){}
