@@ -934,20 +934,36 @@ function gzStart(){
   var amt=Number((inp&&inp.value)||0);
   if(amt<10){pop("Min","Minimum $10");return;}
   if(amt>Number(u.bal||0)){pop("Balance","Not enough wallet");return;}
+  var board=el("gz-board"),msg=el("gz-msg");
+  if(board)board.innerHTML="";
+  if(msg)msg.textContent="Opening...";
   u.bal=+(Number(u.bal||0)-amt).toFixed(2);
   var win=Math.random()<0.35;
-  if(win){
-    var get=+(amt*1.55).toFixed(2);
-    u.bal=+(Number(u.bal)+get).toFixed(2);
-    u.profit=+(Number(u.profit||0)+(get-amt)).toFixed(2);
-    if(typeof bumpToday==="function")bumpToday("rew",get-amt);
-    if(el("gz-msg"))el("gz-msg").textContent="Win $"+get;
-    pop("Diamond","+$"+get);
-  }else{
-    if(el("gz-msg"))el("gz-msg").textContent="Empty box";
-    pop("Diamond","No win · stake gone");
-  }
-  saveU(u);draw();
+  var n=0;
+  var t=setInterval(function(){
+    n++;
+    if(board){
+      var d=document.createElement("div");
+      d.textContent="◆";
+      d.style.cssText="font-size:22px;color:"+(n%2?"#2563eb":"#94a3b8")+";text-align:center";
+      board.appendChild(d);
+    }
+    if(n>=6){
+      clearInterval(t);
+      if(win){
+        var get=+(amt*1.55).toFixed(2);
+        u.bal=+(Number(u.bal)+get).toFixed(2);
+        u.profit=+(Number(u.profit||0)+(get-amt)).toFixed(2);
+        if(typeof bumpToday==="function")bumpToday("rew",get-amt);
+        if(msg)msg.textContent="Win $"+get;
+        pop("Congratulations","Diamond +$"+get);
+      }else{
+        if(msg)msg.textContent="Empty box";
+        pop("Diamond","No win · stake gone");
+      }
+      saveU(u);draw();
+    }
+  },180);
 }
 function draw(){
   if(!u)return;
