@@ -958,10 +958,10 @@ function gzPick(btn){
     u.bal=+(Number(u.bal)+get).toFixed(2);
     u.profit=+(Number(u.profit||0)+(get-gzAmt)).toFixed(2);
     if(typeof bumpToday==="function")bumpToday("rew",get-gzAmt);
-    if(msg)msg.textContent="Win $"+get;
-    pop("Congratulations","Diamond +$"+get);
+        if(msg)msg.textContent="Win $"+get+"  ·  "+gzAmt+" × 1.55";
+        pop("Congratulations","Bet $"+gzAmt+" → $"+get);
   }else{
-    if(msg)msg.textContent="Empty box";
+        if(msg)msg.textContent="Empty · -$"+gzAmt;
     pop("Diamond","No win · stake gone");
   }
   saveU(u);draw();
