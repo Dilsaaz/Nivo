@@ -280,22 +280,21 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
           <button class="btn px-10 py-3 mt-5" onclick="doSpin()">Spin</button>
         </div>
       </section>
-      <section id="tab-game" class="hidden">
-  <div class="card p-5 text-center">
-    <div class="serif text-3xl">Nivo Flip</div>
-    <div id="nf-ring" class="mx-auto my-5" style="width:96px;height:96px;border-radius:50%;border:12px solid #f5a623;background:#0f172a"></div>
-    <div class="text-3xl font-bold" id="nf-mult">1.00x</div>
-    <div class="text-sm text-slate-500 mb-3" id="nf-profit">Profit $0.00</div>
-    <div id="nf-hist" class="flex gap-1 justify-center mb-3"></div>
-    <input id="nf-amt" type="number" min="5" placeholder="Bet min $5" class="w-full rounded-2xl px-4 py-3 bg-slate-100 mb-3">
-    <button type="button" id="nf-cash" onclick="nfCash()" class="btn w-full py-3 mb-2 hidden">Cash out</button>
-    <div class="grid grid-cols-2 gap-2">
-      <button type="button" class="btn py-3" onclick="nfFlip('H')">Heads</button>
-      <button type="button" class="btn py-3" onclick="nfFlip('T')">Tails</button>
-    </div>
-    <div class="text-xs text-slate-400 mt-2">1.90x / flip · max 100x · 10 / day</div>
+   <div class="card p-5 text-center">
+  <div class="serif text-3xl">Nivo Flip</div>
+  <div id="nf-ring" class="mx-auto my-5" style="width:96px;height:96px;border-radius:50%;border:12px solid #f5a623;background:#0f172a"></div>
+  <div class="text-3xl font-bold" id="nf-mult">1.00x</div>
+  <div class="text-sm text-slate-500 mb-3" id="nf-profit">Profit $0.00</div>
+  <div id="nf-hist" class="flex gap-1 justify-center mb-3"></div>
+  <input id="nf-amt" type="number" min="5" placeholder="Bet amount" class="w-full rounded-2xl px-4 py-3 bg-slate-100 mb-3">
+  <button type="button" class="btn w-full py-3 mb-2" id="nf-bet" onclick="nfBet()">Place bet</button>
+  <button type="button" id="nf-cash" onclick="nfCash()" class="btn w-full py-3 mb-2 hidden">Cash out</button>
+  <div class="grid grid-cols-2 gap-2">
+    <button type="button" class="btn py-3" onclick="nfFlip('H')">Heads</button>
+    <button type="button" class="btn py-3" onclick="nfFlip('T')">Tails</button>
   </div>
-</section>
+  <div class="text-xs text-slate-400 mt-2">Bet first · then Heads / Tails · 1.90x</div>
+</div>
   <div class="card p-5 mt-4">
         <div class="card p-5">
       <div class="serif text-3xl">Diamond Box</div>
@@ -827,6 +826,16 @@ var add=+((base*s.m)-base).toFixed(2);
   },7600);
 }
   var nf={on:0,stake:0,mult:1,n:0};
+function nfTone(f,ms,type){
+  try{
+    var A=window.AudioContext||window.webkitAudioContext;
+    if(!A)return;
+    var c=new A(),o=c.createOscillator(),g=c.createGain();
+    o.type=type||"sine";o.frequency.value=f;g.gain.value=0.08;
+    o.connect(g);g.connect(c.destination);o.start();
+    setTimeout(function(){try{o.stop();c.close();}catch(e){}},ms||120);
+  }catch(e){}
+}
 function nfDay(){
   var d=new Date().toDateString();
   if(u.nfDay!==d){u.nfDay=d;u.nfN=0;}
@@ -840,32 +849,41 @@ function nfShow(){
     if(nf.on&&nf.mult>1)el("nf-cash").classList.remove("hidden");
     else el("nf-cash").classList.add("hidden");
   }
+  if(el("nf-bet"))el("nf-bet").textContent=nf.on?"Bet live":"Place bet";
+}
+function nfBet(){
+  if(!u){pop("Login","Sign in");return;}
+  if(nf.on){pop("Live","Flip Heads or Tails");return;}
+  var amt=Number(el("nf-amt").value||0);
+  var can=Math.max(0,+(u.bal||0)-(u.lock||45));
+  if(amt<5){pop("Min","Minimum $5");return;}
+  if(amt>can){pop("Lock","Only above $45 lock");return;}
+  if(nfDay()<=0){pop("Limit","10 rounds today");return;}
+  u.bal=+(u.bal-amt).toFixed(2);
+  u.nfN=(u.nfN||0)+1;
+  nf={on:1,stake:amt,mult:1,n:0};
+  nfTone(520,90,"square");
+  pop("Bet","$"+amt+" live · pick Heads or Tails");
+  saveU(u);draw();nfShow();
 }
 function nfFlip(side){
   if(!u){pop("Login","Sign in");return;}
-  if(!nf.on){
-    var amt=Number(el("nf-amt").value||0);
-    var can=Math.max(0,+(u.bal||0)-(u.lock||45));
-    if(amt<5){pop("Min","Minimum $5");return;}
-    if(amt>can){pop("Lock","Only above $45 lock");return;}
-    if(nfDay()<=0){pop("Limit","10 rounds today");return;}
-    u.bal=+(u.bal-amt).toFixed(2);
-    u.nfN=(u.nfN||0)+1;
-    nf={on:1,stake:amt,mult:1,n:0};
-  }
+  if(!nf.on){pop("Bet first","Place bet then flip");nfTone(180,160,"square");return;}
+  nfTone(240,80,"sawtooth");
   var win=Math.random()<0.45;
   var land=win?side:(side==="H"?"T":"H");
   u.nfH=u.nfH||[];u.nfH.unshift(win?1:0);u.nfH=u.nfH.slice(0,12);
   if(el("nf-hist"))el("nf-hist").innerHTML=u.nfH.map(function(x){
     return '<i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:'+(x?"#f5a623":"#cbd5e1")+'"></i>';
   }).join("");
-  
-    if(!win){
+  if(!win){
+    nfTone(140,280,"square");
     pop("Lose",land+" · stake gone");
-    nf={on:0,stake:0,mult:1,n:0};saveU(u);draw();nfShow();
-    return;
+    nf={on:0,stake:0,mult:1,n:0};saveU(u);draw();nfShow();return;
   }
   nf.n++;nf.mult=Math.min(100,+(nf.mult*1.90).toFixed(2));
+  nfTone(880,120,"sine");
+  setTimeout(function(){nfTone(1174,140,"sine");},80);
   pop("Win",land+" · "+nf.mult.toFixed(2)+"x");
   saveU(u);nfShow();
 }
@@ -873,6 +891,7 @@ function nfCash(){
   if(!nf.on||nf.mult<=1)return;
   var get=+(nf.stake*nf.mult).toFixed(2);
   u.bal=+(Number(u.bal||0)+get).toFixed(2);
+  nfTone(988,180,"sine");
   pop("Cash out","+$"+get);
   nf={on:0,stake:0,mult:1,n:0};saveU(u);draw();nfShow();
 }
