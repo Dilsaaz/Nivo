@@ -312,7 +312,7 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
   <div>2. Choose Heads (yellow) or Tails (blue).</div>
   <div>3. Win multiplies by 1.90x. Lose = stake gone.</div>
   <div>4. Cash out anytime after a win. Flip again to raise the multiplier.</div>
-  <div>5. Minimum $5. 10 rounds per day.</div>
+  <div>5. Minimum $5. 8 rounds per day.</div>
   <div class="font-bold text-slate-800 mt-3">Diamond Box</div>
   <div>1. Bet from wallet. Minimum $10.</div>
   <div>2. Tap Play to open the box.</div>
@@ -852,7 +852,7 @@ function nfTone(f,ms,type){
 function nfDay(){
   var d=new Date().toDateString();
   if(u.nfDay!==d){u.nfDay=d;u.nfN=0;}
-  return 10-(u.nfN||0);
+  return 8-(u.nfN||0);
 }
 function nfShow(){
   if(el("nf-mult"))el("nf-mult").textContent=(nf.mult||1).toFixed(2)+"x";
@@ -884,7 +884,7 @@ function nfFlip(side){
   if(!u){pop("Login","Sign in");return;}
   if(!nf.on){pop("Bet first","Place bet then flip");nfTone(180,160,"square");return;}
   nfTone(240,80,"sawtooth");
-  var win=Math.random()<0.45;
+  var win=Math.random()<0.38;
   var land=win?side:(side==="H"?"T":"H");
     var ring=el("nf-ring");
   if(ring){
@@ -905,7 +905,7 @@ function nfFlip(side){
         nf={on:0,stake:0,mult:1,n:0};saveU(u);draw();nfShow();return;
         return;
   }
-  nf.n++;nf.mult=Math.min(100,+(nf.mult*1.90).toFixed(2));
+    nf.mult=Math.min(15,+(nf.mult*1.85).toFixed(2));
   nfTone(880,120,"sine");
   setTimeout(function(){nfTone(1174,140,"sine");},80);
   pop("Win",land+" · "+nf.mult.toFixed(2)+"x");
