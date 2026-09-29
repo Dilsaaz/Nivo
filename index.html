@@ -301,7 +301,7 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
       <div class="serif text-3xl">Diamond Box</div>
           <div class="gz-lights"><span class="gz-dot"></span><span class="gz-dot"></span><span class="gz-dot"></span><span class="gz-dot"></span><span class="gz-dot"></span></div>
 <div class="text-xs tracking-widest text-center text-blue-600 mb-2">WINNER DESK</div>
-          <div class="flex gap-2 mt-3"><input id="gz-amt" type="number" placeholder="Min $10"/><button class="btn px-5" onclick="gzStart()">Play</button></div>
+                  <div class="flex gap-2 mt-3"><input id="gz-amt" type="number" min="10" placeholder="Min $10" class="flex-1 rounded-2xl px-4 py-2 bg-slate-100"><button type="button" class="btn px-5" onclick="gzStart()">Play</button></div>
           <div id="gz-board" class="grid grid-cols-3 gap-3 mt-5"></div>
           <div id="gz-msg" class="text-center font-bold mt-4"></div>
           <p class="text-xs tracking-widest text-center text-slate-400 mt-4">MORE GAMES COMING SOON</p>
@@ -928,12 +928,15 @@ function nfCash(){
   pop("Cash out","+$"+get);
   nf={on:0,stake:0,mult:1,n:0};saveU(u);draw();nfShow();
 }
+  var gzBusy=0;
 function gzStart(){
   if(!u){pop("Login","Sign in");return;}
-  var inp=document.querySelector("#tab-game input:not(#nf-amt)");
+    if(gzBusy)return;
+  gzBusy=1;
+    var inp=el("gz-amt");
   var amt=Number((inp&&inp.value)||0);
-  if(amt<10){pop("Min","Minimum $10");return;}
-  if(amt>Number(u.bal||0)){pop("Balance","Not enough wallet");return;}
+    if(amt<10){gzBusy=0;pop("Min","Minimum $10");return;}
+    if(amt>Number(u.bal||0)){gzBusy=0;pop("Balance","Not enough wallet");return;}
   var board=el("gz-board"),msg=el("gz-msg");
   if(board)board.innerHTML="";
   if(msg)msg.textContent="Opening...";
@@ -962,6 +965,7 @@ function gzStart(){
         pop("Diamond","No win · stake gone");
       }
       saveU(u);draw();
+            gzBusy=0;
     }
   },180);
 }
