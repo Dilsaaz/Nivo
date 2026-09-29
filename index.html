@@ -855,11 +855,12 @@ function nfBet(){
   if(!u){pop("Login","Sign in");return;}
   if(nf.on){pop("Live","Flip Heads or Tails");return;}
   var amt=Number(el("nf-amt").value||0);
-  var can=Math.max(0,+(u.bal||0)-(u.lock||45));
+    var can=Math.max(0,Number(u.bal||0));
   if(amt<5){pop("Min","Minimum $5");return;}
-  if(amt>can){pop("Lock","Only above $45 lock");return;}
+  if(amt>can){pop("Balance","Not enough wallet");return;}
   if(nfDay()<=0){pop("Limit","10 rounds today");return;}
   u.bal=+(u.bal-amt).toFixed(2);
+    u.profit=+(Number(u.profit||0)-amt).toFixed(2);if(u.profit<0)u.profit=0;
   u.nfN=(u.nfN||0)+1;
   nf={on:1,stake:amt,mult:1,n:0};
   nfTone(520,90,"square");
@@ -879,7 +880,7 @@ function nfFlip(side){
   if(!win){
     nfTone(140,280,"square");
     pop("Lose",land+" · stake gone");
-    nf={on:0,stake:0,mult:1,n:0};saveU(u);draw();nfShow();return;
+        nf={on:0,stake:0,mult:1,n:0};saveU(u);draw();nfShow();return;
   }
   nf.n++;nf.mult=Math.min(100,+(nf.mult*1.90).toFixed(2));
   nfTone(880,120,"sine");
@@ -891,6 +892,8 @@ function nfCash(){
   if(!nf.on||nf.mult<=1)return;
   var get=+(nf.stake*nf.mult).toFixed(2);
   u.bal=+(Number(u.bal||0)+get).toFixed(2);
+    u.profit=+(Number(u.profit||0)+get).toFixed(2);
+  if(typeof bumpToday==="function")bumpToday("rew",get);
   nfTone(988,180,"sine");
   pop("Cash out","+$"+get);
   nf={on:0,stake:0,mult:1,n:0};saveU(u);draw();nfShow();
