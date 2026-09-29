@@ -302,7 +302,14 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
           <div class="gz-lights"><span class="gz-dot"></span><span class="gz-dot"></span><span class="gz-dot"></span><span class="gz-dot"></span><span class="gz-dot"></span></div>
 <div class="text-xs tracking-widest text-center text-blue-600 mb-2">WINNER DESK</div>
                   <div class="flex gap-2 mt-3"><input id="gz-amt" type="number" min="10" placeholder="Min $10" class="flex-1 rounded-2xl px-4 py-2 bg-slate-100"><button type="button" class="btn px-5" onclick="gzStart()">Play</button></div>
-          <div id="gz-board" class="grid grid-cols-3 gap-3 mt-5"></div>
+  <div id="gz-board" class="grid grid-cols-3 gap-2 my-3">
+  <button type="button" class="btn py-3" onclick="gzPick(this)">◆</button>
+  <button type="button" class="btn py-3" onclick="gzPick(this)">◆</button>
+  <button type="button" class="btn py-3" onclick="gzPick(this)">◆</button>
+  <button type="button" class="btn py-3" onclick="gzPick(this)">◆</button>
+  <button type="button" class="btn py-3" onclick="gzPick(this)">◆</button>
+  <button type="button" class="btn py-3" onclick="gzPick(this)">◆</button>
+</div>
           <div id="gz-msg" class="text-center font-bold mt-4"></div>
           <p class="text-xs tracking-widest text-center text-slate-400 mt-4">MORE GAMES COMING SOON</p>
         </div>
@@ -932,24 +939,13 @@ var gzBusy=0,gzAmt=0,gzOpen=0;
 function gzStart(){
   if(!u){pop("Login","Sign in");return;}
   var inp=el("gz-amt");
-    gzBusy=0;gzOpen=0;
   var amt=Number((inp&&inp.value)||0);
   if(amt<10){pop("Min","Minimum $10");return;}
   if(amt>Number(u.bal||0)){pop("Balance","Not enough wallet");return;}
   gzBusy=1;gzOpen=1;gzAmt=amt;
-  u.bal=+(Number(u.bal||0)-amt).toFixed(2);saveU(u);draw();
-  var board=el("gz-board"),msg=el("gz-msg");
+  u.bal=+(Number(u.bal||0)-amt).toFixed(2);saveU(u);
+  var msg=el("gz-msg");
   if(msg)msg.textContent="Tap one diamond";
-  if(!board){gzBusy=0;return;}
-  board.innerHTML="";
-  for(var i=0;i<6;i++){
-    var d=document.createElement("button");
-    d.type="button";
-    d.textContent="◆";
-    d.style.cssText="font-size:28px;color:#2563eb;background:#eff6ff;border:0;border-radius:16px;padding:14px";
-    d.onclick=function(){gzPick(this);};
-    board.appendChild(d);
-  }
 }
 function gzPick(btn){
   if(!gzOpen)return;
