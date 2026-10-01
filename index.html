@@ -826,7 +826,7 @@ function doSpin(){
   }
   u.spins-=1;u.packUsed=true;
 u.spinDay=new Date().toISOString().slice(0,10);
-  if((u.spins||0)<=0){var end=new Date();end.setUTCHours(24,0,0,0);u.nextSpin=end.getTime();}
+  if((u.spins||0)<=0)u.nextSpin=Date.now()+86400000;
   saveU(u);
   if(el("sp-left"))el("sp-left").textContent=u.spins;
   if(el("sp-res"))el("sp-res").textContent="Spinning...";
