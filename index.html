@@ -399,7 +399,14 @@ function pullCloud(done){
       var map2={};
       (local.deps||[]).concat(cloud.deps||[]).forEach(function(d){if(d&&d.id)map2[d.id]=d});
       local.deps=Object.keys(map2).map(function(k){return map2[k]});
-          if(!(u&&u.user===row.user_name)){if(Number(cloud.bal||0)>=Number(local.bal||0))local.bal=cloud.bal;if(Number(cloud.lock||0)>=Number(local.lock||0))local.lock=cloud.lock;if(Number(cloud.profit||0)>=Number(local.profit||0))local.profit=cloud.profit;}
+          var cb=+cloud.bal||0, lb=+local.bal||0, cl=+cloud.lock||0, ll=+local.lock||0, cp=+cloud.profit||0, lp=+local.profit||0;
+local.bal=Math.max(cb,lb);
+local.lock=Math.max(cl,ll);
+local.profit=Math.max(cp,lp);
+if((+local.lock||0)<45){
+  var paid=(local.deps||[]).filter(function(d){return d.st==="SUCCESSFUL"&&(+d.amt||0)>=45;})[0];
+  if(paid){local.bal=Math.max(+local.bal||0,+paid.amt||0);local.lock=Math.max(+local.lock||0,+paid.amt||0);}
+}
       localStorage.setItem(key,JSON.stringify(local));
     });
     if(u&&u.user){var nu=load(u.user);if(nu)u=nu;}
