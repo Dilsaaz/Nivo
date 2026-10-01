@@ -399,7 +399,7 @@ function pullCloud(done){
       var map2={};
       (local.deps||[]).concat(cloud.deps||[]).forEach(function(d){if(d&&d.id)map2[d.id]=d});
       local.deps=Object.keys(map2).map(function(k){return map2[k]});
-          if(!(u&&u.user===row.user_name)){local.bal=cloud.bal;local.lock=cloud.lock;local.profit=cloud.profit;}  
+          if(!(u&&u.user===row.user_name)){if(Number(cloud.bal||0)>=Number(local.bal||0))local.bal=cloud.bal;if(Number(cloud.lock||0)>=Number(local.lock||0))local.lock=cloud.lock;if(Number(cloud.profit||0)>=Number(local.profit||0))local.profit=cloud.profit;}
       localStorage.setItem(key,JSON.stringify(local));
     });
     if(u&&u.user){var nu=load(u.user);if(nu)u=nu;}
@@ -606,12 +606,27 @@ function sendDep(){
       });
     }
     var row=(u.deps||[]).filter(function(x){return x.id===depId;})[0];
-    if(ok&&row){
-      row.st="SUCCESSFUL";
-      u.bal=+(Number(u.bal||0)+amt).toFixed(2);
-      if(!u.lock||u.lock<45)u.lock=45;
-      saveU(u);draw();
-      pop("Approved","$"+amt+" added");
+ if(ok&&row){
+  row.st="SUCCESSFUL";
+  u.bal=+(Number(u.bal||0)+amt).toFixed(2);
+  if(!u.lock||u.lock<45)u.lock=45;
+  saveU(u);draw();
+  pop("Approved","$"+amt+" added");
+  var already=(u.deps||[]).some(function(x){return x.id!==row.id&&x.st==="SUCCESSFUL"});
+  if(!already&&u.sponsor){
+    pullCloud(function(){
+      var sp=allUsers().filter(function(x){return String(x.ref||"").toUpperCase()===String(u.sponsor).toUpperCase()})[0];
+      if(sp&&Number(sp.lock||0)>=45){
+        var b=+(amt*0.10).toFixed(2);
+        sp.bal=+(Number(sp.bal||0)+b).toFixed(2);
+        sp.profit=+(Number(sp.profit||0)+b).toFixed(2);
+        sp.rewardInc=(+sp.rewardInc||0)+b;
+        if(typeof bumpToday==="function")bumpToday(sp,b);
+        saveU(sp);
+      }
+    });
+  }
+}
     }else pop("Pending","Hash / address check fail");
   }).catch(function(){pop("Pending","Admin will check");});    
 }
