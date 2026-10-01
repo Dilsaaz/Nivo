@@ -814,12 +814,12 @@ u.spinDay=new Date().toISOString().slice(0,10);
   saveU(u);
   if(el("sp-left"))el("sp-left").textContent=u.spins;
   if(el("sp-res"))el("sp-res").textContent="Spinning...";
-  var tick=setInterval(function(){tone(180+Math.random()*220,70,"sawtooth")},90);
+  var tickN=0,tick=setInterval(function(){tickN++;tone(420+tickN*8,90,"sine");},160);
   var nw=SLICES.findIndex(function(x){return x.m===0});
   var pay=[];SLICES.forEach(function(x,n){if(x.m>0)pay.push(n)});
   var i=(Math.random()<0.18&&nw>=0)?nw:pay[Math.floor(Math.random()*pay.length)];
   var s=SLICES[i],w=el("wheel");
-  if(w){w.style.transition="none";w.style.transform="rotate(0deg)";void w.offsetWidth;w.style.transition="transform 7.5s cubic-bezier(.12,.7,.12,1)";w.style.transform="rotate("+(360*6+i*-60-30)+"deg)";}
+  if(w){w.style.transition="none";w.style.transform="rotate(0deg)";void w.offsetWidth;w.style.transition="transform 11s cubic-bezier(.12,.7,.12,1)";w.style.transform="rotate("+(360*6+i*-60-30)+"deg)";}
   setTimeout(function(){
     clearInterval(tick);
     var msg;
@@ -830,20 +830,20 @@ var add=+((base*s.m)-base).toFixed(2);
       if(typeof bumpToday==="function")bumpToday(u,add);
       saveU(u);
       if(typeof payTeam==="function")payTeam(u,add);
-      tone(880,120,"sine");
-      setTimeout(function(){tone(1174,160,"sine")},130);
-      setTimeout(function(){tone(1568,220,"sine")},280);
+      tone(523,160,"sine");
+setTimeout(function(){tone(659,180,"sine")},140);
+setTimeout(function(){tone(784,260,"sine")},280);
       msg="Profit $"+money(add)+" added to wallet · "+s.l;
       pop("Profit",msg);
     }else{
-      tone(160,280,"square");
-      setTimeout(function(){tone(120,350,"square")},200);
+      tone(196,220,"sine");
+setTimeout(function(){tone(146,280,"sine")},160);
       msg="No win";
       pop("No win","Nothing added to wallet");
     }
     if(el("sp-res"))el("sp-res").textContent="";
     try{draw();}catch(e){}
-  },7600);
+  },11000);
 }
   var nf={on:0,stake:0,mult:1,n:0};
 function nfTone(f,ms,type){
@@ -1086,7 +1086,17 @@ window.addEventListener("load",function(){
   if(location.hash==="#admin")showBox("box-admin");
 });
   function spinNeed(uu){var lv=Number((uu&&uu.level)||1);if(lv>=5)return 5;if(lv>=4)return 4;if(lv>=3)return 3;if(lv>=2)return 2;return 1;}
-function resetDailySpin(uu){if(!uu||!(uu.lock>=45))return;var d=new Date().toISOString().slice(0,10);if(uu.spinDay===d)return;if(uu.nextSpin&&Date.now()<uu.nextSpin){uu.spinDay=d;return;}uu.spinDay=d;uu.spins=spinNeed(uu);uu.nextSpin=0;}
+function resetDailySpin(uu){
+  if(!uu||!(uu.lock>=45))return;
+  var d=new Date().toISOString().slice(0,10);
+  if(uu.spinDay===d && (uu.spins||0)>0)return;
+  if(uu.nextSpin&&Date.now()<uu.nextSpin)return;
+  if(uu.spinDay===d && (uu.spins||0)<=0 && uu.packUsed)return;
+  uu.spinDay=d;
+  uu.spins=spinNeed(uu);
+  uu.nextSpin=0;
+  uu.packUsed=false;
+}
 </script>
 </body>
 </html>
