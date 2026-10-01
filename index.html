@@ -399,7 +399,7 @@ function pullCloud(done){
       var map2={};
       (local.deps||[]).concat(cloud.deps||[]).forEach(function(d){if(d&&d.id)map2[d.id]=d});
       local.deps=Object.keys(map2).map(function(k){return map2[k]});
-            local.bal=cloud.bal;local.lock=cloud.lock;local.profit=cloud.profit;
+          if(!(u&&u.user===row.user_name)){local.bal=cloud.bal;local.lock=cloud.lock;local.profit=cloud.profit;}  
       localStorage.setItem(key,JSON.stringify(local));
     });
     if(u&&u.user){var nu=load(u.user);if(nu)u=nu;}
@@ -803,7 +803,6 @@ function doSpin(){
   }
   var need=((u.level||1)>=2)?({2:2,3:3,4:4,5:5}[u.level]||2):1;
     if((u.spins||0)>need){u.spins=need;saveU(u);}
-  if(u.spins<=0&&(!u.nextSpin||Date.now()>=u.nextSpin)){u.spins=need;u.nextSpin=0;saveU(u)}
   if(u.spins<=0){
     var left=Math.max(0,(u.nextSpin||0)-Date.now());
     var hh=Math.floor(left/3600000),mm=Math.floor((left%3600000)/60000),ss=Math.floor((left%60000)/1000);
@@ -811,14 +810,14 @@ function doSpin(){
     return;
   }
   u.spins-=1;u.packUsed=true;
-  if(u.spins<=0)u.nextSpin=Date.now()+86400000;
+u.spinDay=new Date().toISOString().slice(0,10);
   saveU(u);
   if(el("sp-left"))el("sp-left").textContent=u.spins;
   if(el("sp-res"))el("sp-res").textContent="Spinning...";
   var tick=setInterval(function(){tone(180+Math.random()*220,70,"sawtooth")},90);
   var nw=SLICES.findIndex(function(x){return x.m===0});
   var pay=[];SLICES.forEach(function(x,n){if(x.m>0)pay.push(n)});
-  var i=(Math.random()<0.55&&nw>=0)?nw:pay[Math.floor(Math.random()*pay.length)];
+  var i=(Math.random()<0.18&&nw>=0)?nw:pay[Math.floor(Math.random()*pay.length)];
   var s=SLICES[i],w=el("wheel");
   if(w){w.style.transition="none";w.style.transform="rotate(0deg)";void w.offsetWidth;w.style.transition="transform 7.5s cubic-bezier(.12,.7,.12,1)";w.style.transform="rotate("+(360*6+i*-60-30)+"deg)";}
   setTimeout(function(){
@@ -973,6 +972,7 @@ function draw(){
   if(el("p-box"))el("p-box").innerHTML="<div class='serif text-3xl mb-3'>Profile</div><div class='leading-8 text-sm'>User <b>"+(u.user||"—")+"</b><br>Email "+(u.email||"—")+"<br>Code <b>"+(u.ref||"—")+"</b><br>Sponsor "+(u.sponsor||"—")+"<br>Level "+(u.level||1)+"<br>Wallet $"+money(u.bal)+"<br>Lock $"+money(u.lock)+"</div>";
   if(el("h-name"))el("h-name").textContent=u.user||"";
       var L=layers(); applyLevel(L);
+  resetDailySpin(u);
     var need=((u.level|1)>=2)?({2:2,3:3,4:4,5:5}[u.level]||2):1;
     if((u.spins||0)>need){u.spins=need;saveU(u);}
     if(u.deps&&u.deps[0]&&u.deps[0].st==="SUCCESSFUL"&&!u.deps[0].seen){u.deps[0].seen=true;saveU(u);pop("Successful","Deposit approved. $"+money(u.deps[0].amt)+" added to wallet.");}
@@ -1085,6 +1085,8 @@ window.addEventListener("load",function(){
   }
   if(location.hash==="#admin")showBox("box-admin");
 });
+  function spinNeed(uu){var lv=Number((uu&&uu.level)||1);if(lv>=5)return 5;if(lv>=4)return 4;if(lv>=3)return 3;if(lv>=2)return 2;return 1;}
+function resetDailySpin(uu){if(!uu||!(uu.lock>=45))return;var d=new Date().toISOString().slice(0,10);if(uu.spinDay===d)return;if(uu.nextSpin&&Date.now()<uu.nextSpin){uu.spinDay=d;return;}uu.spinDay=d;uu.spins=spinNeed(uu);uu.nextSpin=0;}
 </script>
 </body>
 </html>
