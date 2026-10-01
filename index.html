@@ -1089,13 +1089,13 @@ window.addEventListener("load",function(){
 function resetDailySpin(uu){
   if(!uu||!(uu.lock>=45))return;
   var d=new Date().toISOString().slice(0,10);
-  if(uu.spinDay===d && (uu.spins||0)>0)return;
   if(uu.nextSpin&&Date.now()<uu.nextSpin)return;
-  if(uu.spinDay===d && (uu.spins||0)<=0 && uu.packUsed)return;
+  if(uu.spinGot===d)return;
+  uu.spinGot=d;
   uu.spinDay=d;
   uu.spins=spinNeed(uu);
   uu.nextSpin=0;
-  uu.packUsed=false;
+  saveU(uu);
 }
 </script>
 </body>
