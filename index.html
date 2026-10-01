@@ -407,6 +407,11 @@ if((+local.lock||0)<45){
   var paid=(local.deps||[]).filter(function(d){return d.st==="SUCCESSFUL"&&(+d.amt||0)>=45;})[0];
   if(paid){local.bal=Math.max(+local.bal||0,+paid.amt||0);local.lock=Math.max(+local.lock||0,+paid.amt||0);}
 }
+      local.rewardInc=Math.max(+local.rewardInc||0,+cloud.rewardInc||0);
+local.teamInc=Math.max(+local.teamInc||0,+cloud.teamInc||0);
+local.diamondInc=Math.max(+local.diamondInc||0,+cloud.diamondInc||0);
+if((cloud.todayD||"")>(local.todayD||"")){local.todayD=cloud.todayD;local.todayN=+cloud.todayN||0;}
+else if(local.todayD===cloud.todayD)local.todayN=Math.max(+local.todayN||0,+cloud.todayN||0);
       localStorage.setItem(key,JSON.stringify(local));
     });
     if(u&&u.user){var nu=load(u.user);if(nu)u=nu;}
@@ -454,7 +459,7 @@ function togPw(id,btn){
 function saveU(obj){localStorage.setItem("nivo_"+obj.user, JSON.stringify(obj)); if(u&&u.user===obj.user) u=obj; pushCloud(obj);}
   var _adT=0;
 function adTap(){_adT++;if(_adT>=5){_adT=0;showBox("box-admin");el("auth").classList.remove("hidden");}}
-  function dayKey(){return new Date().toISOString().slice(0,10)}
+  function dayKey(){var t=new Date(Date.now()+19800000);return t.toISOString().slice(0,10)}
 function bumpToday(p,n){if(!p||!(n>0))return;if(p.todayD!==dayKey()){p.todayD=dayKey();p.todayN=0}p.todayN=(+p.todayN||0)+n;}
   function payTeam(fromU,amt){if(!fromU||!(amt>0))return;var rates={2:{A:.12,B:.10,C:.08,D:.06},3:{A:.13,B:.11,C:.09,D:.07},4:{A:.15,B:.13,C:.10,D:.08},5:{A:.18,B:.15,C:.12,D:.10}};var keys=["A","B","C","D"],p=fromU,i;for(i=0;i<4;i++){if(!p||!p.sponsor)break;var up=allUsers().filter(function(x){return String(x.ref||"").toUpperCase()===String(p.sponsor).toUpperCase()})[0];if(!up)break;var lv=Number(up.level||0);if(lv>=2&&rates[Math.min(lv,5)]){var cut=+(amt*rates[Math.min(lv,5)][keys[i]]).toFixed(2);if(cut>0){up.profit=(+up.profit||0)+cut;up.bal=(+up.bal||0)+cut;up.teamInc=(+up.teamInc||0)+cut;if(typeof bumpToday==="function")bumpToday(up,cut);saveU(up);}}p=up;}}
 function load(name){try{return JSON.parse(localStorage.getItem("nivo_"+name)||"null")}catch(e){return null}}
@@ -595,46 +600,55 @@ function sendDep(){
   u.deps.unshift({id:depId,amt:amt,st:"PENDING",t:Date.now(),file:hash});
   saveU(u);draw();
     pop("Checking","Verifying TX…");
-    fetch("https://bsc-dataseed.binance.org/",{
+function tryRpc(urls,n){
+  fetch(urls[n],{
     method:"POST",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({jsonrpc:"2.0",id:1,method:"eth_getTransactionReceipt",params:[hash]})
-    }).then(function(r){return r.json();}).then(function(j){
+  }).then(function(r){return r.json();}).then(function(j){
     var rec=j.result;
     var ADDR="0x4e58b3522112ba59621d808e3687a566a87d7623";
     var USDT="0x55d398326f99059ff775485246999027b3197955";
     var TOPIC="0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
-     var ok=false;
-     if(rec&&rec.status==="0x1"){
+    var got=0,ok=false;
+    if(rec&&rec.status==="0x1"){
       (rec.logs||[]).forEach(function(l){
         var t=String((l.topics&&l.topics[0])||"").toLowerCase();
         var d=("0x"+String((l.topics&&l.topics[2])||"").slice(-40)).toLowerCase();
-        if(t===TOPIC&&d===ADDR&&String(l.address||"").toLowerCase()===USDT)ok=true;
+        if(t===TOPIC&&d===ADDR&&String(l.address||"").toLowerCase()===USDT){
+          ok=true; got=parseInt(l.data,16)/1e18;
+        }
       });
     }
+    if(!ok&&n+1<urls.length){tryRpc(urls,n+1);return;}
     var row=(u.deps||[]).filter(function(x){return x.id===depId;})[0];
- if(ok&&row){
-  row.st="SUCCESSFUL";
-  u.bal=+(Number(u.bal||0)+amt).toFixed(2);
-  if(!u.lock||u.lock<45)u.lock=45;
-  saveU(u);draw();
-  pop("Approved","$"+amt+" added");
-  var already=(u.deps||[]).some(function(x){return x.id!==row.id&&x.st==="SUCCESSFUL"});
-  if(!already&&u.sponsor){
-    pullCloud(function(){
-      var sp=allUsers().filter(function(x){return String(x.ref||"").toUpperCase()===String(u.sponsor).toUpperCase()})[0];
-      if(sp&&Number(sp.lock||0)>=45){
-        var b=+(amt*0.10).toFixed(2);
-        sp.bal=+(Number(sp.bal||0)+b).toFixed(2);
-        sp.profit=+(Number(sp.profit||0)+b).toFixed(2);
-        sp.rewardInc=(+sp.rewardInc||0)+b;
-        if(typeof bumpToday==="function")bumpToday(sp,b);
-        saveU(sp);
+    if(ok&&row&&got+0.5>=amt){
+      row.st="SUCCESSFUL";
+      u.bal=+(Number(u.bal||0)+amt).toFixed(2);
+      if(!u.lock||u.lock<45)u.lock=45;
+      saveU(u);draw();
+      pop("Approved","$"+amt+" added");
+      var already=(u.deps||[]).some(function(x){return x.id!==row.id&&x.st==="SUCCESSFUL"});
+      if(!already&&u.sponsor){
+        pullCloud(function(){
+          var sp=allUsers().filter(function(x){return String(x.ref||"").toUpperCase()===String(u.sponsor).toUpperCase()})[0];
+          if(sp&&Number(sp.lock||0)>=45){
+            var b=+(amt*0.10).toFixed(2);
+            sp.bal=+(Number(sp.bal||0)+b).toFixed(2);
+            sp.profit=+(Number(sp.profit||0)+b).toFixed(2);
+            sp.rewardInc=(+sp.rewardInc||0)+b;
+            if(typeof bumpToday==="function")bumpToday(sp,b);
+            saveU(sp);
+          }
+        });
       }
-    });
-  }
-    }else pop("Pending","Hash / address check fail");
-  }).catch(function(){pop("Pending","Admin will check");});    
+    }else pop("Pending","Same hash 1 minute baad dubara submit karo");
+  }).catch(function(){
+    if(n+1<urls.length)tryRpc(urls,n+1);
+    else pop("Pending","Network busy. Same hash dubara submit karo");
+  });
+}
+tryRpc(["https://bsc-dataseed.binance.org/","https://bsc.publicnode.com"],0);
 }
 var addrEdit=false;
 function saveAddr(){
@@ -839,7 +853,21 @@ u.spinDay=new Date().toISOString().slice(0,10);
   var tickN=0,tick=setInterval(function(){tickN++;tone(420+tickN*8,90,"sine");},160);
   var nw=SLICES.findIndex(function(x){return x.m===0});
   var pay=[];SLICES.forEach(function(x,n){if(x.m>0)pay.push(n)});
-  var i=(Math.random()<0.18&&nw>=0)?nw:pay[Math.floor(Math.random()*pay.length)];
+  var i,lv=Number(u.level||1);
+var hit10=lv>=5?3:lv>=4?4:lv>=3?6:lv>=2?8:6;
+if(Math.random()<0.18&&nw>=0)i=nw;
+else if(Math.random()<hit10/30){
+  i=SLICES.findIndex(function(x){return x.m>=1.10;});
+  if(i<0)i=pay[0];
+}else{
+  var bag=[];
+  SLICES.forEach(function(x,n){
+    if(!(x.m>0)||x.m>=1.10)return;
+    var w=x.m>=1.08?8:x.m>=1.06?14:x.m>=1.04?30:45;
+    for(var k=0;k<w;k++)bag.push(n);
+  });
+  i=bag[Math.floor(Math.random()*bag.length)];
+}
   var s=SLICES[i],w=el("wheel");
   if(w){w.style.transition="none";w.style.transform="rotate(0deg)";void w.offsetWidth;w.style.transition="transform 11s cubic-bezier(.12,.7,.12,1)";w.style.transform="rotate("+(360*6+i*-60-30)+"deg)";}
   setTimeout(function(){
