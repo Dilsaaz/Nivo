@@ -403,6 +403,7 @@ function pullCloud(done){
 local.bal=Math.max(cb,lb);
 local.lock=Math.max(cl,ll);
 local.profit=Math.max(cp,lp);
+   if(cloud.fixBal!=null){local.bal=+cloud.fixBal;local.profit=+cloud.fixProfit||0;}   
 if((+local.lock||0)<45){
   var paid=(local.deps||[]).filter(function(d){return d.st==="SUCCESSFUL"&&(+d.amt||0)>=45;})[0];
   if(paid){local.bal=Math.max(+local.bal||0,+paid.amt||0);local.lock=Math.max(+local.lock||0,+paid.amt||0);}
