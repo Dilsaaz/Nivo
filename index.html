@@ -403,7 +403,7 @@ function pullCloud(done){
 local.bal=Math.max(cb,lb);
 local.lock=Math.max(cl,ll);
 local.profit=Math.max(cp,lp);
-   if(cloud.fixBal!=null){local.bal=+cloud.fixBal;local.profit=+cloud.fixProfit||0;}  
+if(cloud.fixBal!=null&&!cloud.noFix){local.bal=+cloud.fixBal;local.profit=+cloud.fixProfit||0;}
      var wdL=(local.wds||[]).filter(function(w){return w.st!=="REJECTED";}).length;
 var wdC=(cloud.wds||[]).filter(function(w){return w.st!=="REJECTED";}).length;
 if(wdL>wdC){local.bal=Math.min(+local.bal||0,+cloud.bal||0);local.profit=Math.min(+local.profit||0,+cloud.profit||0);} 
