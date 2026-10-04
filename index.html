@@ -885,7 +885,7 @@ u.spinDay=new Date().toISOString().slice(0,10);
   var nw=SLICES.findIndex(function(x){return x.m===0});
   var pay=[];SLICES.forEach(function(x,n){if(x.m>0)pay.push(n)});
   var i,lv=Number(u.level||1);
-var hit10=lv>=5?3:lv>=4?4:lv>=3?6:lv>=2?8:6;
+var hit10=lv>=5?1:lv>=4?1:lv>=3?1:lv>=2?1:6;
 if(Math.random()<0.18&&nw>=0)i=nw;
 else if(Math.random()<hit10/30){
   i=SLICES.findIndex(function(x){return x.m>=1.10;});
@@ -894,7 +894,7 @@ else if(Math.random()<hit10/30){
   var bag=[];
   SLICES.forEach(function(x,n){
     if(!(x.m>0)||x.m>=1.10)return;
-    var w=x.m>=1.08?8:x.m>=1.06?14:x.m>=1.04?30:45;
+    var w=x.m>=1.08?(lv>=2?2:8):x.m>=1.06?20:x.m>=1.04?36:50;
     for(var k=0;k<w;k++)bag.push(n);
   });
   i=bag[Math.floor(Math.random()*bag.length)];
