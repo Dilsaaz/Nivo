@@ -240,7 +240,7 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
           <input id="dep-amt" type="number" class="mt-4" placeholder="Amount (min $45)"/>
        <label class="block text-xs mt-3 mb-1">Transaction hash (BEP20)</label>
           <input id="dep-hash" placeholder="Paste TX hash"/>
-          <button class="btn w-full py-3 mt-4" onclick="sendDep()">Submit deposit</button>
+     <button class="btn w-full py-3 mt-4" onclick="payNow()">Pay with USDT</button>
           <p class="text-xs mt-3 text-slate-500" id="dep-note"></p>
           <div id="dep-hist" class="text-sm mt-4"></div>
         </div>
@@ -595,6 +595,20 @@ tab=function(id){
 };
 function copyRef(){navigator.clipboard.writeText(location.origin+location.pathname+"?ref="+u.ref);pop("Copied","Invite link copied.")}
 function copyAddr(){navigator.clipboard.writeText(ADDR).then(function(){el("copy-ok").classList.remove("hidden");pop("Copied","Address copied.")})}
+  function payNow(){
+  if(!u){pop("Login","Sign in first");return;}
+  var amt=Number(el("dep-amt").value);
+  if(!amt||amt<45){pop("Minimum","Enter amount $45 or more");return;}
+  pop("Opening","Payment page…");
+  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/nowpay",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({user:u.user,amt:amt})
+  }).then(function(r){return r.json();}).then(function(j){
+    if(j.url)location.href=j.url;
+    else pop("Not ready","Payment page did not open");
+  }).catch(function(){pop("Not ready","Try again");});
+}
 function sendDep(){
   if(!u){pop("Login","Sign in first");return;}
   var box=el("dep-hash");
