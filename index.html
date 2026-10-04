@@ -240,7 +240,7 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
           <input id="dep-amt" type="number" class="mt-4" placeholder="Amount (min $45)"/>
        <label class="block text-xs mt-3 mb-1">Transaction hash (BEP20)</label>
           <input id="dep-hash" placeholder="Paste TX hash"/>
-     <button class="btn w-full py-3 mt-4" onclick="payNow()">Pay with USDT</button>
+<button class="btn w-full py-3 mt-4" onclick="sendDep()">Submit deposit</button>
           <p class="text-xs mt-3 text-slate-500" id="dep-note"></p>
           <div id="dep-hist" class="text-sm mt-4"></div>
         </div>
@@ -663,7 +663,7 @@ function tryRpc(urls,n){
           }
         });
       }
-    }else pop("Pending","Same hash 1 minute baad dubara submit karo");
+}else{if(row){row.st="REJECTED";saveU(u);draw();}pop("Rejected","Hash not matched");}
   }).catch(function(){
     if(n+1<urls.length)tryRpc(urls,n+1);
     else pop("Pending","Network busy. Same hash dubara submit karo");
