@@ -578,6 +578,7 @@ function enterUser(){
     if(el("h-name"))el("h-name").textContent=u.user;
     if(el("h-bal"))el("h-bal").textContent=money(u.bal);
     drawWheel();draw();tab("home");
+    if(!sessionStorage.getItem("nivo_rw_"+u.user)){sessionStorage.setItem("nivo_rw_"+u.user,"1");pop("Direct rewards","$45 joining: 10% direct. $100 joining: $18 reward. $200 joining: $35 reward.");}
   });
 }
 function tab(id){["home","wallet","income","deposit","withdraw","spin","game","team","profile"].forEach(function(t){if(el("tab-"+t))el("tab-"+t).classList.toggle("hidden",t!==id)});document.querySelectorAll(".side-btn[data-tab]").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-tab")===id)});if(id==="game"){try{var ctx=window.AudioContext||window.webkitAudioContext;var a=new ctx(),o=a.createOscillator(),g=a.createGain();o.type="triangle";o.frequency.value=523;g.gain.value=0.12;o.connect(g);g.connect(a.destination);o.start();setTimeout(function(){o.frequency.value=784},120);setTimeout(function(){o.stop();a.close()},350);}catch(e){}}draw();}
