@@ -211,7 +211,7 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
   <div class="card p-5 mb-3">
     <div class="text-xs font-bold tracking-widest text-blue-700">REWARDS</div>
     <div class="serif text-4xl mt-2" id="inc-rew">0.00</div>
-    <div class="text-xs text-slate-500 mt-1">Direct A · 10% first deposit</div>
+<div class="text-xs text-slate-500 mt-1">$45: 10% · $100: $18 · $200: $35</div>
   </div>
   <div class="card p-5 mb-3">
     <div class="text-xs font-bold tracking-widest text-blue-700">DIAMOND BOX</div>
@@ -654,7 +654,7 @@ function tryRpc(urls,n){
         pullCloud(function(){
           var sp=allUsers().filter(function(x){return String(x.ref||"").toUpperCase()===String(u.sponsor).toUpperCase()})[0];
           if(sp&&Number(sp.lock||0)>=45){
-            var b=+(amt*0.10).toFixed(2);
+            var b=amt>=200?35:amt>=100?18:+(amt*0.10).toFixed(2);
             sp.bal=+(Number(sp.bal||0)+b).toFixed(2);
             sp.profit=+(Number(sp.profit||0)+b).toFixed(2);
             sp.rewardInc=(+sp.rewardInc||0)+b;
@@ -758,7 +758,7 @@ function adDep(user,id,ok){
     if(!already&&p.sponsor){
       var sp=allUsers().filter(function(x){return String(x.ref||"").toUpperCase()===String(p.sponsor).toUpperCase()})[0];
       if(sp&&Number(sp.lock||0)>=45){
-        var b=+(d.amt*0.10).toFixed(2);
+        var b=d.amt>=200?35:d.amt>=100?18:+(d.amt*0.10).toFixed(2);
         sp.bal+=b;sp.profit+=b;sp.rewardInc=(+sp.rewardInc||0)+b;
         if(typeof bumpToday==="function")bumpToday(sp,b);
         if(!sp.teamA)sp.teamA=[];
