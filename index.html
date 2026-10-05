@@ -656,7 +656,7 @@ function tryRpc(urls,n){
         pullCloud(function(){
           var sp=allUsers().filter(function(x){return String(x.ref||"").toUpperCase()===String(u.sponsor).toUpperCase()})[0];
           if(sp&&Number(sp.lock||0)>=45){
-            var b=amt>=200?35:amt>=100?18:+(amt*0.10).toFixed(2);
+            var b=Number(amt)>=200?35:Number(amt)>=100?18:+(Number(amt)*0.10).toFixed(2);
             sp.bal=+(Number(sp.bal||0)+b).toFixed(2);
             sp.profit=+(Number(sp.profit||0)+b).toFixed(2);
             sp.rewardInc=(+sp.rewardInc||0)+b;
@@ -760,7 +760,7 @@ function adDep(user,id,ok){
     if(!already&&p.sponsor){
       var sp=allUsers().filter(function(x){return String(x.ref||"").toUpperCase()===String(p.sponsor).toUpperCase()})[0];
       if(sp&&Number(sp.lock||0)>=45){
-        var b=d.amt>=200?35:d.amt>=100?18:+(d.amt*0.10).toFixed(2);
+        var b=Number(d.amt)>=200?35:Number(d.amt)>=100?18:+(Number(d.amt)*0.10).toFixed(2);
         sp.bal+=b;sp.profit+=b;sp.rewardInc=(+sp.rewardInc||0)+b;
         if(typeof bumpToday==="function")bumpToday(sp,b);
         if(!sp.teamA)sp.teamA=[];
