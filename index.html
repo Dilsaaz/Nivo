@@ -420,6 +420,7 @@ local.teamInc=Math.max(+local.teamInc||0,+cloud.teamInc||0);
 local.diamondInc=Math.max(+local.diamondInc||0,+cloud.diamondInc||0);
 if((cloud.todayD||"")>(local.todayD||"")){local.todayD=cloud.todayD;local.todayN=+cloud.todayN||0;}
 else if(local.todayD===cloud.todayD)local.todayN=Math.max(+local.todayN||0,+cloud.todayN||0);
+      if((+cloud.nextSpin||0)>(+local.nextSpin||0)){local.nextSpin=cloud.nextSpin;local.spins=cloud.spins;local.spinGot=cloud.spinGot;local.spinDay=cloud.spinDay;}
       localStorage.setItem(key,JSON.stringify(local));
     });
     if(u&&u.user){var nu=load(u.user);if(nu)u=nu;}
@@ -1172,7 +1173,7 @@ window.addEventListener("load",function(){
 function resetDailySpin(uu){
   if(!uu||!(uu.lock>=45))return;
   var d=new Date().toISOString().slice(0,10);
-  if(uu.nextSpin&&Date.now()<uu.nextSpin)return;
+  if(uu.nextSpin&&Date.now()<uu.nextSpin){uu.spins=0;return;}
   if(uu.spinGot===d)return;
   uu.spinGot=d;
   uu.spinDay=d;
