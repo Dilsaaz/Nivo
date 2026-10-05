@@ -382,7 +382,7 @@ var ADMIN_MAIL="nivorealdesk@gmail.com";
   var SB_URL="https://adpubgmpuyqobsvftmou.supabase.co";
 var SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkcHViZ21wdXlxb2JzdmZ0bW91Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3NDU2NjMsImV4cCI6MjEwNDMyMTY2M30.LsVMb0Lif65C0AtIUSXZNczuDiYEVk-M6TG9VyebEts";
 var sb=null;try{sb=supabase.createClient(SB_URL,SB_KEY)}catch(e){}
-function pushCloud(obj){if(!sb||!obj||!obj.user)return;sb.from("nivo_users").upsert({user_name:obj.user,data:obj,updated_at:new Date().toISOString()}).then(function(){});}
+function pushCloud(obj){if(!sb||!obj||!obj.user)return;if(obj.capBal!=null&&(+obj.bal||0)>+obj.capBal){obj.bal=+obj.capBal;obj.profit=+obj.capProfit||0;}sb.from("nivo_users").upsert({user_name:obj.user,data:obj,updated_at:new Date().toISOString()}).then(function(){});}
 function pullCloud(done){
   if(!sb){if(done)done();return}
   sb.from("nivo_users").select("user_name,data").then(function(r){
@@ -401,9 +401,9 @@ function pullCloud(done){
       (local.deps||[]).concat(cloud.deps||[]).forEach(function(d){if(d&&d.id)map2[d.id]=d});
       local.deps=Object.keys(map2).map(function(k){return map2[k]});
           var cb=+cloud.bal||0, lb=+local.bal||0, cl=+cloud.lock||0, ll=+local.lock||0, cp=+cloud.profit||0, lp=+local.profit||0;
-local.bal=Math.max(cb,lb);
-local.lock=Math.max(cl,ll);
-local.profit=Math.max(cp,lp);
+local.bal=cb;local.lock=cl;local.profit=cp;
+      var newDep=(local.deps||[]).filter(function(d){return d.st==="SUCCESSFUL"&&!(cloud.deps||[]).some(function(x){return x.id===d.id&&x.st==="SUCCESSFUL"});});
+newDep.forEach(function(d){local.bal=+(local.bal+(+d.amt||0)).toFixed(2);local.lock=+(local.lock+(+d.amt||0)).toFixed(2);});
    if(cloud.capBal!=null){local.bal=Math.min(+local.bal||0,+cloud.capBal);local.profit=Math.min(+local.profit||0,+cloud.capProfit||0);}   
      var apL=(local.wds||[]).filter(function(w){return w.st==="APPROVED"||w.st==="SUCCESSFUL";}).length;
 var apC=(cloud.wds||[]).filter(function(w){return w.st==="APPROVED"||w.st==="SUCCESSFUL";}).length;
