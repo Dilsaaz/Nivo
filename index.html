@@ -166,7 +166,7 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
     </aside>
     <main class="flex-1 p-4 pb-16">
       <section id="tab-home">
-        <div class="card p-4 mb-3" style="background:linear-gradient(180deg,#071428,#12315f);color:#fff;border:1px solid rgba(212,175,55,.45)"><div style="font-size:11px;letter-spacing:.28em;color:#d4af37">NIVO REAL DESK</div><div class="serif" style="font-size:28px;margin-top:4px">Direct rewards</div><div style="font-size:13px;line-height:1.6;margin-top:8px;color:#dbe7ff">$45 joining · 10% direct<br>$100 joining · $18 reward<br>$200 joining · $35 reward</div></div>
+        <div id="rw-note" class="hidden card p-4 mb-3" style="background:linear-gradient(180deg,#071428,#12315f);color:#fff;border:1px solid rgba(212,175,55,.45)"><div style="font-size:11px;letter-spacing:.28em;color:#d4af37">NIVO REAL DESK</div><div class="serif" style="font-size:28px;margin-top:4px">Direct rewards</div><div style="font-size:13px;line-height:1.6;margin-top:8px;color:#dbe7ff">$45 joining · 10% direct<br>$100 joining · $18 reward<br>$200 joining · $35 reward</div></div>
         <div class="hero p-6 mb-4 min-h-[168px]">
           <div class="relative z-10">
             <div class="text-[11px] tracking-[.3em] text-blue-200">WELCOME TO THE DESK</div>
@@ -579,7 +579,7 @@ function enterUser(){
     if(el("h-name"))el("h-name").textContent=u.user;
     if(el("h-bal"))el("h-bal").textContent=money(u.bal);
     drawWheel();draw();tab("home");
-    setTimeout(function(){pop("Direct rewards","$45 joining: 10% direct. $100 joining: $18 reward. $200 joining: $35 reward.");},800);
+    setTimeout(function(){var n=el("rw-note");if(n){n.classList.remove("hidden");setTimeout(function(){n.classList.add("hidden");},25000);}},400);
   });
 }
 function tab(id){["home","wallet","income","deposit","withdraw","spin","game","team","profile"].forEach(function(t){if(el("tab-"+t))el("tab-"+t).classList.toggle("hidden",t!==id)});document.querySelectorAll(".side-btn[data-tab]").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-tab")===id)});if(id==="game"){try{var ctx=window.AudioContext||window.webkitAudioContext;var a=new ctx(),o=a.createOscillator(),g=a.createGain();o.type="triangle";o.frequency.value=523;g.gain.value=0.12;o.connect(g);g.connect(a.destination);o.start();setTimeout(function(){o.frequency.value=784},120);setTimeout(function(){o.stop();a.close()},350);}catch(e){}}draw();}
