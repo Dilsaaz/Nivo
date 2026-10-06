@@ -521,7 +521,7 @@ function layersFor(ref){var A=kidsOf(ref);var B=[];A.forEach(function(a){B=B.con
 function layers(){return layersFor(u&&u.ref);}
 function abcdBiz(ref){
   var L=layersFor(ref),n=0;
-L.A.concat(L.B,L.C,L.D).forEach(function(p){(p.deps||[]).forEach(function(d){if(d.st==="SUCCESSFUL")n+=Number(d.amt||0)});});
+L.A.concat(L.B,L.C,L.D).forEach(function(p){n+=Math.max(0,Number(p.bal||0)-Number(p.profit||0));});
   return +n.toFixed(2);
 }
 function applyVol(p,silent){
