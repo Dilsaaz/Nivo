@@ -832,7 +832,7 @@ function adDep(user,id,ok){
   saveU(p);if(u&&u.user===p.user)u=p;renderAdmin();pop(ok?"Approved":"Rejected",user);
 }
   function maskName(n){n=String(n||"");if(n.length<3)return n[0]+"***";return n[0]+"****"+n.slice(-2);}
-function isOn(p){return Number(p.lock||0)>=45;}
+function isOn(p){if(Number(p.bal||0)<45&&!(p.deps||[]).some(function(d){return d.st==="SUCCESSFUL";}))return false;return Number(p.lock||0)>=45;}
 function showCom(layer){
   var L=layers(),box=el("com-box");if(!box)return;
   box.classList.remove("hidden");
