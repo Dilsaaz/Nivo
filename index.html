@@ -499,7 +499,55 @@ function showBox(id){
 }
 function hideAll(){el("auth").classList.add("hidden");el("app").classList.add("hidden");el("admin").classList.add("hidden")}
 function kidsOf(ref){return allUsers().filter(function(p){return String(p.sponsor||"").toUpperCase()===String(ref||"").toUpperCase()})}
-function layers(){var A=kidsOf(u.ref);var B=[];A.forEach(function(a){B=B.concat(kidsOf(a.ref))});var C=[];B.forEach(function(b){C=C.concat(kidsOf(b.ref))});var D=[];C.forEach(function(c){D=D.concat(kidsOf(c.ref))});return {A:A,B:B,C:C,D:D};}
+var VOL=[
+  {need:5000,pay:250,name:"First"},
+  {need:12000,pay:500,name:"Second"},
+  {need:22000,pay:1200,name:"Third"},
+  {need:35000,pay:2200,name:"Fourth"},
+  {need:48000,pay:4200,name:"Fifth"},
+  {need:75000,pay:8000,name:"Sixth"},
+  {need:110000,pay:12000,name:"Seventh"},
+  {need:160000,pay:25000,name:"Eighth"}
+];
+function layersFor(ref){var A=kidsOf(ref);var B=[];A.forEach(function(a){B=B.concat(kidsOf(a.ref))});var C=[];B.forEach(function(b){C=C.concat(kidsOf(b.ref))});var D=[];C.forEach(function(c){D=D.concat(kidsOf(c.ref))});return {A:A,B:B,C:C,D:D};}
+function layers(){return layersFor(u&&u.ref);}
+function abcdBiz(ref){
+  var L=layersFor(ref),n=0;
+  L.A.concat(L.B,L.C,L.D).forEach(function(p){n+=Math.max(0,Number(p.bal||0))});
+  return +n.toFixed(2);
+}
+function applyVol(p,silent){
+  if(!p||!p.ref)return 0;
+  var biz=abcdBiz(p.ref);
+  if(!p.volPaid)p.volPaid=[];
+  var added=0;
+  VOL.forEach(function(s,i){
+    if(biz>=s.need&&p.volPaid.indexOf(i)<0){
+      p.bal=(+p.bal||0)+s.pay;
+      p.profit=(+p.profit||0)+s.pay;
+      p.volInc=(+p.volInc||0)+s.pay;
+      p.volPaid.push(i);
+      added+=s.pay;
+    }
+  });
+  if(added){saveU(p);if(!silent&&u&&u.user===p.user)pop("Volume Bonus","$"+money(added)+" added to wallet");}
+  return added;
+}
+function paintVol(){
+  if(!u||!el("vol-lines"))return;
+  var biz=abcdBiz(u.ref);
+  el("vol-biz").textContent=money(biz);
+  el("vol-got").textContent=money(u.volInc||0);
+  var next=null;
+  el("vol-lines").innerHTML=VOL.map(function(s,i){
+    var done=(u.volPaid||[]).indexOf(i)>=0||biz>=s.need;
+    if(!done&&!next)next=s;
+    var pct=Math.max(0,Math.min(100,biz/s.need*100));
+    var tag=done?"Achieved · $"+s.pay+" received":(next===s?"Next bonus · $"+s.pay:"Locked · $"+s.pay);
+    var left=done?"":" · $"+(Math.max(0,s.need-biz)).toFixed(0)+" left";
+    return '<div style="margin:10px 0 0"><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700"><span>'+s.name+' · $'+s.pay+'</span><span>'+tag+'</span></div><div style="font-size:11px;color:#64748b">ABCD business $'+s.need+left+'</div><div style="height:8px;border-radius:99px;background:#f1f5f9;margin-top:4px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:'+(done?"#16a34a":"#d97706")+'"></div></div></div>';
+  }).join("");
+}
 function doLogin(){
   var name=el("li-user").value.trim(),pass=el("li-pass").value;
   if(!name||!pass){pop("Required","Enter username and password");return}
@@ -756,7 +804,7 @@ function adDep(user,id,ok){
   if(!d||d.st!=="PENDING")return;
   if(ok){
     d.st="SUCCESSFUL";
-    p.bal+=d.amt;p.lock+=d.amt;
+ p.bal+=d.amt;p.lock=45;
     if(p.spins===0&&p.lock>=45)p.spins=1;
     var already=(p.deps||[]).some(function(x){return x.id!==d.id&&x.st==="SUCCESSFUL"});
     if(!already&&p.sponsor){
