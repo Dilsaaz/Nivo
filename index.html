@@ -702,11 +702,18 @@ function tryRpc(urls,n){
     if(!ok&&n+1<urls.length){tryRpc(urls,n+1);return;}
     var row=(u.deps||[]).filter(function(x){return x.id===depId;})[0];
     if(ok&&row&&got+0.5>=amt){
-      row.st="SUCCESSFUL";
-      u.bal=+(Number(u.bal||0)+amt).toFixed(2);
-      if(!u.lock||u.lock<45)u.lock=45;
-      saveU(u);draw();
-      pop("Approved","$"+amt+" added");
+      fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/deposit",{
+  method:"POST",
+  headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+  body:JSON.stringify({user:u.user,amount:amt,hash:depId})
+}).then(function(r){return r.json()}).then(function(d){
+  if(!d||d.error){pop("Deposit",d&&d.error||"not saved");return}
+  u.bal=d.bal;u.lock=45;
+  if(el("h-bal"))el("h-bal").textContent=money(d.bal);
+  pop("Approved","$"+amt+" added");
+  draw();
+}).catch(function(){pop("Deposit","not saved");});
+return;
       var already=(u.deps||[]).some(function(x){return x.id!==row.id&&x.st==="SUCCESSFUL"});
       if(!already&&u.sponsor){
         pullCloud(function(){
