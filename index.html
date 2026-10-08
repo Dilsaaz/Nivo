@@ -527,19 +527,16 @@ L.A.concat(L.B,L.C,L.D).forEach(function(p){n+=Math.max(0,Number(p.bal||0)-Numbe
 function applyVol(p,silent){
   if(!p||!p.ref)return 0;
   var biz=abcdBiz(p.ref);
-  if(!p.volPaid)p.volPaid=[];
-  var added=0;
-  VOL.forEach(function(s,i){
-    if(biz>=s.need&&p.volPaid.indexOf(i)<0){
-      p.bal=(+p.bal||0)+s.pay;
-      p.profit=(+p.profit||0)+s.pay;
-      p.volInc=(+p.volInc||0)+s.pay;
-      p.volPaid.push(i);
-      added+=s.pay;
-    }
-  });
-  if(added){saveU(p);if(!silent&&u&&u.user===p.user)pop("Volume Bonus","$"+money(added)+" added to wallet");}
-  return added;
+  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/volume",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+    body:JSON.stringify({user:p.user,biz:biz})
+  }).then(function(r){return r.json()}).then(function(d){
+    if(!d||!d.added)return;
+    p.bal=d.bal;p.profit=d.profit;
+    if(u&&u.user===p.user){u.bal=d.bal;u.profit=d.profit;if(el("h-bal"))el("h-bal").textContent=money(d.bal);if(!silent)pop("Volume Bonus","$"+money(d.added)+" added");}
+  }).catch(function(){});
+  return 0;
 }
 function paintVol(){
   if(!u||!el("vol-lines"))return;
