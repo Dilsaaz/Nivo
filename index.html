@@ -965,11 +965,18 @@ else if(Math.random()<hit10/30){
     clearInterval(tick);
     var msg;
     if(s.m>0){
-      var base=Number(u.bal||u.lock||0);
-var add=+((base*s.m)-base).toFixed(2);
- u.profit+=add;u.bal=+(Number(u.bal)+add).toFixed(2);
-      if(typeof bumpToday==="function")bumpToday(u,add);
-      saveU(u);
+      fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/Spin",{
+  method:"POST",
+  headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+  body:JSON.stringify({user:u.user})
+}).then(function(r){return r.json()}).then(function(d){
+  if(!d||d.error){pop("Spin",d&&d.error||"not saved");return}
+  u.bal=d.bal;u.profit=d.profit;u.spinDay=new Date().toISOString().slice(0,10);
+  localStorage.setItem("nivo_"+u.user,JSON.stringify(u));
+  pop("Profit","$"+money(d.add)+" added");
+  draw();
+});
+return;
       if(typeof payTeam==="function")payTeam(u,add);
       tone(523,160,"sine");
 setTimeout(function(){tone(659,180,"sine")},140);
