@@ -985,7 +985,7 @@ else if(Math.random()<hit10/30){
       fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/Spin",{
   method:"POST",
   headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
-  body:JSON.stringify({user:u.user})
+  body:JSON.stringify({user:u.user,m:s.m})
 }).then(function(r){return r.json()}).then(function(d){
   if(!d||d.error){pop("Spin",d&&d.error||"not saved");return}
 u.bal=d.bal;u.profit=d.profit;u.spinDay=new Date().toISOString().slice(0,10);
