@@ -971,10 +971,13 @@ else if(Math.random()<hit10/30){
   body:JSON.stringify({user:u.user})
 }).then(function(r){return r.json()}).then(function(d){
   if(!d||d.error){pop("Spin",d&&d.error||"not saved");return}
-  u.bal=d.bal;u.profit=d.profit;u.spinDay=new Date().toISOString().slice(0,10);
-  localStorage.setItem("nivo_"+u.user,JSON.stringify(u));
-  pop("Profit","$"+money(d.add)+" added");
-  draw();
+u.bal=d.bal;u.profit=d.profit;u.spinDay=new Date().toISOString().slice(0,10);
+localStorage.setItem("nivo_"+u.user,JSON.stringify(u));
+if(el("h-bal"))el("h-bal").textContent=money(d.bal);
+if(el("h-profit"))el("h-profit").textContent=money(d.profit);
+pop("Profit","$"+money(d.add)+" added");
+draw();
+}).catch(function(){pop("Spin","not saved");});
 });
 return;
       if(typeof payTeam==="function")payTeam(u,add);
