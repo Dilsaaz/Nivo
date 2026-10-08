@@ -1136,8 +1136,6 @@ function draw(){
   resetDailySpin(u);
     var need=((u.level|1)>=2)?({2:2,3:3,4:4,5:5}[u.level]||2):1;
     if((u.spins||0)>need){u.spins=need;saveU(u);}
-    var seenKey="depseen_"+u.user;
-if(u.deps&&u.deps[0]&&u.deps[0].st==="SUCCESSFUL"&&!localStorage.getItem(seenKey)){localStorage.setItem(seenKey,"1");pop("Successful","Deposit approved. $"+money(u.deps[0].amt)+" added to wallet.");}
     
   if(el("h-lv"))el("h-lv").textContent=u.level||0;
   if(el("dep-addr"))el("dep-addr").textContent=ADDR;
