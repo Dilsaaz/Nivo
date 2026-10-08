@@ -710,6 +710,12 @@ function tryRpc(urls,n){
   if(!d||d.error){pop("Deposit",d&&d.error||"not saved");return}
   u.bal=d.bal;u.lock=45;
   if(el("h-bal"))el("h-bal").textContent=money(d.bal);
+     u.spinDay="";
+fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/sponsor",{
+  method:"POST",
+  headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+  body:JSON.stringify({user:u.user,amount:amt})
+}).catch(function(){});   
   pop("Approved","$"+amt+" added");
   draw();
 }).catch(function(){pop("Deposit","not saved");});
