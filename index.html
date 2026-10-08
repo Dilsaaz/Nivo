@@ -393,7 +393,7 @@ var ADMIN_MAIL="nivorealdesk@gmail.com";
   var SB_URL="https://adpubgmpuyqobsvftmou.supabase.co";
 var SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkcHViZ21wdXlxb2JzdmZ0bW91Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3NDU2NjMsImV4cCI6MjEwNDMyMTY2M30.LsVMb0Lif65C0AtIUSXZNczuDiYEVk-M6TG9VyebEts";
 var sb=null;try{sb=supabase.createClient(SB_URL,SB_KEY)}catch(e){}
-function pushCloud(obj){if(!sb||!obj||!obj.user)return;delete obj.capBal;delete obj.capProfit;if((+obj.lock||0)>45)obj.lock=45;sb.from("nivo_users").upsert({user_name:obj.user,data:obj,updated_at:new Date().toISOString()}).then(function(){});}
+function pushCloud(obj){return;}
 function pullCloud(done){
   if(!sb){if(done)done();return}
   sb.from("nivo_users").select("user_name,data").then(function(r){
