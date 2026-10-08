@@ -786,14 +786,20 @@ function askWd(){
     pop("Locked","Package $"+locked+" stays locked. You can withdraw $"+money(Math.max(0,maxW)));
     return;
   }
-  var fee=+(amt*0.10).toFixed(2),net=+(amt-fee).toFixed(2);
-  u.profit-=amt;u.bal-=amt;
-  if(!u.wds)u.wds=[];
-      u.wds.unshift({id:"W"+Date.now(),req:amt,amt:net,fee:fee,st:"PENDING",addr:u.addr,t:Date.now()});
-  saveU(u);
+  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/withdraw",{
+  method:"POST",
+  headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+  body:JSON.stringify({user:u.user,amount:amt})
+}).then(function(r){return r.json()}).then(function(d){
+  if(!d||d.error){pop("Withdraw",d&&d.error||"not saved");return}
+  u.bal=d.bal;u.profit=d.profit;
+  if(el("h-bal"))el("h-bal").textContent=money(d.bal);
+  if(el("h-profit"))el("h-profit").textContent=money(d.profit);
   if(el("wd-otp"))el("wd-otp").value="";
   pop("Pending","Withdraw request $"+money(amt)+" submitted.");
   draw();
+}).catch(function(){pop("Withdraw","not saved");});
+return;
 }
 function undoWd(user,id){
   var p=findUser(user);if(!p)return;
