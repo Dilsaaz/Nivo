@@ -710,21 +710,11 @@ function tryRpc(urls,n){
   pop("Approved","$"+amt+" added");
   draw();
 }).catch(function(){pop("Deposit","not saved");});
-return;
-      var already=(u.deps||[]).some(function(x){return x.id!==row.id&&x.st==="SUCCESSFUL"});
-      if(!already&&u.sponsor){
-        pullCloud(function(){
-          var sp=allUsers().filter(function(x){return String(x.ref||"").toUpperCase()===String(u.sponsor).toUpperCase()})[0];
-          if(sp&&Number(sp.lock||0)>=45){
-            var b=Number(amt)>=200?35:Number(amt)>=100?18:+(Number(amt)*0.10).toFixed(2);
-            sp.bal=+(Number(sp.bal||0)+b).toFixed(2);
-            sp.profit=+(Number(sp.profit||0)+b).toFixed(2);
-            sp.rewardInc=(+sp.rewardInc||0)+b;
-            if(typeof bumpToday==="function")bumpToday(sp,b);
-            saveU(sp);
-          }
-        });
-      }
+fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/sponsor",{
+  method:"POST",
+  headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+  body:JSON.stringify({user:u.user,amount:amt})
+}).catch(function(){});
 }else{if(row){row.st="REJECTED";saveU(u);draw();}pop("Rejected","Hash not matched");}
   }).catch(function(){
     if(n+1<urls.length)tryRpc(urls,n+1);
