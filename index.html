@@ -434,7 +434,7 @@ else if(local.todayD===cloud.todayD)local.todayN=Math.max(+local.todayN||0,+clou
     });
     if(u&&u.user){var nu=load(u.user);if(nu)u=nu;}
     if(done)done();
-  });
+  }).catch(function(){if(done)done();});
 }
 var SLICES=[{l:"1.02x",m:1.02,c:"#1a73e8"},{l:"1.04x",m:1.04,c:"#071428"},{l:"1.06x",m:1.06,c:"#3b82f6"},{l:"1.08x",m:1.08,c:"#071428"},{l:"1.10x",m:1.10,c:"#1a73e8"},{l:"No win",m:0,c:"#64748b"}];
 var SLABS=[
