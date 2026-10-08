@@ -855,7 +855,17 @@ function showCom(layer){
   }).join("")||"<tr><td class='py-3' colspan='3'>No "+k+" members</td></tr>";
   box.innerHTML=tabs+"<div class='font-bold mb-2'>"+k+" team</div><table class='w-full text-sm'><thead><tr class='text-slate-500 text-left'><th class='py-1'>Name</th><th>Status</th><th>Code</th></tr></thead><tbody>"+rows+"</tbody></table>";
 }
-function adWd(user,id,ok){var p=findUser(user);if(!p)return;var d=p.wds.filter(function(x){return x.id===id})[0];if(!d||d.st!=="PENDING")return;if(ok){d.st="APPROVED";if(!d.cut){var cut=Number(d.req||d.amt)||0;p.bal=+((Number(p.bal)||0)-cut).toFixed(2);p.profit=+((Number(p.profit)||0)-cut).toFixed(2);p.capBal=p.bal;p.capProfit=p.profit;d.cut=1;}}else{d.st="REJECTED";if(!d.back){var back=Number(d.req||d.amt)||0;p.profit=+(Number(p.profit||0)+back).toFixed(2);p.bal=+(Number(p.bal||0)+back).toFixed(2);d.back=1;}}saveU(p);if(u&&u.user===p.user)u=p;renderAdmin();pop(ok?"Approved":"Rejected",user);}
+function adWd(user,id,ok){
+  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/approve",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+    body:JSON.stringify({admin:ADMIN_ID,pass:ADMIN_PW,user:user,id:id,ok:ok})
+  }).then(function(r){return r.json()}).then(function(d){
+    if(!d||d.error){pop("Admin",d&&d.error||"not saved");return}
+    pop(ok?"Approved":"Rejected",user);
+    pullCloud(function(){renderAdmin();});
+  }).catch(function(){pop("Admin","not saved");});
+}
 function renderAdmin(){
   var list=allUsers(),pd=0,pw=0,depH="",wdH="",mem="";
   list.forEach(function(p){
