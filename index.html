@@ -925,7 +925,7 @@ saveU(u);
   if(el("h-bal"))el("h-bal").textContent=money(d.bal);
   if(el("h-profit"))el("h-profit").textContent=money(d.profit);
   if(el("wd-otp"))el("wd-otp").value="";
-  pop("Pending","Withdraw request $"+money(amt)+" submitted.");
+  pop("Pending","Withdraw request $"+money(amt)+" submitted. Payment will be sent within 24 hours after admin approval.");
   draw();
 }).catch(function(){pop("Withdraw","not saved");});
 return;
@@ -979,7 +979,7 @@ function adWd(user,id,ok){
   fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/approve",{
     method:"POST",
     headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
-    body:JSON.stringify({admin:ADMIN_ID,pass:ADMIN_PW,user:user,id:id,ok:ok})
+    body:JSON.stringify({admin:ADMIN_ID,pass:ADMIN_PW,user:user,id:id,ok:ok,kind:"withdraw"})
   }).then(function(r){return r.json()}).then(function(d){
     if(!d||d.error){pop("Admin",d&&d.error||"not saved");return}
     pop(ok?"Approved":"Rejected",user);
