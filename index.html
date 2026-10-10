@@ -1239,19 +1239,29 @@ if(el("slab-team")){
   el("slab-team").innerHTML="Active slab · <b>"+s.name+"</b> · $"+s.need;
 }
       if(u.todayD!==dayKey()){
-      u.todayD=dayKey();
-      u.todayN=0;u.rewardInc=0;u.diamondInc=0;u.teamInc=0;
-      saveU(u);
-    }
+  u.todayD=dayKey();
+  u.todayN=0;u.dRew=0;u.dDia=0;u.dTeam=0;
+  u.lastRew=+u.rewardInc||0;
+  u.lastDia=+u.diamondInc||0;
+  u.lastTeam=+u.teamInc||0;
+  saveU(u);
+}
+var nr=+u.rewardInc||0, nd=+u.diamondInc||0, nt=+u.teamInc||0;
+if(u.lastRew==null)u.lastRew=nr;
+if(u.lastDia==null)u.lastDia=nd;
+if(u.lastTeam==null)u.lastTeam=nt;
+if(nr>u.lastRew){u.dRew=(+u.dRew||0)+(nr-u.lastRew);u.lastRew=nr;}
+if(nd>u.lastDia){u.dDia=(+u.dDia||0)+(nd-u.lastDia);u.lastDia=nd;}
+if(nt>u.lastTeam){u.dTeam=(+u.dTeam||0)+(nt-u.lastTeam);u.lastTeam=nt;}
     if(el("inc-today"))el("inc-today").textContent=money(u.todayN||0);
-    if(el("inc-rew"))el("inc-rew").textContent=money(u.rewardInc||0);
-    if(el("inc-dia"))el("inc-dia").textContent=money(u.diamondInc||0);
-    if(el("inc-team"))el("inc-team").textContent=money(u.teamInc||0);
+if(el("inc-rew"))el("inc-rew").textContent=money(u.dRew||0);
+if(el("inc-dia"))el("inc-dia").textContent=money(u.dDia||0);
+if(el("inc-team"))el("inc-team").textContent=money(u.dTeam||0);
   applyVol(u,true);
 paintVol();
 if(el("inc-today"))el("inc-today").textContent=money(u.todayN||0);
-if(el("inc-rew"))el("inc-rew").textContent=money(u.rewardInc||0);
-if(el("inc-dia"))el("inc-dia").textContent=money(u.diamondInc||0);
+if(el("inc-rew"))el("inc-rew").textContent=money(u.dRew||0);
+if(el("inc-dia"))el("inc-dia").textContent=money(u.dDia||0);
  el("h-lv").textContent=u.level; if(el("h-lvn"))el("h-lvn").textContent=L.A.length+" in A-team";
   el("nA").textContent=L.A.length; el("nB").textContent=L.B.length; el("nC").textContent=L.C.length; el("nD").textContent=L.D.length;
   el("tA").textContent=L.A.length; el("tB").textContent=L.B.length; el("tC").textContent=L.C.length; el("tD").textContent=L.D.length;
