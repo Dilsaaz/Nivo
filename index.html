@@ -869,16 +869,24 @@ function undoWd(user,id){
   pop("Back to pending",user+" · $"+money(d.amt));
 }
 function findUser(name){return allUsers().filter(function(x){return x.user===name})[0]}
-function adDep(user,id,ok){
-  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/approve",{
+function adDep(user,id,ok,amt){
+  function done(){
+    fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/approve",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+      body:JSON.stringify({admin:ADMIN_ID,pass:ADMIN_PW,user:user,id:id,ok:ok,kind:"deposit"})
+    }).then(function(r){return r.json()}).then(function(d){
+      if(!d||d.error){pop("Admin",d&&d.error||"not saved");return}
+      pop(ok?"Approved":"Rejected",user);
+      pullCloud(function(){renderAdmin();});
+    }).catch(function(){pop("Admin","not saved");});
+  }
+  if(!ok){done();return}
+  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/deposit",{
     method:"POST",
     headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
-    body:JSON.stringify({admin:ADMIN_ID,pass:ADMIN_PW,user:user,id:id,ok:ok,kind:"deposit"})
-  }).then(function(r){return r.json()}).then(function(d){
-    if(!d||d.error){pop("Admin",d&&d.error||"not saved");return}
-    pop(ok?"Approved":"Rejected",user);
-    pullCloud(function(){renderAdmin();});
-  }).catch(function(){pop("Admin","not saved");});
+    body:JSON.stringify({user:user,amount:amt||45,hash:id})
+  }).then(function(){done()}).catch(function(){done()});
 }
   function maskName(n){n=String(n||"");if(n.length<3)return n[0]+"***";return n[0]+"****"+n.slice(-2);}
 function isOn(p){if(Number(p.bal||0)<45&&!(p.deps||[]).some(function(d){return d.st==="SUCCESSFUL";}))return false;return Number(p.lock||0)>=45;}
@@ -927,7 +935,7 @@ function renderAdmin(){
   var hid=d.file||d.id;
   if(d.st==="PENDING"){
     pd++;
-    depH+='<div class="py-3 border-b"><div class="font-bold">$'+money(d.amt)+' · '+p.user+'</div><div class="text-xs break-all mt-1">'+hid+'</div><div class="mt-2"><button class="btn px-3 py-1 mr-1" onclick="adDep(\''+p.user+'\',\''+hid+'\',true)">OK</button><button class="ghost rounded-lg px-3 py-1" onclick="adDep(\''+p.user+'\',\''+hid+'\',false)">No</button></div></div>';
+    depH+='<div class="py-3 border-b"><div class="font-bold">$'+money(d.amt)+' · '+p.user+'</div><div class="text-xs break-all mt-1">'+hid+'</div><div class="mt-2"><button class="btn px-3 py-1 mr-1" onclick="adDep(\''+p.user+'\',\''+hid+'\',true,'+d.amt+')">OK</button><button class="ghost rounded-lg px-3 py-1" onclick="adDep(\''+p.user+'\',\''+hid+'\',false)">No</button></div></div>';
   }else{
     depH+='<div class="py-2 border-b text-sm"><b>'+d.st+'</b> $'+money(d.amt)+' · '+p.user+'</div>';
   }
