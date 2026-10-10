@@ -427,6 +427,12 @@ function pullCloud(done){
       var map2={};
       (local.deps||[]).concat(cloud.deps||[]).forEach(function(d){if(d&&d.id)map2[d.id]=d});
       local.deps=Object.keys(map2).map(function(k){return map2[k]});
+      local.deps=(local.deps||[]).map(function(d){
+  var c=(cloud.deps||[]).filter(function(x){return x.id===d.id||x.id===d.file;})[0];
+  return c||d;
+});
+if(cloud.verify)local.verify=cloud.verify;
+if(cloud.verified)local.verified=true;
           var cb=+cloud.bal||0, lb=+local.bal||0, cl=+cloud.lock||0, ll=+local.lock||0, cp=+cloud.profit||0, lp=+local.profit||0;
 local.bal=cb;local.lock=cl;local.profit=cp;
       var newDep=(local.deps||[]).filter(function(d){return d.st==="SUCCESSFUL"&&!(cloud.deps||[]).some(function(x){return x.id===d.id&&x.st==="SUCCESSFUL"});});
@@ -917,12 +923,15 @@ function renderAdmin(){
     if(p.verify&&p.verify.st==="PENDING"){
   vfH+='<div class="py-3 border-b"><div class="font-bold">$25 · '+p.user+'</div><div class="text-xs break-all mt-1">'+(p.verify.hash||"—")+'</div><div class="mt-2"><button class="btn px-3 py-1 mr-1" onclick="adVf(\''+p.user+'\',true)">OK</button><button class="ghost rounded-lg px-3 py-1" onclick="adVf(\''+p.user+'\',false)">No</button></div></div>';
 }
-    (p.deps||[]).forEach(function(d){
-      if(d.st==="PENDING"){
-        pd++;
-        depH+='<div class="py-3 border-b"><div class="font-bold">$'+money(d.amt)+' · '+p.user+'</div><div class="text-xs break-all mt-1">'+(d.file||"—")+'</div><div class="mt-2"><button class="btn px-3 py-1 mr-1" onclick="adDep(\''+p.user+'\',\''+d.id+'\',true)">OK</button><button class="ghost rounded-lg px-3 py-1" onclick="adDep(\''+p.user+'\',\''+d.id+'\',false)">No</button></div></div>';
-      }
-    });
+(p.deps||[]).forEach(function(d){
+  var hid=d.file||d.id;
+  if(d.st==="PENDING"){
+    pd++;
+    depH+='<div class="py-3 border-b"><div class="font-bold">$'+money(d.amt)+' · '+p.user+'</div><div class="text-xs break-all mt-1">'+hid+'</div><div class="mt-2"><button class="btn px-3 py-1 mr-1" onclick="adDep(\''+p.user+'\',\''+hid+'\',true)">OK</button><button class="ghost rounded-lg px-3 py-1" onclick="adDep(\''+p.user+'\',\''+hid+'\',false)">No</button></div></div>';
+  }else{
+    depH+='<div class="py-2 border-b text-sm"><b>'+d.st+'</b> $'+money(d.amt)+' · '+p.user+'</div>';
+  }
+});
      (p.wds||[]).forEach(function(d){
       var a=d.addr||p.addr||"—";
       if(d.st==="PENDING"){
