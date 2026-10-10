@@ -864,27 +864,15 @@ function undoWd(user,id){
 }
 function findUser(name){return allUsers().filter(function(x){return x.user===name})[0]}
 function adDep(user,id,ok){
-  var p=findUser(user);if(!p)return;
-  var d=p.deps.filter(function(x){return x.id===id})[0];
-  if(!d||d.st!=="PENDING")return;
-  if(ok){
-    d.st="SUCCESSFUL";
- p.bal+=d.amt;p.lock=45;
-    if(p.spins===0&&p.lock>=45)p.spins=1;
-    var already=(p.deps||[]).some(function(x){return x.id!==d.id&&x.st==="SUCCESSFUL"});
-    if(!already&&p.sponsor){
-      var sp=allUsers().filter(function(x){return String(x.ref||"").toUpperCase()===String(p.sponsor).toUpperCase()})[0];
-      if(sp&&Number(sp.lock||0)>=45){
-        var b=Number(d.amt)>=200?35:Number(d.amt)>=100?18:+(Number(d.amt)*0.10).toFixed(2);
-        sp.bal+=b;sp.profit+=b;sp.rewardInc=(+sp.rewardInc||0)+b;
-        if(typeof bumpToday==="function")bumpToday(sp,b);
-        if(!sp.teamA)sp.teamA=[];
-        if(sp.teamA.indexOf(p.user)<0)sp.teamA.push(p.user);
-        saveU(sp);
-      }
-    }
-  }else d.st="REJECTED";
-  saveU(p);if(u&&u.user===p.user)u=p;renderAdmin();pop(ok?"Approved":"Rejected",user);
+  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/approve",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+    body:JSON.stringify({admin:ADMIN_ID,pass:ADMIN_PW,user:user,id:id,ok:ok,kind:"deposit"})
+  }).then(function(r){return r.json()}).then(function(d){
+    if(!d||d.error){pop("Admin",d&&d.error||"not saved");return}
+    pop(ok?"Approved":"Rejected",user);
+    pullCloud(function(){renderAdmin();});
+  }).catch(function(){pop("Admin","not saved");});
 }
   function maskName(n){n=String(n||"");if(n.length<3)return n[0]+"***";return n[0]+"****"+n.slice(-2);}
 function isOn(p){if(Number(p.bal||0)<45&&!(p.deps||[]).some(function(d){return d.st==="SUCCESSFUL";}))return false;return Number(p.lock||0)>=45;}
