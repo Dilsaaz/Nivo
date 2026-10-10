@@ -478,8 +478,7 @@ function pullCloud(done){
       try{local=JSON.parse(localStorage.getItem(key)||"null")}catch(e){}
       if(!local){localStorage.setItem(key,JSON.stringify(cloud));return}
       var map={};
-(local.wds||[]).concat(cloud.wds||[]).forEach(function(d){if(d)map[d.id||("x"+Math.random())]=d});
-      local.wds=Object.keys(map).map(function(k){return map[k]});
+local.wds=cloud.wds||[];
       var map2={};
       (local.deps||[]).concat(cloud.deps||[]).forEach(function(d){if(d&&d.id)map2[d.id]=d});
       local.deps=Object.keys(map2).map(function(k){return map2[k]});
