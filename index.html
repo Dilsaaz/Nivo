@@ -478,7 +478,7 @@ function pullCloud(done){
       try{local=JSON.parse(localStorage.getItem(key)||"null")}catch(e){}
       if(!local){localStorage.setItem(key,JSON.stringify(cloud));return}
       var map={};
-      (local.wds||[]).concat(cloud.wds||[]).forEach(function(d){if(d&&d.id)map[d.id]=d});
+(local.wds||[]).concat(cloud.wds||[]).forEach(function(d){if(d)map[d.id||("x"+Math.random())]=d});
       local.wds=Object.keys(map).map(function(k){return map[k]});
       var map2={};
       (local.deps||[]).concat(cloud.deps||[]).forEach(function(d){if(d&&d.id)map2[d.id]=d});
@@ -920,7 +920,7 @@ function askWd(){
   if(!d||d.error){pop("Withdraw",d&&d.error?d.error:"not saved");return}
   u.bal=d.bal;u.profit=d.profit;
     if(!u.wds)u.wds=[];
-u.wds.unshift({t:Date.now(),st:"PENDING",req:amt,amt:+(amt*0.9).toFixed(2),fee:+(amt*0.1).toFixed(2)});
+u.wds.unshift({id:"wd"+Date.now(),t:Date.now(),st:"PENDING",req:amt,amt:+(amt*0.9).toFixed(2),fee:+(amt*0.1).toFixed(2)});
 saveU(u);
   if(el("h-bal"))el("h-bal").textContent=money(d.bal);
   if(el("h-profit"))el("h-profit").textContent=money(d.profit);
