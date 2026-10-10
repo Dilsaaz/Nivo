@@ -103,6 +103,8 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
   background:#0f2748!important;
   color:#fff!important;
 }
+  #tab-volume .card,#tab-volume .card *{color:#fff!important}
+#tab-volume .card{background:rgba(255,255,255,.08)!important;border:1px solid rgba(255,255,255,.14)!important}
 </style>
 </head>
 <body>
@@ -281,7 +283,7 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
 </section>
       <section id="tab-volume" class="hidden">
   <div class="hero p-5 mb-4 min-h-[120px]"><div class="serif text-3xl relative z-10">Volume Bonus</div><div class="text-blue-100 text-sm relative z-10">ABCD team business only</div></div>
-  <div class="card p-5 mb-3" style="background:linear-gradient(180deg,#fffbeb,#fff);border:1px solid #fde68a">
+  <div class="card p-5 mb-3">
     <div class="text-xs font-bold tracking-widest text-amber-700">NIVO VOLUME BONUS</div>
     <div class="text-xs text-slate-500 mt-1">Only A B C D count. Business below D is not counted.</div>
     <div class="serif text-3xl mt-2">$<span id="vol-biz">0</span></div>
@@ -629,7 +631,7 @@ function paintVol(){
     var pct=Math.max(0,Math.min(100,biz/s.need*100));
     var tag=done?"Achieved · $"+s.pay+" received":(next===s?"Next bonus · $"+s.pay:"Locked · $"+s.pay);
     var left=done?"":" · $"+(Math.max(0,s.need-biz)).toFixed(0)+" left";
-    return '<div style="margin:10px 0 0"><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700"><span>'+s.name+' · $'+s.pay+'</span><span>'+tag+'</span></div><div style="font-size:11px;color:#64748b">ABCD business $'+s.need+left+'</div><div style="height:8px;border-radius:99px;background:#f1f5f9;margin-top:4px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:'+(done?"#16a34a":"#d97706")+'"></div></div></div>';
+    return '<div style="margin:10px 0 0"><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700"><span>'+s.name+' · $'+s.pay+'</span><span>'+tag+'</span></div><div style="font-size:11px;color:#bfdbfe">ABCD business $'+s.need+left+'</div><div style="height:8px;border-radius:99px;background:#1e3a5f;margin-top:4px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:'+(done?"#16a34a":"#d97706")+'"></div></div></div>';
   }).join("");
 }
 function doLogin(){
