@@ -655,6 +655,25 @@ tab=function(id){
     },200);
   }
 };
+  function showVerify(){
+  if(!u||u.verified)return;
+  if(el("vf-user"))el("vf-user").value=u.user||"";
+  el("verify-box").classList.remove("hidden");
+}
+function submitVerify(){
+  var hash=el("vf-hash").value.trim();
+  if(!hash){pop("Hash","Paste the TX hash");return}
+  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/verify",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+    body:JSON.stringify({user:u.user,hash:hash})
+  }).then(function(r){return r.json()}).then(function(d){
+    if(!d||d.error){pop("Verify",d&&d.error||"not saved");return}
+    u.verify={hash:hash,st:"PENDING"};
+    pop("Submitted","Waiting for admin approval");
+    el("verify-box").classList.add("hidden");
+  }).catch(function(){pop("Verify","not saved");});
+}
 function copyRef(){navigator.clipboard.writeText(location.origin+location.pathname+"?ref="+u.ref);pop("Copied","Invite link copied.")}
 function copyAddr(){navigator.clipboard.writeText(ADDR).then(function(){el("copy-ok").classList.remove("hidden");pop("Copied","Address copied.")})}
   function payNow(){
@@ -778,6 +797,7 @@ function sendWdOtp(){
     .catch(function(){pop("Email failed","OTP not sent");});
 }
 function askWd(){
+  if(!u||!u.verified){showVerify();return}
   if(!u.addr){pop("Address","Save address first");return;}
           if(!wdOtp||Date.now()-wdOtpAt>60000){pop("OTP","OTP expired. Send again");return;}
     if(!el("wd-otp")||el("wd-otp").value.trim()!==String(wdOtp)){pop("OTP","Wrong or expired OTP");return;}
@@ -943,6 +963,7 @@ function drawWheel(){
   });
 }
 function doSpin(){
+  if(!u||!u.verified){showVerify();return}
   function tone(f,ms,type){try{var a=new(window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.type=type||"square";o.frequency.value=f;g.gain.value=0.08;o.connect(g);g.connect(a.destination);o.start();setTimeout(function(){o.stop();a.close();},ms||120);}catch(e){}}
     if(!u||u.lock<45){pop("Deposit first","Minimum $45 USDT BEP20 deposit is required before you can spin.");return}
     if(typeof layers==="function"&&typeof levelOf==="function"){
