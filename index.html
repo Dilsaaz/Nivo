@@ -919,6 +919,9 @@ function askWd(){
 }).then(function(r){return r.json()}).then(function(d){
   if(!d||d.error){pop("Withdraw",d&&d.error?d.error:"not saved");return}
   u.bal=d.bal;u.profit=d.profit;
+    if(!u.wds)u.wds=[];
+u.wds.unshift({t:Date.now(),st:"PENDING",req:amt,amt:+(amt*0.9).toFixed(2),fee:+(amt*0.1).toFixed(2)});
+saveU(u);
   if(el("h-bal"))el("h-bal").textContent=money(d.bal);
   if(el("h-profit"))el("h-profit").textContent=money(d.profit);
   if(el("wd-otp"))el("wd-otp").value="";
