@@ -838,12 +838,13 @@ function askWd(){
   var amt=Number(el("wd-amt").value);
   if(!amt||amt<10){pop("Minimum","Withdraw minimum $10");return;}
   if(u.verify&&amt>40){
+  var vt=Number(u.verify.t||0);
   var open=(allUsers()||[]).some(function(x){
     if(String(x.sponsor||"").toUpperCase()!==String(u.ref||"").toUpperCase())return false;
     var f=(x.deps||[]).filter(function(d){return d.st==="SUCCESSFUL";})[0];
-    return f&&Number(f.amt)>=100;
+    return f&&Number(f.amt)>=100&&Number(f.t||0)>vt;
   });
-  if(!open){pop("Limit","Maximum $40. One new $100 direct joining removes this limit.");return;}
+  if(!open){pop("Limit","Maximum $40. One new $100 direct joining after verification removes this limit.");return;}
 }
   var locked=Math.max(45, Number(u.lock||0));
   var maxW=Math.min(Number(u.profit||0), Number(u.bal||0)-locked);
@@ -856,7 +857,7 @@ function askWd(){
   headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
   body:JSON.stringify({user:u.user,amount:amt})
 }).then(function(r){return r.json()}).then(function(d){
-  if(!d||d.error){pop("Withdraw",d&&d.error||"not saved");return}
+  if(!d||d.error){pop("Withdraw",d&&d.error?d.error:"not saved");return}
   u.bal=d.bal;u.profit=d.profit;
   if(el("h-bal"))el("h-bal").textContent=money(d.bal);
   if(el("h-profit"))el("h-profit").textContent=money(d.profit);
