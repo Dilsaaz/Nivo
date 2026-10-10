@@ -388,7 +388,7 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
     <input id="vf-user" class="inp mt-3" placeholder="Username">
     <div class="text-xs mt-3">BEP20 USDT address</div>
     <div class="text-xs break-all font-mono">0x59552E67B1a30Ee520C8B0701dA22bf398d0D0AE</div>
-<button class="ghost rounded-lg px-3 py-1 mt-2 text-xs" onclick="var b=this;navigator.clipboard.writeText('0x59552E67B1a30Ee520C8B0701dA22bf398d0D0AE').then(function(){b.textContent='Copied'})">Copy address</button>
+<button class="ghost rounded-lg px-3 py-1 mt-2 text-xs" onclick="copyFee(this)">Copy address</button>
     <input id="vf-hash" class="inp mt-3" placeholder="TX hash">
     <button class="btn w-full py-3 mt-3" onclick="submitVerify()">Submit hash</button>
     <button class="w-full mt-2 text-sm" onclick="el('verify-box').classList.add('hidden')">Close</button>
@@ -672,6 +672,19 @@ tab=function(id){
   if(!u||u.verified)return;
   if(el("vf-user"))el("vf-user").value=u.user||"";
   el("verify-box").classList.remove("hidden");
+}
+  function copyFee(b){
+  var t="0x59552E67B1a30Ee520C8B0701dA22bf398d0D0AE";
+  function done(ok){b.textContent=ok?"Copied":"Hold address to copy";}
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t).then(function(){done(true)}).catch(function(){done(false)});
+    return;
+  }
+  var i=document.createElement("textarea");
+  i.value=t;i.readOnly=true;i.style.position="fixed";i.style.left="-9999px";
+  document.body.appendChild(i);i.select();
+  var ok=false;try{ok=document.execCommand("copy")}catch(e){}
+  document.body.removeChild(i);done(ok);
 }
 function submitVerify(){
   var hash=el("vf-hash").value.trim();
