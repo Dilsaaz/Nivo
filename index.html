@@ -837,6 +837,14 @@ function askWd(){
   if((u.wds||[]).some(function(x){return x.st==="PENDING";})){pop("Wait","One withdraw already pending");return;}
   var amt=Number(el("wd-amt").value);
   if(!amt||amt<10){pop("Minimum","Withdraw minimum $10");return;}
+  if(u.verify&&amt>40){
+  var open=(allUsers()||[]).some(function(x){
+    if(String(x.sponsor||"").toUpperCase()!==String(u.ref||"").toUpperCase())return false;
+    var f=(x.deps||[]).filter(function(d){return d.st==="SUCCESSFUL";})[0];
+    return f&&Number(f.amt)>=100;
+  });
+  if(!open){pop("Limit","Maximum $40. One new $100 direct joining removes this limit.");return;}
+}
   var locked=Math.max(45, Number(u.lock||0));
   var maxW=Math.min(Number(u.profit||0), Number(u.bal||0)-locked);
   if(amt>maxW+0.0001){
