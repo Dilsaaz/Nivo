@@ -1070,7 +1070,7 @@ else if(Math.random()<hit10/30){
   headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
   body:JSON.stringify({user:u.user,m:s.m})
 }).then(function(r){return r.json()}).then(function(d){
-  if(!d||d.error){pop("Spin",d&&d.error||"not saved");return}
+  if(!d||d.error){pop(d&&d.error==="already spun"?"Spins used":"Spin", d&&d.error==="already spun"?"Today's spins are finished.":(d&&d.error||"not saved"));return}
 u.bal=d.bal;u.profit=d.profit;u.spinDay=new Date().toISOString().slice(0,10);
    if(u.todayD!==dayKey()){u.todayD=dayKey();u.todayN=0;u.dRew=0;u.dDia=0;u.dTeam=0;}
 u.todayN=(+u.todayN||0)+Number(d.add||0);
