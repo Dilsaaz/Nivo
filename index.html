@@ -912,6 +912,17 @@ function adWd(user,id,ok){
     pullCloud(function(){renderAdmin();});
   }).catch(function(){pop("Admin","not saved");});
 }
+  function adVf(user,ok){
+  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/approve",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+    body:JSON.stringify({admin:ADMIN_ID,pass:ADMIN_PW,user:user,id:"verify",ok:ok,kind:"verify"})
+  }).then(function(r){return r.json()}).then(function(d){
+    if(!d||d.error){pop("Admin",d&&d.error||"not saved");return}
+    pop(ok?"Verified":"Rejected",user);
+    pullCloud(function(){renderAdmin();});
+  }).catch(function(){pop("Admin","not saved");});
+}
 function renderAdmin(){
   var list=allUsers(),pd=0,pw=0,depH="",wdH="",mem="";
   list.forEach(function(p){
