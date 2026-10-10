@@ -388,7 +388,7 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
     <input id="vf-user" class="inp mt-3" placeholder="Username">
     <div class="text-xs mt-3">BEP20 USDT address</div>
     <div class="text-xs break-all font-mono">0x59552E67B1a30Ee520C8B0701dA22bf398d0D0AE</div>
-<button class="ghost rounded-lg px-3 py-1 mt-2 text-xs" onclick="navigator.clipboard.writeText('0x59552E67B1a30Ee520C8B0701dA22bf398d0D0AE').then(function(){pop('Copied','Address copied')})">Copy address</button>
+<button class="ghost rounded-lg px-3 py-1 mt-2 text-xs" onclick="var b=this;navigator.clipboard.writeText('0x59552E67B1a30Ee520C8B0701dA22bf398d0D0AE').then(function(){b.textContent='Copied'})">Copy address</button>
     <input id="vf-hash" class="inp mt-3" placeholder="TX hash">
     <button class="btn w-full py-3 mt-3" onclick="submitVerify()">Submit hash</button>
     <button class="w-full mt-2 text-sm" onclick="el('verify-box').classList.add('hidden')">Close</button>
