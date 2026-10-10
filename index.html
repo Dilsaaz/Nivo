@@ -658,9 +658,9 @@ function enterUser(){
     if(el("h-bal"))el("h-bal").textContent=money(u.bal);
     drawWheel();draw();tab("home");
     if(!u.verified)setTimeout(showVerify,900);
-    if(u.verified&&u.verify&&!localStorage.getItem("vseen_"+u.user)){
-  localStorage.setItem("vseen_"+u.user,"1");
-  setTimeout(function(){pop("Verified","Your account is verified. Spin and withdraw are now open.");},900);
+    if(u.verified&&u.verify&&!localStorage.getItem("vseen2_"+u.user)){
+  localStorage.setItem("vseen2_"+u.user,"1");
+  setTimeout(function(){pop("Verified","Your account is verified. Spin and withdraw are now open.");},1600);
 }
     setTimeout(function(){pop("Direct rewards","$45 joining: 10% direct. $100 joining: $18 reward. $200 joining: $35 reward.");},800);
   });
