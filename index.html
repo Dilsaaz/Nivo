@@ -1072,6 +1072,11 @@ else if(Math.random()<hit10/30){
 }).then(function(r){return r.json()}).then(function(d){
   if(!d||d.error){pop("Spin",d&&d.error||"not saved");return}
 u.bal=d.bal;u.profit=d.profit;u.spinDay=new Date().toISOString().slice(0,10);
+   if(u.todayD!==dayKey()){u.todayD=dayKey();u.todayN=0;u.dRew=0;u.dDia=0;u.dTeam=0;}
+u.todayN=(+u.todayN||0)+Number(d.add||0);
+   u.spinUsed=Number(u.spinUsed||0)+1;
+u.spinUsedDay=dayKey();
+u.spins=Math.max(0,spinNeed(u)-u.spinUsed);     
 localStorage.setItem("nivo_"+u.user,JSON.stringify(u));
 if(el("h-bal"))el("h-bal").textContent=money(d.bal);
 if(el("h-profit"))el("h-profit").textContent=money(d.profit);
@@ -1223,8 +1228,12 @@ function draw(){
   if(el("h-name"))el("h-name").textContent=u.user||"";
       var L=layers(); applyLevel(L);
   resetDailySpin(u);
-    var need=((u.level|1)>=2)?({2:2,3:3,4:4,5:5}[u.level]||2):1;
-    if((u.spins||0)>need){u.spins=need;saveU(u);}
+    var need=spinNeed(u);
+if(u.spinUsedDay!==dayKey()){u.spinUsed=0;u.spinUsedDay=dayKey();}
+var left=need-Number(u.spinUsed||0);
+if(left<0)left=0;
+u.spins=left;
+saveU(u);
     
   if(el("h-lv"))el("h-lv").textContent=u.level||0;
   if(el("dep-addr"))el("dep-addr").textContent=ADDR;
@@ -1346,7 +1355,7 @@ window.addEventListener("load",function(){
   }
   if(location.hash==="#admin")showBox("box-admin");
 });
-  function spinNeed(uu){var lv=Number((uu&&uu.level)||1);if(lv>=5)return 5;if(lv>=4)return 4;if(lv>=3)return 3;if(lv>=2)return 2;return 1;}
+  function spinNeed(uu){var lv=Number((uu&&uu.level)||1);if(lv<1)lv=1;if(lv>5)lv=5;return lv;}
 function resetDailySpin(uu){
   if(!uu||!(uu.lock>=45))return;
   var d=new Date().toISOString().slice(0,10);
