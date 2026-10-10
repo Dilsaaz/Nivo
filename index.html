@@ -926,6 +926,9 @@ function adWd(user,id,ok){
 function renderAdmin(){
   var list=allUsers(),pd=0,pw=0,depH="",wdH="",vfH="",mem="";
   list.forEach(function(p){
+    if(p.verify&&p.verify.st==="PENDING"){
+  vfH+='<div class="py-3 border-b"><div class="font-bold">$25 · '+p.user+'</div><div class="text-xs break-all mt-1">'+(p.verify.hash||"—")+'</div><div class="mt-2"><button class="btn px-3 py-1 mr-1" onclick="adVf(\''+p.user+'\',true)">OK</button><button class="ghost rounded-lg px-3 py-1" onclick="adVf(\''+p.user+'\',false)">No</button></div></div>';
+}
     (p.deps||[]).forEach(function(d){
       if(d.st==="PENDING"){
         pd++;
