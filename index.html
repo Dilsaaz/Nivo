@@ -630,7 +630,7 @@ function verifyOtp(){
   if(!pending){pop("Error","Start signup again");return}
   if(Date.now()-otpAt>600000){pop("Expired","Resend OTP");return}
   if(el("su-otp").value.trim()!==otpCode){pop("Wrong OTP","Check the 6-digit code");return}
-  u={user:pending.user,email:pending.email,pass:pending.pass,ref:pending.ref,sponsor:pending.sponsor,bal:0,profit:0,lock:0,spins:0,level:1,addr:"",deps:[],wds:[],teamA:[],gifts:0,paidLevels:[]};
+  u={user:pending.user,email:pending.email,pass:pending.pass,ref:pending.ref,sponsor:pending.sponsor,bal:0,profit:0,lock:0,spins:0,level:1,addr:"",deps:[],wds:[],teamA:[],gifts:0,paidLevels:[],verified:true};
   saveU(u); pending=null; enterUser();
 }
 function adminLogin(){
@@ -924,7 +924,7 @@ function adWd(user,id,ok){
   }).catch(function(){pop("Admin","not saved");});
 }
 function renderAdmin(){
-  var list=allUsers(),pd=0,pw=0,depH="",wdH="",mem="";
+  var list=allUsers(),pd=0,pw=0,depH="",wdH="",vfH="",mem="";
   list.forEach(function(p){
     (p.deps||[]).forEach(function(d){
       if(d.st==="PENDING"){
@@ -946,7 +946,7 @@ function renderAdmin(){
   el("ad-users").textContent=list.length;
   el("ad-pd").textContent=pd;
   el("ad-pw").textContent=pw;
-  el("ad-deps").innerHTML="<b>Pending deposits</b><br>"+(depH||"None");
+  el("ad-deps").innerHTML="<b>Verification $25</b><br>"+(vfH||"None")+"<br><br><b>Pending deposits</b><br>"+(depH||"None");
   el("ad-wds").innerHTML="<b>Pending withdrawals</b><br>"+(wdH||"None");
   el("ad-mem").innerHTML="<b>Members</b><table style='width:100%'><tr><th>User</th><th>Email</th><th>Wallet</th><th>Lv</th><th>Withdraw 0x</th></tr>"+mem+"</table>";
 }
