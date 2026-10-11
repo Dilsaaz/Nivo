@@ -886,6 +886,7 @@ function sendWdOtp(){
     otp_code:wdOtp,message:"NIVO withdraw OTP "+wdOtp
   }).then(function(){pop("OTP sent","Check your email. OTP is valid for 5 minutes.");})
     .catch(function(){pop("Email failed","OTP not sent");});
+  }
 function askWd(){
   if(!u||!u.verified){showVerify();return}
   if(!u.addr){pop("Address","Save address first");return;}
