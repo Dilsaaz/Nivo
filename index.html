@@ -1082,6 +1082,14 @@ function doSpin(){
   if(!u||!u.verified){showVerify();return}
   function tone(f,ms,type){try{var a=new(window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.type=type||"square";o.frequency.value=f;g.gain.value=0.08;o.connect(g);g.connect(a.destination);o.start();setTimeout(function(){o.stop();a.close();},ms||120);}catch(e){}}
     if(!u||u.lock<45){pop("Deposit first","Minimum $45 USDT BEP20 deposit is required before you can spin.");return}
+  if(u.nextSpin&&Date.now()<u.nextSpin){
+  u.spins=0;
+  if(el("sp-left"))el("sp-left").textContent="0";
+  var left=u.nextSpin-Date.now();
+  var hh=Math.floor(left/3600000),mm=Math.floor((left%3600000)/60000);
+  pop("Spins used","Today's spins are finished. Next in "+hh+"h "+mm+"m.");
+  return;
+}
     if(typeof layers==="function"&&typeof levelOf==="function"){
     u.level=levelOf(layers())||1;
   }
