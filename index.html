@@ -1053,16 +1053,19 @@ function applyLevel(L){
   if(!u)return;
   if(!(u.lock>=45)){u.level=0;return;}
   var lv=levelOf(L)||1;
-  var gifts={2:25,3:50,4:100,5:200};
-  if(!u.paidLevels)u.paidLevels=[];
-  if(lv>u.level){
-    var g=gifts[lv]||0;
-    if(g&&u.paidLevels.indexOf(lv)<0){
-      u.bal+=g;u.profit+=g;u.paidLevels.push(lv);
-      giftBox(lv,g);
-    }
-  }
-  u.level=lv;saveU(u);
+  u.level=lv;
+  saveU(u);
+  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/level",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+    body:JSON.stringify({user:u.user})
+  }).then(function(r){return r.json()}).then(function(d){
+    if(!d||!d.ok)return;
+    u.level=d.level;u.bal=d.bal;u.profit=d.profit;u.paidLevels=d.paidLevels||u.paidLevels;
+    saveU(u);
+    if(d.added>0)giftBox(d.level,d.added);
+    draw();
+  }).catch(function(){});
 }
 function drawWheel(){
   var w=el("wheel");if(!w)return;
