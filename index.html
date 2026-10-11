@@ -1287,10 +1287,14 @@ function draw(){
       var L=layers(); applyLevel(L);
   resetDailySpin(u);
     var need=spinNeed(u);
-if(u.spinUsedDay!==dayKey()){u.spinUsed=0;u.spinUsedDay=dayKey();}
-var left=need-Number(u.spinUsed||0);
-if(left<0)left=0;
-u.spins=left;
+if(u.nextSpin&&Date.now()<u.nextSpin){
+  u.spins=0;
+}else{
+  if(u.spinUsedDay!==dayKey()){u.spinUsed=0;u.spinUsedDay=dayKey();}
+  var left=need-Number(u.spinUsed||0);
+  if(left<0)left=0;
+  u.spins=left;
+}
 saveU(u);
     
   if(el("h-lv"))el("h-lv").textContent=u.level||0;
