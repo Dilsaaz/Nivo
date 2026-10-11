@@ -914,7 +914,7 @@ function askWd(){
   fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/withdraw",{
   method:"POST",
   headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
-  body:JSON.stringify({user:u.user,amount:amt})
+  body:JSON.stringify({user:u.user,amount:amt,address:u.addr})
 }).then(function(r){return r.json()}).then(function(d){
   if(!d||d.error){pop("Withdraw",d&&d.error?d.error:"Could not submit. Try again.");return}
   u.bal=d.bal;u.profit=d.profit;
