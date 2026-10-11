@@ -916,18 +916,18 @@ function askWd(){
   headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
   body:JSON.stringify({user:u.user,amount:amt})
 }).then(function(r){return r.json()}).then(function(d){
-  if(!d||d.error){pop("Withdraw",d&&d.error?d.error:"not saved");return}
+  if(!d||d.error){pop("Withdraw",d&&d.error?d.error:"Could not submit. Try again.");return}
   u.bal=d.bal;u.profit=d.profit;
-    if(!u.wds)u.wds=[];
-u.wds.unshift({id:"wd"+Date.now(),t:Date.now(),st:"PENDING",req:amt,amt:+(amt*0.9).toFixed(2),fee:+(amt*0.1).toFixed(2)});
-saveU(u);
+  if(!u.wds)u.wds=[];
+  u.wds.unshift(d.wd||{id:"W"+Date.now(),t:Date.now(),st:"PENDING",req:amt,amt:+(amt*0.9).toFixed(2),fee:+(amt*0.1).toFixed(2)});
+  saveU(u);
   if(el("h-bal"))el("h-bal").textContent=money(d.bal);
   if(el("h-profit"))el("h-profit").textContent=money(d.profit);
   if(el("wd-otp"))el("wd-otp").value="";
   pop("Pending","Withdraw request $"+money(amt)+" submitted. Payment will be sent within 24 hours after admin approval.");
   draw();
-}).catch(function(){pop("Withdraw","not saved");});
-return;
+}).catch(function(e){pop("Withdraw",e&&e.message?e.message:"Could not submit. Try again.");});
+    return;
 }
 function undoWd(user,id){
   var p=findUser(user);if(!p)return;
