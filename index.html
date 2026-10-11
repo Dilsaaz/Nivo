@@ -884,9 +884,8 @@ function sendWdOtp(){
   emailjs.send(EJ_SVC,EJ_TPL,{
     email:u.email,to_email:u.email,user_name:u.user,
     otp_code:wdOtp,message:"NIVO withdraw OTP "+wdOtp
-    .catch(function(){pop("Email failed","OTP not sent");});
   }).then(function(){pop("OTP sent","Check your email. OTP is valid for 5 minutes.");})
-}
+    .catch(function(){pop("Email failed","OTP not sent");});
 function askWd(){
   if(!u||!u.verified){showVerify();return}
   if(!u.addr){pop("Address","Save address first");return;}
