@@ -464,7 +464,7 @@ var SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI
 var sb=null;try{sb=supabase.createClient(SB_URL,SB_KEY)}catch(e){}
 function pushCloud(obj){
   if(!sb||!obj||!obj.user)return;
-  sb.from("nivo_users").insert({user_name:obj.user,data:obj,updated_at:new Date().toISOString()}).then(function(){});
+  sb.from("nivo_users").upsert({user_name:obj.user,data:obj,updated_at:new Date().toISOString()},{onConflict:"user_name"}).then(function(){});
 }
 function pullCloud(done){
   if(!sb){if(done)done();return}
