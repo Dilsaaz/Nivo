@@ -819,7 +819,7 @@ function tryRpc(urls,n){
       fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/deposit",{
   method:"POST",
   headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
-  body:JSON.stringify({user:u.user,amount:amt,hash:depId})
+  body:JSON.stringify({user:u.user,amount:amt,hash:hash})
 }).then(function(r){return r.json()}).then(function(d){
   if(!d||d.error){pop("Deposit",d&&d.error||"not saved");return}
   u.bal=d.bal;u.lock=45;
