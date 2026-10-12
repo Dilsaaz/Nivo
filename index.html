@@ -1221,7 +1221,7 @@ function gzStart(){
   if(amt<10){pop("Min","Minimum $10");return;}
   if(amt>Number(u.bal||0)){pop("Balance","Not enough wallet");return;}
   gzBusy=1;gzOpen=1;gzAmt=amt;
-  u.bal=+(Number(u.bal||0)-amt).toFixed(2);saveU(u);
+  
   var msg=el("gz-msg");
   if(msg)msg.textContent="Tap one diamond";
 }
@@ -1231,18 +1231,19 @@ function gzPick(btn){
   var win=Math.random()<0.35;
   var msg=el("gz-msg");
   btn.style.color=win?"#ca8a04":"#94a3b8";
-  if(win){
-    var get=+(gzAmt*1.55).toFixed(2);
-    u.bal=+(Number(u.bal)+get).toFixed(2);
-    u.profit=+(Number(u.profit||0)+(get-gzAmt)).toFixed(2);
-    if(typeof bumpToday==="function")bumpToday("rew",get-gzAmt);
-        if(msg)msg.textContent="Win $"+get+"  ·  "+gzAmt+" × 1.55";
-        pop("Congratulations","Bet $"+gzAmt+" → $"+get);
-  }else{
-        if(msg)msg.textContent="Empty · -$"+gzAmt;
-    pop("Diamond","No win · stake gone");
-  }
-  saveU(u);draw();
+  var delta=win?+(gzAmt*1.55-gzAmt).toFixed(2):-gzAmt;
+  var income=win?delta:0;
+  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/game",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+    body:JSON.stringify({user:u.user,delta:delta,income:income})
+  }).then(function(r){return r.json()}).then(function(d){
+    if(!d||d.error){pop("Game",d&&d.error||"not saved");return}
+    u.bal=d.bal;u.profit=d.profit;u.todayN=d.todayN;u.todayD=dayKey();
+    saveU(u);draw();
+    if(win){if(msg)msg.textContent="Win $"+(gzAmt*1.55).toFixed(2);pop("Congratulations","+$"+income);}
+    else{if(msg)msg.textContent="Empty · -$"+gzAmt;pop("Diamond","No win · stake gone");}
+  }).catch(function(){pop("Game","not saved");});
   gzBusy=0;gzAmt=0;
 }
 function draw(){
