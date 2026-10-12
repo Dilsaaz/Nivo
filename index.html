@@ -788,63 +788,18 @@ function sendDep(){
   var amt=Number(el("dep-amt").value),hash=(box.value||"").trim();
   if(!amt||amt<45){pop("Minimum","Enter amount $45 or more");return;}
   if(!/^0x[0-9a-fA-F]{64}$/.test(hash)){pop("TX hash","Paste full BEP20 hash");return;}
-  var depId="D"+Date.now();
-  u.deps=u.deps||[];
-  u.deps.unshift({id:depId,amt:amt,st:"PENDING",t:Date.now(),file:hash});
-  saveU(u);draw();
-    pop("Checking","Verifying TX…");
-function tryRpc(urls,n){
-  fetch(urls[n],{
+  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/deposit",{
     method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({jsonrpc:"2.0",id:1,method:"eth_getTransactionReceipt",params:[hash]})
-  }).then(function(r){return r.json();}).then(function(j){
-    var rec=j.result;
-    var ADDR="0x4e58b3522112ba59621d808e3687a566a87d7623";
-    var USDT="0x55d398326f99059ff775485246999027b3197955";
-    var TOPIC="0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
-    var got=0,ok=false;
-    if(rec&&rec.status==="0x1"){
-      (rec.logs||[]).forEach(function(l){
-        var t=String((l.topics&&l.topics[0])||"").toLowerCase();
-        var d=("0x"+String((l.topics&&l.topics[2])||"").slice(-40)).toLowerCase();
-        if(t===TOPIC&&d===ADDR&&String(l.address||"").toLowerCase()===USDT){
-          ok=true; got=parseInt(l.data,16)/1e18;
-        }
-      });
-    }
-    if(!ok&&n+1<urls.length){tryRpc(urls,n+1);return;}
-    var row=(u.deps||[]).filter(function(x){return x.id===depId;})[0];
-    if(ok&&row&&got+0.5>=amt){
-      fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/deposit",{
-  method:"POST",
-  headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
-  body:JSON.stringify({user:u.user,amount:amt,hash:hash})
-}).then(function(r){return r.json()}).then(function(d){
-  if(!d||d.error){pop("Deposit",d&&d.error||"not saved");return}
-  u.bal=d.bal;u.lock=45;
-  if(el("h-bal"))el("h-bal").textContent=money(d.bal);
-     u.spinDay="";
-fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/sponsor",{
-  method:"POST",
-  headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
-  body:JSON.stringify({user:u.user,amount:amt})
-}).catch(function(){});   
-  pop("Approved","$"+amt+" added");
-  draw();
-}).catch(function(){pop("Deposit","not saved");});
-fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/sponsor",{
-  method:"POST",
-  headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
-  body:JSON.stringify({user:u.user,amount:amt})
-}).catch(function(){});
-}else{if(row){row.st="REJECTED";saveU(u);draw();}pop("Rejected","Hash not matched");}
-  }).catch(function(){
-    if(n+1<urls.length)tryRpc(urls,n+1);
-    else pop("Pending","Network busy. Same hash dubara submit karo");
-  });
-}
-tryRpc(["https://bsc-dataseed.binance.org/","https://rpc.ankr.com/bsc"],0);
+    headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+    body:JSON.stringify({user:u.user,amount:amt,hash:hash})
+  }).then(function(r){return r.json()}).then(function(d){
+    if(!d||d.error){pop("Deposit",d&&d.error||"not saved");return}
+    u.deps=u.deps||[];
+    u.deps.unshift({id:hash,amt:amt,st:"PENDING",t:Date.now()});
+    saveU(u);
+    pop("Pending","Deposit $"+amt+" submitted. Waiting for admin approval.");
+    draw();
+  }).catch(function(){pop("Deposit","not saved");});
 }
 var addrEdit=false;
 function saveAddr(){
@@ -1292,6 +1247,10 @@ function gzPick(btn){
 }
 function draw(){
   if(!u)return;
+  var dk="depseen_"+u.user, seen=JSON.parse(localStorage.getItem(dk)||"null");
+var ok=(u.deps||[]).filter(function(d){return d.st==="SUCCESSFUL";});
+if(!seen){localStorage.setItem(dk,JSON.stringify(ok.map(function(d){return d.id})));}
+else{ok.forEach(function(d){if(seen.indexOf(d.id)<0){seen.push(d.id);pop("Approved","$"+d.amt+" added");}});localStorage.setItem(dk,JSON.stringify(seen));}
     try{nfShow();}catch(e){}
   if(el("p-box"))el("p-box").innerHTML="<div class='serif text-3xl mb-3'>Profile</div><div class='leading-8 text-sm'>User <b>"+(u.user||"—")+"</b><br>Email "+(u.email||"—")+"<br>Code <b>"+(u.ref||"—")+"</b><br>Sponsor "+(u.sponsor||"—")+"<br>Level "+(u.level||1)+"<br>Wallet $"+money(u.bal)+"<br>Lock $"+money(u.lock)+"</div>";
   if(el("h-name"))el("h-name").textContent=u.user||"";
