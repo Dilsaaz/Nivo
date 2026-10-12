@@ -490,6 +490,8 @@ if(cloud.verify)local.verify=cloud.verify;
 if(cloud.verified)local.verified=true;
           var cb=+cloud.bal||0, lb=+local.bal||0, cl=+cloud.lock||0, ll=+local.lock||0, cp=+cloud.profit||0, lp=+local.profit||0;
 local.bal=cb;local.lock=cl;local.profit=cp;
+      if(cloud.ref)local.ref=cloud.ref;
+if(cloud.level)local.level=cloud.level;
       var newDep=(local.deps||[]).filter(function(d){return d.st==="SUCCESSFUL"&&!(cloud.deps||[]).some(function(x){return x.id===d.id&&x.st==="SUCCESSFUL"});});
      var apL=(local.wds||[]).filter(function(w){return w.st==="APPROVED"||w.st==="SUCCESSFUL";}).length;
 var apC=(cloud.wds||[]).filter(function(w){return w.st==="APPROVED"||w.st==="SUCCESSFUL";}).length;
