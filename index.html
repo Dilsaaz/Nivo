@@ -1154,15 +1154,13 @@ function nfBet(){
   if(!u){pop("Login","Sign in");return;}
   if(nf.on){pop("Live","Flip Heads or Tails");return;}
   var amt=Number(el("nf-amt").value||0);
-    var can=Math.max(0,Number(u.bal||0));
+  var can=Math.max(0,Number(u.bal||0));
   if(amt<5){pop("Min","Minimum $5");return;}
   if(amt>can){pop("Balance","Not enough wallet");return;}
-    if(nfDay()<=0){pop("Limit","30 rounds today");return;}
-  u.bal=+(u.bal-amt).toFixed(2);
-    u.profit=+(Number(u.profit||0)-amt).toFixed(2);if(u.profit<0)u.profit=0;
+  if(nfDay()<=0){pop("Limit","30 rounds today");return;}
   u.nfN=(u.nfN||0)+1;
   nf={on:1,stake:amt,mult:1,n:0};
-    nfTone(180,40,"square");
+  nfTone(180,40,"square");
   setTimeout(function(){nfTone(320,50,"square");},70);
   setTimeout(function(){nfTone(520,80,"triangle");},160);
   setTimeout(function(){nfTone(780,120,"sine");},260);
@@ -1171,14 +1169,10 @@ function nfBet(){
 }
 function nfFlip(side){
   if(!u){pop("Login","Sign in");return;}
-  if(!nf.on){pop("Bet first","Place bet then flip");nfTone(180,160,"square");return;}
-    nfTone(180,40,"square");
-  setTimeout(function(){nfTone(320,50,"square");},70);
-  setTimeout(function(){nfTone(520,80,"triangle");},160);
-  setTimeout(function(){nfTone(780,120,"sine");},260);
+  if(!nf.on){pop("Bet first","Place bet then flip");return;}
   var win=Math.random()<0.38;
   var land=win?side:(side==="H"?"T":"H");
-    var ring=el("nf-ring");
+  var ring=el("nf-ring");
   if(ring){
     ring.style.transition="transform .7s cubic-bezier(.2,.8,.2,1),background .2s,border-color .2s";
     ring.style.transform="rotate("+(720+Math.random()*360)+"deg)";
@@ -1186,6 +1180,27 @@ function nfFlip(side){
       ring.style.borderColor=land==="H"?"#f5a623":"#2563eb";
       ring.style.background=land==="H"?"#fde68a":"#1e3a8a";
     },700);
+  }
+  u.nfH=u.nfH||[];u.nfH.unshift(win?1:0);u.nfH=u.nfH.slice(0,12);
+  if(el("nf-hist"))el("nf-hist").innerHTML=u.nfH.map(function(x){
+    return '<i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:'+(x?"#f5a623":"#cbd5e1")+'"></i>';
+  }).join("");
+  if(!win){
+    fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/game",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+      body:JSON.stringify({user:u.user,delta:-nf.stake,income:0})
+    }).then(function(r){return r.json()}).then(function(d){
+      if(d&&d.bal!=null){u.bal=d.bal;u.profit=d.profit;saveU(u);draw();}
+      pop("Lose",land+" · stake gone");
+      nf={on:0,stake:0,mult:1,n:0};nfShow();
+    });
+    return;
+  }
+  nf.n++;nf.mult=Math.min(100,+(1.25+(nf.n-1)*0.25).toFixed(2));
+  pop("Congratulations",land==="H"?"Heads · "+nf.mult.toFixed(2)+"x":"Tails · "+nf.mult.toFixed(2)+"x");
+  saveU(u);nfShow();
+}
   }
   u.nfH=u.nfH||[];u.nfH.unshift(win?1:0);u.nfH=u.nfH.slice(0,12);
   if(el("nf-hist"))el("nf-hist").innerHTML=u.nfH.map(function(x){
@@ -1206,13 +1221,16 @@ function nfFlip(side){
 function nfCash(){
   if(!nf.on||nf.mult<=1)return;
   var get=+(nf.stake*nf.mult).toFixed(2);
-  u.bal=+(Number(u.bal||0)+get).toFixed(2);
-    u.profit=+(Number(u.profit||0)+get).toFixed(2);
-  if(typeof bumpToday==="function")bumpToday("rew",get);
-  nfTone(988,180,"sine");
-  pop("Cash out","+$"+get);
-  nf={on:0,stake:0,mult:1,n:0};saveU(u);draw();nfShow();
-}
+  var income=+(get-nf.stake).toFixed(2);
+  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/game",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+    body:JSON.stringify({user:u.user,delta:income,income:income})
+  }).then(function(r){return r.json()}).then(function(d){
+    if(d&&d.bal!=null){u.bal=d.bal;u.profit=d.profit;u.todayN=d.todayN;saveU(u);draw();}
+    pop("Cash out","+$"+get);
+    nf={on:0,stake:0,mult:1,n:0};nfShow();
+  });
 var gzBusy=0,gzAmt=0,gzOpen=0;
 function gzStart(){
   if(!u){pop("Login","Sign in");return;}
