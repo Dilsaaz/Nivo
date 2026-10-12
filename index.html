@@ -1201,23 +1201,6 @@ function nfFlip(side){
   pop("Congratulations",land==="H"?"Heads · "+nf.mult.toFixed(2)+"x":"Tails · "+nf.mult.toFixed(2)+"x");
   saveU(u);nfShow();
 }
-  }
-  u.nfH=u.nfH||[];u.nfH.unshift(win?1:0);u.nfH=u.nfH.slice(0,12);
-  if(el("nf-hist"))el("nf-hist").innerHTML=u.nfH.map(function(x){
-    return '<i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:'+(x?"#f5a623":"#cbd5e1")+'"></i>';
-  }).join("");
-  if(!win){
-    nfTone(140,280,"square");
-    pop("Lose",land+" · stake gone");
-        nf={on:0,stake:0,mult:1,n:0};saveU(u);draw();nfShow();return;
-        return;
-  }
-      nf.n++;nf.mult=Math.min(100,+(1.25+(nf.n-1)*0.25).toFixed(2));
-  nfTone(880,120,"sine");
-  setTimeout(function(){nfTone(1174,140,"sine");},80);
-    pop("Congratulations",land==="H"?"Heads · "+nf.mult.toFixed(2)+"x":"Tails · "+nf.mult.toFixed(2)+"x");
-  saveU(u);nfShow();
-}
 function nfCash(){
   if(!nf.on||nf.mult<=1)return;
   var get=+(nf.stake*nf.mult).toFixed(2);
