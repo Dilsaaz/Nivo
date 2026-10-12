@@ -251,7 +251,7 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
         </div>
         <div class="card p-4 mb-4">
           <div class="text-[11px] tracking-widest text-slate-500 mb-1">REFERRAL DESK</div>
-          <div class="serif text-3xl" id="h-code"></div>
+          <div class="flex items-center justify-between gap-2"><div class="serif text-3xl" id="h-code"></div><button class="ghost rounded-lg px-3 py-1 text-xs font-bold" onclick="copyCode()">Copy</button></div>
           <div class="text-xs break-all mt-1 text-slate-500" id="h-link"></div>
           <button class="btn px-4 py-2 mt-3 text-sm" onclick="copyRef()">Copy invite link</button>
         </div>
@@ -765,7 +765,7 @@ function submitVerify(){
     el("verify-box").classList.add("hidden");
   }).catch(function(){pop("Verify","not saved");});
 }
-function copyRef(){navigator.clipboard.writeText(location.origin+location.pathname+"?ref="+u.ref);pop("Copied","Invite link copied.")}
+function copyCode(){if(!u||!u.ref)return;navigator.clipboard.writeText(u.ref);pop("Copied","Referral code copied.");}
 function copyAddr(){navigator.clipboard.writeText(ADDR).then(function(){el("copy-ok").classList.remove("hidden");pop("Copied","Address copied.")})}
   function payNow(){
   if(!u){pop("Login","Sign in first");return;}
