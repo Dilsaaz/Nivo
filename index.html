@@ -1151,7 +1151,7 @@ if(el("h-bal"))el("h-bal").textContent=money(d.bal);
 if(el("h-profit"))el("h-profit").textContent=money(d.profit);
 pop("Profit","$"+money(d.add)+" added");
 draw();
-}).catch(function(){});
+}).catch(function(){pop("Spin","Could not save profit. Try again.");});
 return;
       if(typeof payTeam==="function")payTeam(u,add);
       tone(523,160,"sine");
