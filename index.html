@@ -464,7 +464,16 @@ var SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI
 var sb=null;try{sb=supabase.createClient(SB_URL,SB_KEY)}catch(e){}
 function pushCloud(obj){
   if(!sb||!obj||!obj.user)return;
-  sb.from("nivo_users").upsert({user_name:obj.user,data:obj,updated_at:new Date().toISOString()},{onConflict:"user_name"}).then(function(){});
+  sb.from("nivo_users").select("data").eq("user_name",obj.user).maybeSingle().then(function(r){
+    var c=r.data&&r.data.data;
+    if(c&&c.wds){
+      var wm={};
+      (obj.wds||[]).concat(c.wds).forEach(function(w){if(w&&w.id)wm[w.id]=w;});
+      c.wds.forEach(function(w){if(w&&w.id)wm[w.id]=w;});
+      obj.wds=Object.keys(wm).map(function(k){return wm[k];});
+    }
+    sb.from("nivo_users").upsert({user_name:obj.user,data:obj,updated_at:new Date().toISOString()},{onConflict:"user_name"});
+  });
 }
 function pullCloud(done){
   if(!sb){if(done)done();return}
@@ -478,7 +487,10 @@ function pullCloud(done){
       try{local=JSON.parse(localStorage.getItem(key)||"null")}catch(e){}
       if(!local){localStorage.setItem(key,JSON.stringify(cloud));return}
       var map={};
-local.wds=cloud.wds||[];
+var wm={};
+(local.wds||[]).concat(cloud.wds||[]).forEach(function(w){if(w&&w.id)wm[w.id]=w;});
+(cloud.wds||[]).forEach(function(w){if(w&&w.id)wm[w.id]=w;});
+local.wds=Object.keys(wm).map(function(k){return wm[k];});
       var map2={};
       (local.deps||[]).concat(cloud.deps||[]).forEach(function(d){if(d&&d.id)map2[d.id]=d});
       local.deps=Object.keys(map2).map(function(k){return map2[k]});
