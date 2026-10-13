@@ -1106,16 +1106,10 @@ u.spins=Math.max(0,spinNeed(u)-u.spinUsed);
 localStorage.setItem("nivo_"+u.user,JSON.stringify(u));
 if(el("h-bal"))el("h-bal").textContent=money(d.bal);
 if(el("h-profit"))el("h-profit").textContent=money(d.profit);
+  if(typeof payTeam==="function")payTeam(u,Number(d.add||0));      
 pop("Profit","$"+money(d.add)+" added");
 draw();
-}).catch(function(){pop("Spin","Could not save profit. Try again.");});
-return;
-      if(typeof payTeam==="function")payTeam(u,add);
-      tone(523,160,"sine");
-setTimeout(function(){tone(659,180,"sine")},140);
-setTimeout(function(){tone(784,260,"sine")},280);
-      msg="Profit $"+money(add)+" added to wallet · "+s.l;
-      pop("Profit",msg);
+}).catch(function(){pop("Spin","Could not save profit. Try 
     }else{
       tone(196,220,"sine");
 setTimeout(function(){tone(146,280,"sine")},160);
