@@ -500,8 +500,8 @@ function pullCloud(done){
   var c=(cloud.deps||[]).filter(function(x){return x.id===d.id||x.id===d.file;})[0];
   return c||d;
 });
-if(cloud.verify)local.verify=cloud.verify;
-if(cloud.verified)local.verified=true;
+local.verify=cloud.verify||null;
+local.verified=!!cloud.verified;
           var cb=+cloud.bal||0, lb=+local.bal||0, cl=+cloud.lock||0, ll=+local.lock||0, cp=+cloud.profit||0, lp=+local.profit||0;
 local.bal=cb;local.lock=cl;local.profit=cp;
       if(cloud.ref)local.ref=cloud.ref;
