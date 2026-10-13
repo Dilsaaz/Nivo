@@ -1106,7 +1106,6 @@ u.spins=Math.max(0,spinNeed(u)-u.spinUsed);
 localStorage.setItem("nivo_"+u.user,JSON.stringify(u));
 if(el("h-bal"))el("h-bal").textContent=money(d.bal);
 if(el("h-profit"))el("h-profit").textContent=money(d.profit);
-  if(typeof payTeam==="function")payTeam(u,Number(d.add||0));      
 pop("Profit","$"+money(d.add)+" added");
 draw();
     }).catch(function(){pop("Spin","Could not save profit. Try again.");});    
