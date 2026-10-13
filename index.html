@@ -478,10 +478,7 @@ function pushCloud(obj){
 function pullCloud(done){
   if(!sb){if(done)done();return}
   sb.from("nivo_users").select("user_name,data").then(function(r){
-    if(r.data)r.data.forEach(function(row){
-      if(!row||!row.user_name||!row.data)return;
-      var cloud=row.data;
-      if(typeof cloud==="string")try{cloud=JSON.parse(cloud)}catch(e){return}
+    local.wds=cloud.wds||[];
       if(!cloud||!cloud.user)return;
       var key="nivo_"+row.user_name,local=null;
       try{local=JSON.parse(localStorage.getItem(key)||"null")}catch(e){}
