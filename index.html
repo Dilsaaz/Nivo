@@ -466,27 +466,16 @@ function pushCloud(obj){
   if(!sb||!obj||!obj.user)return;
   sb.from("nivo_users").select("data").eq("user_name",obj.user).maybeSingle().then(function(r){
     var c=r.data&&r.data.data;
-    if(c){
-      if(c.wds){
-        var wm={};
-        (obj.wds||[]).concat(c.wds).forEach(function(w){if(w&&w.id)wm[w.id]=w;});
-        c.wds.forEach(function(w){if(w&&w.id)wm[w.id]=w;});
-        obj.wds=Object.keys(wm).map(function(k){return wm[k];});
-      }
-      obj.bal=c.bal;
-      obj.profit=c.profit;
-      obj.lock=c.lock;
-      if((+c.todayN||0)>=(+obj.todayN||0))obj.todayN=c.todayN;
-      if(c.todayD)obj.todayD=c.todayD;
-      if(c.spinDay)obj.spinDay=c.spinDay;
-      if((+c.spinUsed||0)>=(+obj.spinUsed||0))obj.spinUsed=c.spinUsed;
-      obj.teamInc=Math.max(+obj.teamInc||0,+c.teamInc||0);
-      obj.rewardInc=Math.max(+obj.rewardInc||0,+c.rewardInc||0);
-      obj.diamondInc=Math.max(+obj.diamondInc||0,+c.diamondInc||0);
+    if(!c){
+      sb.from("nivo_users").upsert({user_name:obj.user,data:obj,updated_at:new Date().toISOString()},{onConflict:"user_name"});
+      return;
     }
-    sb.from("nivo_users").upsert({user_name:obj.user,data:obj,updated_at:new Date().toISOString()},{onConflict:"user_name"});
+    if(obj.addr)c.addr=obj.addr;
+    if(obj.email)c.email=obj.email;
+    sb.from("nivo_users").upsert({user_name:obj.user,data:c,updated_at:new Date().toISOString()},{onConflict:"user_name"});
   });
 }
+      
 function pullCloud(done){
   if(!sb){if(done)done();return}
   sb.from("nivo_users").select("user_name,data").then(function(r){
