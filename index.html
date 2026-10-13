@@ -1063,7 +1063,7 @@ function doSpin(){
   }
   u.spins-=1;u.packUsed=true;
 u.spinDay=new Date().toISOString().slice(0,10);
-  if((u.spins||0)<=0)u.nextSpin=Date.now()+86400000;
+  if((u.spins||0)<=0)u.nextSpin=Date.now()+86400000;else u.nextSpin=0;
   saveU(u);
   if(el("sp-left"))el("sp-left").textContent=u.spins;
   if(el("sp-res"))el("sp-res").textContent="Spinning...";
@@ -1396,7 +1396,7 @@ window.addEventListener("load",function(){
 function resetDailySpin(uu){
   if(!uu||!(uu.lock>=45))return;
   var d=new Date().toISOString().slice(0,10);
-  if(uu.nextSpin&&Date.now()<uu.nextSpin){uu.spins=0;return;}
+  if(uu.nextSpin&&Date.now()<uu.nextSpin&&(uu.spins||0)<=0){return;}
   if((uu.spins||0)<spinNeed(uu))uu.spins=spinNeed(uu);
   if(uu.spinGot===d)return;
   uu.spinGot=d;
