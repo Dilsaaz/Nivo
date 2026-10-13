@@ -472,6 +472,7 @@ function pushCloud(obj){
       c.wds.forEach(function(w){if(w&&w.id)wm[w.id]=w;});
       obj.wds=Object.keys(wm).map(function(k){return wm[k];});
     }
+    if(c){obj.bal=c.bal;obj.profit=c.profit;obj.lock=c.lock;}
     sb.from("nivo_users").upsert({user_name:obj.user,data:obj,updated_at:new Date().toISOString()},{onConflict:"user_name"});
   });
 }
@@ -510,10 +511,7 @@ if(apC>apL){local.bal=Math.min(+local.bal||0,+cloud.bal||0);local.profit=Math.mi
      var wdL=(local.wds||[]).filter(function(w){return w.st!=="REJECTED";}).length;
 var wdC=(cloud.wds||[]).filter(function(w){return w.st!=="REJECTED";}).length;
 if(wdL>wdC){local.bal=Math.min(+local.bal||0,+cloud.bal||0);local.profit=Math.min(+local.profit||0,+cloud.profit||0);} 
-if((+local.lock||0)<45){
-  var paid=(local.deps||[]).filter(function(d){return d.st==="SUCCESSFUL"&&(+d.amt||0)>=45;})[0];
-  if(paid){local.bal=Math.max(+local.bal||0,+paid.amt||0);local.lock=Math.max(+local.lock||0,+paid.amt||0);}
-}
+
       local.rewardInc=Math.max(+local.rewardInc||0,+cloud.rewardInc||0);
 local.teamInc=Math.max(+local.teamInc||0,+cloud.teamInc||0);
 local.diamondInc=Math.max(+local.diamondInc||0,+cloud.diamondInc||0);
