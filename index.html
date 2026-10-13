@@ -1369,12 +1369,7 @@ el("sp-next").style.opacity="1";
   }catch(e){}
   requestAnimationFrame(tickClock);
 })();
-  setInterval(function(){
-  if(!u||!u.user)return;
-  pullCloud(function(){
-    var nu=load(u.user);if(!nu)return;u=nu;draw();
-  });
-},15000);
+  
 window.addEventListener("load",function(){
   var sess=localStorage.getItem("nivo_session");
   if(sess){
