@@ -1009,7 +1009,7 @@ function renderAdmin(){
 function applyLevel(L){
   if(!u)return;
   if(!(u.lock>=45)){u.level=0;return;}
-  var lv=levelOf(L)||1;
+  var lv=Math.max(levelOf(L)||1, Number(u.level||1));
   u.level=lv;
   saveU(u);
   fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/level",{
@@ -1397,6 +1397,7 @@ function resetDailySpin(uu){
   if(!uu||!(uu.lock>=45))return;
   var d=new Date().toISOString().slice(0,10);
   if(uu.nextSpin&&Date.now()<uu.nextSpin){uu.spins=0;return;}
+  if((uu.spins||0)<spinNeed(uu))uu.spins=spinNeed(uu);
   if(uu.spinGot===d)return;
   uu.spinGot=d;
   uu.spinDay=d;
