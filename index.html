@@ -478,16 +478,14 @@ function pushCloud(obj){
 function pullCloud(done){
   if(!sb){if(done)done();return}
   sb.from("nivo_users").select("user_name,data").then(function(r){
-    local.wds=cloud.wds||[];
+    
       if(!cloud||!cloud.user)return;
       var key="nivo_"+row.user_name,local=null;
       try{local=JSON.parse(localStorage.getItem(key)||"null")}catch(e){}
       if(!local){localStorage.setItem(key,JSON.stringify(cloud));return}
+    local.wds=cloud.wds||[];
       var map={};
-var wm={};
-(local.wds||[]).concat(cloud.wds||[]).forEach(function(w){if(w&&w.id)wm[w.id]=w;});
-(cloud.wds||[]).forEach(function(w){if(w&&w.id)wm[w.id]=w;});
-local.wds=Object.keys(wm).map(function(k){return wm[k];});
+
       var map2={};
       (local.deps||[]).concat(cloud.deps||[]).forEach(function(d){if(d&&d.id)map2[d.id]=d});
       local.deps=Object.keys(map2).map(function(k){return map2[k]});
