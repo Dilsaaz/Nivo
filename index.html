@@ -1046,14 +1046,14 @@ function doSpin(){
   if(!u||!u.verified){showVerify();return}
   function tone(f,ms,type){try{var a=new(window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.type=type||"square";o.frequency.value=f;g.gain.value=0.08;o.connect(g);g.connect(a.destination);o.start();setTimeout(function(){o.stop();a.close();},ms||120);}catch(e){}}
     if(!u||u.lock<45){pop("Deposit first","Minimum $45 USDT BEP20 deposit is required before you can spin.");return}
-  if(u.nextSpin&&Date.now()<u.nextSpin){
-  u.spins=0;
-  if(el("sp-left"))el("sp-left").textContent="0";
-  var left=u.nextSpin-Date.now();
-  var hh=Math.floor(left/3600000),mm=Math.floor((left%3600000)/60000);
-  pop("Spins used","Today's spins are finished. Next in "+hh+"h "+mm+"m.");
+  if(u.spinUsedDay!==dayKey()){u.spinUsed=0;u.spinUsedDay=dayKey();u.nextSpin=0;}
+var needNow=spinNeed(u);
+var leftNow=needNow-Number(u.spinUsed||0);
+if(leftNow<=0){
+  pop("Spins used","Today's spins are finished.");
   return;
 }
+u.spins=leftNow;
     if(typeof layers==="function"&&typeof levelOf==="function"){
     u.level=levelOf(layers())||1;
   }
@@ -1104,6 +1104,7 @@ else if(Math.random()<hit10/30){
 u.bal=d.bal;u.profit=d.profit;u.spinDay=new Date().toISOString().slice(0,10);
    if(u.todayD!==dayKey()){u.todayD=dayKey();u.todayN=0;u.dRew=0;u.dDia=0;u.dTeam=0;}
 u.todayN=(+u.todayN||0)+Number(d.add||0);
+    if(el("inc-today"))el("inc-today").textContent=money(u.todayN||0);    
    u.spinUsed=Number(u.spinUsed||0)+1;
 u.spinUsedDay=dayKey();
 u.spins=Math.max(0,spinNeed(u)-u.spinUsed);     
@@ -1259,7 +1260,8 @@ else{ok.forEach(function(d){if(seen.indexOf(d.id)<0){seen.push(d.id);pop("Approv
       var L=layers(); applyLevel(L);
   resetDailySpin(u);
     var need=spinNeed(u);
-if(u.nextSpin&&Date.now()<u.nextSpin){
+if(u.spinUsedDay!==dayKey()){u.spinUsed=0;u.spinUsedDay=dayKey();u.nextSpin=0;}
+if(Number(u.spinUsed||0)>=spinNeed(u)){
   u.spins=0;
 }else{
   if(u.spinUsedDay!==dayKey()){u.spinUsed=0;u.spinUsedDay=dayKey();}
