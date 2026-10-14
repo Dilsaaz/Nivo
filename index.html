@@ -428,16 +428,19 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
 </div>
 <div id="admin" class="hidden max-w-5xl mx-auto p-4">
   <div class="flex items-center justify-between mb-4"><div class="flex items-center gap-2"><svg class="logo"><use href="#nivo-mark"/></svg><div class="serif text-3xl">Admin</div></div><button class="ghost rounded-xl px-4 py-2" onclick="logout()">Exit</button></div>
-  <div class="grid grid-cols-3 gap-3 mb-4">
-    <div class="card p-4"><div class="text-xs">USERS</div><div class="text-2xl font-extrabold" id="ad-users">0</div></div>
-    <div class="card p-4"><div class="text-xs">PENDING DEP</div><div class="text-2xl font-extrabold" id="ad-pd">0</div></div>
-    <div class="card p-4"><div class="text-xs">PENDING WD</div><div class="text-2xl font-extrabold" id="ad-pw">0</div></div>
-  </div>
-  <button class="btn px-4 py-2 mb-3" onclick="pullCloud(function(){renderAdmin();pop('Admin','List updated')})">Refresh list</button>
-  <div class="card p-4 mb-4" id="ad-deps"></div>
-  <div class="card p-4 mb-4" id="ad-wds"></div>
-  <div class="card p-4 mb-4" id="ad-sup"></div>
-  <div class="card p-4" id="ad-mem"></div>
+  <div class="grid grid-cols-2 gap-2 mb-4">
+  <button class="btn py-3" onclick="adTab('vf')">Verification</button>
+  <button class="btn py-3" onclick="adTab('dep')">Deposits</button>
+  <button class="btn py-3" onclick="adTab('wd')">Withdrawals</button>
+  <button class="btn py-3" onclick="adTab('sup')">Support</button>
+  <button class="btn py-3" onclick="adTab('mem')">Members</button>
+</div>
+<button class="btn px-4 py-2 mb-3" onclick="pullCloud(function(){renderAdmin();pop('Admin','List updated')})">Refresh list</button>
+<div class="card p-4 mb-4" id="ad-vf"></div>
+<div class="card p-4 mb-4 hidden" id="ad-deps"></div>
+<div class="card p-4 mb-4 hidden" id="ad-wds"></div>
+<div class="card p-4 mb-4 hidden" id="ad-sup"></div>
+<div class="card p-4 hidden" id="ad-mem"></div>
 </div>
 <div id="pop" class="hidden fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-6">
   <div class="card p-6 max-w-sm w-full text-center">
@@ -1004,7 +1007,8 @@ function renderAdmin(){
   el("ad-users").textContent=list.length;
   el("ad-pd").textContent=pd;
   el("ad-pw").textContent=pw;
-  el("ad-deps").innerHTML="<b>Verification $25</b><br>"+(vfH||"None")+"<br><br><b>Pending deposits</b><br>"+(depH||"None");
+  if(el("ad-vf"))el("ad-vf").innerHTML="<b>Verification $25</b><br>"+(vfH||"None");
+el("ad-deps").innerHTML="<b>Deposits</b><br>"+(depH||"None");
   el("ad-wds").innerHTML="<b>Pending withdrawals</b><br>"+(wdH||"None");
   el("ad-mem").innerHTML="<b>Members</b><table style='width:100%'><tr><th>User</th><th>Email</th><th>Wallet</th><th>Lv</th><th>Withdraw 0x</th></tr>"+mem+"</table>";
   var sup=el("ad-sup");
@@ -1026,6 +1030,11 @@ if(sup){
   saveU(p);
   pop("Sent","Reply saved");
   renderAdmin();
+}
+  function adTab(id){
+  ["vf","deps","wds","sup","mem"].forEach(function(x){
+    var e=el("ad-"+x); if(e)e.classList.toggle("hidden",x!==id);
+  });
 }
  function levelOf(L){
   var A=L.A.filter(isOn).length;
