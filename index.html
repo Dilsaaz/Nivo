@@ -704,7 +704,7 @@ function verifyOtp(){
   if(!pending){pop("Error","Start signup again");return}
   if(Date.now()-otpAt>600000){pop("Expired","Resend OTP");return}
   if(el("su-otp").value.trim()!==otpCode){pop("Wrong OTP","Check the 6-digit code");return}
-  u={user:pending.user,email:pending.email,pass:pending.pass,ref:pending.ref,sponsor:pending.sponsor,bal:0,profit:0,lock:0,spins:0,level:1,addr:"",deps:[],wds:[],teamA:[],gifts:0,paidLevels:[],verified:true};skipVerify:true
+  u={user:pending.user,email:pending.email,pass:pending.pass,ref:pending.ref,sponsor:pending.sponsor,bal:0,profit:0,lock:0,spins:0,level:1,addr:"",deps:[],wds:[],teamA:[],gifts:0,paidLevels:[],verified:true,skipVerify:true};
   saveU(u); pending=null; enterUser();
 }
 function adminLogin(){
