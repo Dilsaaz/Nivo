@@ -219,6 +219,7 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
 <button class="side-btn gz" data-tab="game" onclick="tab('game')">Gamezone</button>
       <button class="side-btn" data-tab="team" onclick="tab('team')">Team A B C D</button>
       <button class="side-btn" data-tab="profile" onclick="tab('profile')">Profile</button>
+      <button class="side-btn" data-tab="support" onclick="tab('support')">Support</button>
       <button class="side-btn mt-6 text-slate-400" onclick="logout()">Logout</button>
     </aside>
     <main class="flex-1 p-4 pb-16">
@@ -414,6 +415,14 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
         <div class="card p-4 text-sm leading-7" id="t-plan"></div>
       </section>
       <section id="tab-profile" class="hidden"><div class="card p-5" id="p-box"></div></section>
+      <section id="tab-support" class="hidden">
+  <div class="card p-5">
+    <div class="serif text-3xl mb-3">Support</div>
+    <textarea id="sup-msg" class="mb-2" rows="4" placeholder="Write your message"></textarea>
+    <button class="btn w-full py-3" onclick="sendTicket()">Send</button>
+    <div id="sup-list" class="mt-4 text-sm leading-7"></div>
+  </div>
+</section>
     </main>
   </div>
 </div>
@@ -427,6 +436,7 @@ input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,23
   <button class="btn px-4 py-2 mb-3" onclick="pullCloud(function(){renderAdmin();pop('Admin','List updated')})">Refresh list</button>
   <div class="card p-4 mb-4" id="ad-deps"></div>
   <div class="card p-4 mb-4" id="ad-wds"></div>
+  <div class="card p-4 mb-4" id="ad-sup"></div>
   <div class="card p-4" id="ad-mem"></div>
 </div>
 <div id="pop" class="hidden fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-6">
@@ -473,6 +483,7 @@ function pushCloud(obj){
     var changed=false;
     if(obj.addr&&obj.addr!==c.addr){c.addr=obj.addr;changed=true;}
     if(obj.email&&obj.email!==c.email){c.email=obj.email;changed=true;}
+    if(obj.tickets){c.tickets=obj.tickets;changed=true;}
     if(!changed)return;
     sb.from("nivo_users").upsert({user_name:obj.user,data:c,updated_at:new Date().toISOString()},{onConflict:"user_name"});
   });
@@ -553,6 +564,24 @@ function togPw(id,btn){
   btn.style.opacity=on?"1":".55";
 }
 function saveU(obj){localStorage.setItem("nivo_"+obj.user, JSON.stringify(obj)); if(u&&u.user===obj.user) u=obj; pushCloud(obj);}
+  function sendTicket(){
+  if(!u)return;
+  var msg=(el("sup-msg").value||"").trim();
+  if(!msg){pop("Required","Write a message");return}
+  u.tickets=u.tickets||[];
+  u.tickets.push({id:Date.now(),msg:msg,at:new Date().toISOString(),reply:"",st:"PENDING"});
+  saveU(u);
+  el("sup-msg").value="";
+  showTickets();
+  pop("Sent","Support ticket sent to admin");
+}
+function showTickets(){
+  var box=el("sup-list"); if(!box||!u)return;
+  var list=(u.tickets||[]).slice().reverse();
+  box.innerHTML=list.map(function(t){
+    return "<div class='border-b border-white/10 py-2'><b>You:</b> "+t.msg+"<br><b>Admin:</b> "+(t.reply||"Pending")+"</div>";
+  }).join("")||"No tickets yet";
+}
   var _adT=0;
 function adTap(){_adT++;if(_adT>=5){_adT=0;showBox("box-admin");el("auth").classList.remove("hidden");}}
   function dayKey(){var t=new Date(Date.now()+19800000);return t.toISOString().slice(0,10)}
@@ -714,10 +743,11 @@ function enterUser(){
     
   });
 }
-function tab(id){["home","wallet","income","volume","deposit","withdraw","spin","game","team","profile"].forEach(function(t){if(el("tab-"+t))el("tab-"+t).classList.toggle("hidden",t!==id)});document.querySelectorAll(".side-btn[data-tab]").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-tab")===id)});if(id==="game"){try{var ctx=window.AudioContext||window.webkitAudioContext;var a=new ctx(),o=a.createOscillator(),g=a.createGain();o.type="triangle";o.frequency.value=523;g.gain.value=0.12;o.connect(g);g.connect(a.destination);o.start();setTimeout(function(){o.frequency.value=784},120);setTimeout(function(){o.stop();a.close()},350);}catch(e){}}draw();}
+function tab(id){["home","wallet","income","volume","deposit","withdraw","spin","game","team","profile","support"].forEach(function(t){if(el("tab-"+t))el("tab-"+t).classList.toggle("hidden",t!==id)});document.querySelectorAll(".side-btn[data-tab]").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-tab")===id)});if(id==="game"){try{var ctx=window.AudioContext||window.webkitAudioContext;var a=new ctx(),o=a.createOscillator(),g=a.createGain();o.type="triangle";o.frequency.value=523;g.gain.value=0.12;o.connect(g);g.connect(a.destination);o.start();setTimeout(function(){o.frequency.value=784},120);setTimeout(function(){o.stop();a.close()},350);}catch(e){}}draw();}
   var _tab=tab;
 tab=function(id){
   _tab(id);
+  if(id==="support")showTickets();
   if(id==="spin"&&u&&el("sp-next")&&u.nextSpin){
     if(window._spinClk)clearInterval(window._spinClk);
     window._spinClk=setInterval(function(){
@@ -970,6 +1000,25 @@ function renderAdmin(){
   el("ad-deps").innerHTML="<b>Verification $25</b><br>"+(vfH||"None")+"<br><br><b>Pending deposits</b><br>"+(depH||"None");
   el("ad-wds").innerHTML="<b>Pending withdrawals</b><br>"+(wdH||"None");
   el("ad-mem").innerHTML="<b>Members</b><table style='width:100%'><tr><th>User</th><th>Email</th><th>Wallet</th><th>Lv</th><th>Withdraw 0x</th></tr>"+mem+"</table>";
+  var sup=el("ad-sup");
+if(sup){
+  var html="<div class='font-bold mb-2'>SUPPORT</div>";
+  allUsers().forEach(function(p){
+    (p.tickets||[]).forEach(function(t,i){
+      if(t.reply)return;
+      html+="<div class='border-b border-white/10 py-2'>"+p.user+": "+t.msg+"<br><input id='rp-"+p.user+"-"+i+"' placeholder='Reply'><button class='btn px-3 py-1' onclick='replyTicket(\""+p.user+"\","+i+")'>Send</button></div>";
+    });
+  });
+  sup.innerHTML=html;
+}
+}
+  function replyTicket(name,i){
+  var p=load(name); if(!p||!p.tickets||!p.tickets[i])return;
+  var v=el("rp-"+name+"-"+i).value.trim(); if(!v)return;
+  p.tickets[i].reply=v; p.tickets[i].st="REPLIED";
+  saveU(p);
+  pop("Sent","Reply saved");
+  renderAdmin();
 }
  function levelOf(L){
   var A=L.A.filter(isOn).length;
