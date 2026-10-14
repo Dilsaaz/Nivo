@@ -581,6 +581,13 @@ function showTickets(){
   box.innerHTML=list.map(function(t){
     return "<div class='border-b border-white/10 py-2'><b>You:</b> "+t.msg+"<br><b>Admin:</b> "+(t.reply||"Pending")+"</div>";
   }).join("")||"No tickets yet";
+  if((u.tickets||[]).some(function(t){return t.reply;})){
+  setTimeout(function(){
+    u.tickets=[];
+    saveU(u);
+    if(el("sup-list"))el("sup-list").innerHTML="No tickets yet";
+  },4000);
+}
 }
   var _adT=0;
 function adTap(){_adT++;if(_adT>=5){_adT=0;showBox("box-admin");el("auth").classList.remove("hidden");}}
