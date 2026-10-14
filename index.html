@@ -671,7 +671,7 @@ function sendFg(){
     pending={user:name,email:email,mode:"fg"};
     el("fg-step2").classList.remove("hidden");
     if(!(EJ_PUB&&EJ_SVC&&EJ_TPL)){pop("OTP","Test code: "+otpCode);return}
-    emailjs.send(EJ_SVC,EJ_TPL,{
+    emailjs.send(EJ_SVC,EJ_TPL,{email:email,to_email:email,name:name,user_name:name,otp_code:otpCode,message:"NIVO reset OTP "+otpCode})
       email:email,
       to_email:email,
       user_name:name,
@@ -693,7 +693,7 @@ function sendOtp(){
   if(el("otp-hint"))el("otp-hint").textContent="Enter the code sent to "+email;
   showBox("box-otp");
   if(EJ_PUB&&EJ_SVC&&EJ_TPL){
-    emailjs.send(EJ_SVC,EJ_TPL,{email:email,to_email:email,user_name:name,otp_code:otpCode,message:"NIVO OTP "+otpCode})
+    emailjs.send(EJ_SVC,EJ_TPL,{email:email,to_email:email,name:name,user_name:name,otp_code:otpCode,message:"NIVO OTP "+otpCode})
       .then(function(){pop("OTP sent","Check your email inbox")})
       .catch(function(){pop("Email failed","Mail not sent. Enter a correct email and try again");});
   } else {
