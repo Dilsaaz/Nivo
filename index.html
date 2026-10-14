@@ -1006,7 +1006,7 @@ function renderAdmin(){
 function applyLevel(L){
   if(!u)return;
   if(!(u.lock>=45)){u.level=0;return;}
-  var lv=Math.max(levelOf(L)||1, Number(u.level||1));
+  var lv=levelOf(L)||1;
   u.level=lv;
   saveU(u);
   fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/level",{
