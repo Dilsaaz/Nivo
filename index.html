@@ -1004,14 +1004,9 @@ function renderAdmin(){
     });
     mem+="<tr><td>"+p.user+"</td><td>"+p.email+"</td><td>$"+money(p.bal)+"</td><td>L"+(p.level||0)+"</td><td class='text-xs break-all font-mono'>"+(p.addr||"—")+"</td></tr>";
   });
-  el("ad-users").textContent=list.length;
-  el("ad-pd").textContent=pd;
-  el("ad-pw").textContent=pw;
+  
   if(el("ad-vf"))el("ad-vf").innerHTML="<b>Verification $25</b><br>"+(vfH||"None");
-  var vfN=(vfH.match(/\$25/g)||[]).length;
-var supN=(html.match(/border-b/g)||[]).length;
-window._adCount={vf:vfN,deps:pd,wds:pw,sup:supN};
-adBadge("vf",vfN); adBadge("deps",pd); adBadge("wds",pw); adBadge("sup",supN);
+  
 el("ad-deps").innerHTML="<b>Deposits</b><br>"+(depH||"None");
   el("ad-wds").innerHTML="<b>Pending withdrawals</b><br>"+(wdH||"None");
   el("ad-mem").innerHTML="<b>Members</b><table style='width:100%'><tr><th>User</th><th>Email</th><th>Wallet</th><th>Lv</th><th>Withdraw 0x</th></tr>"+mem+"</table>";
@@ -1025,6 +1020,10 @@ if(sup){
     });
   });
   sup.innerHTML=html;
+  var vfN=(vfH.match(/\$25/g)||[]).length;
+var supN=(html.match(/border-b/g)||[]).length;
+window._adCount={vf:vfN,deps:pd,wds:pw,sup:supN};
+adBadge("vf",vfN); adBadge("deps",pd); adBadge("wds",pw); adBadge("sup",supN);
 }
 }
   function replyTicket(name,i){
