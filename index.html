@@ -1120,6 +1120,7 @@ setTimeout(function(){tone(146,280,"sine")},160);
     }
     if(el("sp-res"))el("sp-res").textContent="";
     try{draw();}catch(e){}
+    window._spinning=false;
   },11000);
 }
   var nf={on:0,stake:0,mult:1,n:0};
