@@ -1113,12 +1113,16 @@ else if(Math.random()<hit10/30){
       
     
     if(el("sp-res"))el("sp-res").textContent="";
-    try{draw();}catch(e){}
-    if(el("h-bal"))el("h-bal").textContent=money(u.bal);
-if(el("h-profit"))el("h-profit").textContent=money(u.profit);
-if(el("inc-today"))el("inc-today").textContent=money(u.todayN||0);
-pop("Profit","$"+money(u._spinAdd||0)+" added");
-    window._spinning=false;
+    pullCloud(function(){
+  var nu=load(u.user);
+  if(nu)u=nu;
+  draw();
+  if(el("h-bal"))el("h-bal").textContent=money(u.bal);
+  if(el("h-profit"))el("h-profit").textContent=money(u.profit);
+  if(el("inc-today"))el("inc-today").textContent=money(u.todayN||0);
+  pop("Profit","$"+money(u._spinAdd||0)+" added");
+  window._spinning=false;
+});
   },11000);
 }
   var nf={on:0,stake:0,mult:1,n:0};
