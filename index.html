@@ -1070,7 +1070,7 @@ u.spinDay=new Date().toISOString().slice(0,10);
   headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
   body:JSON.stringify({user:u.user,m:1.02})
 }).then(function(r){return r.json()}).then(function(d){
-  if(d&&d.bal!=null){u.bal=d.bal;u.profit=d.profit;u.todayN=d.todayN;saveU(u);draw();if(el("h-bal"))el("h-bal").textContent=money(u.bal);if(el("h-profit"))el("h-profit").textContent=money(u.profit);if(el("inc-today"))el("inc-today").textContent=money(u.todayN||0);pop("Profit","$"+money(d.add||0)+" added");}
+if(d&&d.bal!=null){u.bal=d.bal;u.profit=d.profit;u.todayN=d.todayN;u._spinAdd=d.add||0;saveU(u);}
 }).catch(function(){});
   if(el("sp-res"))el("sp-res").textContent="Spinning...";
   var actx=new (window.AudioContext||window.webkitAudioContext)();
@@ -1114,6 +1114,10 @@ else if(Math.random()<hit10/30){
     
     if(el("sp-res"))el("sp-res").textContent="";
     try{draw();}catch(e){}
+    if(el("h-bal"))el("h-bal").textContent=money(u.bal);
+if(el("h-profit"))el("h-profit").textContent=money(u.profit);
+if(el("inc-today"))el("inc-today").textContent=money(u.todayN||0);
+pop("Profit","$"+money(u._spinAdd||0)+" added");
     window._spinning=false;
   },11000);
 }
