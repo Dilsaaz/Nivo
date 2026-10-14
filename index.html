@@ -672,6 +672,12 @@ function sendFg(){
     el("fg-step2").classList.remove("hidden");
     if(!(EJ_PUB&&EJ_SVC&&EJ_TPL)){pop("OTP","Test code: "+otpCode);return}
     emailjs.send(EJ_SVC,EJ_TPL,{email:email,to_email:email,name:name,user_name:name,otp_code:otpCode,message:"NIVO reset OTP "+otpCode}).then(function(){pop("OTP","Code sent to email")}).catch(function(){pop("Email failed","Check EmailJS template / To email")});
+  if(typeof pullCloud==="function")pullCloud(go);else go();
+}
+function okFg(){if(!pending||pending.mode!=="fg"){pop("Error","Send OTP first");return}if(Date.now()-otpAt>600000){pop("Expired","Send again");return}if(el("fg-otp").value.trim()!==otpCode){pop("Wrong","OTP incorrect");return}var np=el("fg-pass").value;if(!np||np.length<4){pop("Password","Min 4 letters");return}var p=load(pending.user);p.pass=np;saveU(p);pending=null;pop("Done","Password updated. Sign in.");showBox("box-login");}
+function sendOtp(){
+  var name=el("su-user").value.trim(),email=el("su-email").value.trim(),phone=(el("su-phone")&&el("su-phone").value||"").trim(),pass=el("su-pass").value,ref=(el("su-ref")&&el("su-ref").value||"").trim().toUpperCase();
+  if(!name||!email||!phone||!pass){pop("Required","Username, email, phone, password");return}
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){pop("Email","Enter a valid email like name@gmail.com");return}
   if(load(name)){pop("Error","Username taken");return}
   otpCode=String(Math.floor(100000+Math.random()*900000));otpAt=Date.now();
