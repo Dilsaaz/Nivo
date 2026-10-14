@@ -1059,7 +1059,7 @@ u.spins=leftNow;
     pop("Spin locked","Next spin in "+hh+"h "+mm+"m "+ss+"s");
     return;
   }
-  u.spins-=1;u.packUsed=true;
+u.spins-=1;u.spinUsed=Number(u.spinUsed||0)+1;u.spinUsedDay=dayKey();u.packUsed=true;
 u.spinDay=new Date().toISOString().slice(0,10);
   if((u.spins||0)<=0)u.nextSpin=Date.now()+86400000;else u.nextSpin=0;
   saveU(u);
