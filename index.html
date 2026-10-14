@@ -1065,6 +1065,13 @@ u.spinDay=new Date().toISOString().slice(0,10);
   saveU(u);
   if(el("sp-left"))el("sp-left").textContent=u.spins;
   window._spinning=true;
+  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/Spin",{
+  method:"POST",
+  headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+  body:JSON.stringify({user:u.user,m:1.02})
+}).then(function(r){return r.json()}).then(function(d){
+  if(d&&d.bal!=null){u.bal=d.bal;u.profit=d.profit;u.todayN=d.todayN;saveU(u);}
+}).catch(function(){});
   if(el("sp-res"))el("sp-res").textContent="Spinning...";
   var actx=new (window.AudioContext||window.webkitAudioContext)();
   if(actx.resume)actx.resume();
@@ -1101,35 +1108,10 @@ else if(Math.random()<hit10/30){
     clearInterval(tick);
     try{var c=actx.createOscillator(),g=actx.createGain();c.type="sine";c.frequency.value=784;g.gain.setValueAtTime(0.25,actx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,actx.currentTime+0.8);c.connect(g);g.connect(actx.destination);c.start();c.stop(actx.currentTime+0.8);}catch(e){}
     var msg;
-    if(s.m>0){
-      fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/Spin",{
-  method:"POST",
-  headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
-  body:JSON.stringify({user:u.user,m:s.m})
-}).then(function(r){return r.json()}).then(function(d){
-  if(!d||d.error){pop(d&&d.error==="already spun"?"Spins used":"Spin", d&&d.error==="already spun"?"Today's spins are finished.":(d&&d.error||"not saved"));return}
-u.bal=d.bal;u.profit=d.profit;u.spinDay=new Date().toISOString().slice(0,10);
-   if(u.todayD!==dayKey()){u.todayD=dayKey();u.todayN=0;u.dRew=0;u.dDia=0;u.dTeam=0;}
-u.todayN=Number(d.todayN!=null?d.todayN:(+u.todayN||0)+Number(d.add||0));
-u.todayD=dayKey();
-u.spinUsed=Number(u.spinUsed||0)+1;
-u.spinUsedDay=dayKey();
-u.spins=Math.max(0,spinNeed(u)-u.spinUsed);
-localStorage.setItem("nivo_"+u.user,JSON.stringify(u));
-draw();
-if(el("h-bal"))el("h-bal").textContent=money(u.bal);
-if(el("h-profit"))el("h-profit").textContent=money(u.profit);
-if(el("inc-today"))el("inc-today").textContent=money(u.todayN||0);
-if(el("w-bal"))el("w-bal").textContent=money(u.bal);
-if(el("w-free"))el("w-free").textContent=money(u.profit);
-pop("Profit","$"+money(d.add)+" added");
-    }).catch(function(){pop("Spin","Could not save profit. Try again.");});    
-    }else{
-      tone(196,220,"sine");
-setTimeout(function(){tone(146,280,"sine")},160);
-      msg="No win";
-      pop("No win","Nothing added to wallet");
-    }
+    
+  
+      
+    
     if(el("sp-res"))el("sp-res").textContent="";
     try{draw();}catch(e){}
     window._spinning=false;
