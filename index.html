@@ -804,7 +804,7 @@ function sendDep(){
   fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/deposit",{
     method:"POST",
     headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
-    body:JSON.stringify({user:u.user,amount:amt,hash:hash})
+    body:JSON.stringify({user:u.user,amount:amt,hash:hash,sponsor:u.sponsor||""})
   }).then(function(r){return r.json()}).then(function(d){
     if(!d||d.error){pop("Deposit",d&&d.error||"not saved");return}
     u.deps=u.deps||[];
