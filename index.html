@@ -477,55 +477,43 @@ function pushCloud(obj){
     sb.from("nivo_users").upsert({user_name:obj.user,data:c,updated_at:new Date().toISOString()},{onConflict:"user_name"});
   });
 }
-      
-function pullCloud(done){
+    function pullCloud(done){
   if(!sb){if(done)done();return}
   sb.from("nivo_users").select("user_name,data").then(function(r){
     if(r.data)r.data.forEach(function(row){
-  if(!row||!row.user_name||!row.data)return;
-  var cloud=row.data;
-  if(typeof cloud==="string")try{cloud=JSON.parse(cloud)}catch(e){return}
-    
+      if(!row||!row.user_name||!row.data)return;
+      var cloud=row.data;
+      if(typeof cloud==="string")try{cloud=JSON.parse(cloud)}catch(e){return}
       if(!cloud||!cloud.user)return;
       var key="nivo_"+row.user_name,local=null;
       try{local=JSON.parse(localStorage.getItem(key)||"null")}catch(e){}
       if(!local){localStorage.setItem(key,JSON.stringify(cloud));return}
-    local.wds=cloud.wds||[];
-      var map={};
-
-      var map2={};
-      (local.deps||[]).concat(cloud.deps||[]).forEach(function(d){if(d&&d.id)map2[d.id]=d});
-      local.deps=Object.keys(map2).map(function(k){return map2[k]});
-      local.deps=(local.deps||[]).map(function(d){
-  var c=(cloud.deps||[]).filter(function(x){return x.id===d.id||x.id===d.file;})[0];
-  return c||d;
-});
-local.verify=cloud.verify||null;
-local.verified=!!cloud.verified;
-          var cb=+cloud.bal||0, lb=+local.bal||0, cl=+cloud.lock||0, ll=+local.lock||0, cp=+cloud.profit||0, lp=+local.profit||0;
-local.bal=cb;local.lock=cl;local.profit=cp;
+      local.wds=cloud.wds||[];
+      local.deps=cloud.deps||local.deps||[];
+      local.verify=cloud.verify||null;
+      local.verified=!!cloud.verified;
+      local.bal=+cloud.bal||0;
+      local.lock=+cloud.lock||0;
+      local.profit=+cloud.profit||0;
+      local.todayN=+cloud.todayN||0;
+      local.todayD=cloud.todayD||local.todayD||"";
       if(cloud.ref)local.ref=cloud.ref;
-if(cloud.level)local.level=cloud.level;
-      var newDep=(local.deps||[]).filter(function(d){return d.st==="SUCCESSFUL"&&!(cloud.deps||[]).some(function(x){return x.id===d.id&&x.st==="SUCCESSFUL"});});
-     var apL=(local.wds||[]).filter(function(w){return w.st==="APPROVED"||w.st==="SUCCESSFUL";}).length;
-var apC=(cloud.wds||[]).filter(function(w){return w.st==="APPROVED"||w.st==="SUCCESSFUL";}).length;
-if(apC>apL){local.bal=Math.min(+local.bal||0,+cloud.bal||0);local.profit=Math.min(+local.profit||0,+cloud.profit||0);} 
-     var wdL=(local.wds||[]).filter(function(w){return w.st!=="REJECTED";}).length;
-var wdC=(cloud.wds||[]).filter(function(w){return w.st!=="REJECTED";}).length;
-if(wdL>wdC){local.bal=Math.min(+local.bal||0,+cloud.bal||0);local.profit=Math.min(+local.profit||0,+cloud.profit||0);} 
-
-      local.rewardInc=Math.max(+local.rewardInc||0,+cloud.rewardInc||0);
-local.teamInc=Math.max(+local.teamInc||0,+cloud.teamInc||0);
-local.diamondInc=Math.max(+local.diamondInc||0,+cloud.diamondInc||0);
-if((cloud.todayD||"")>(local.todayD||"")){local.todayD=cloud.todayD;local.todayN=+cloud.todayN||0;}
-else if(local.todayD===cloud.todayD)local.todayN=Math.max(+local.todayN||0,+cloud.todayN||0);
-      if((+cloud.nextSpin||0)>(+local.nextSpin||0)){local.nextSpin=cloud.nextSpin;local.spins=cloud.spins;local.spinGot=cloud.spinGot;local.spinDay=cloud.spinDay;}
+      if(cloud.level)local.level=cloud.level;
+      local.rewardInc=+cloud.rewardInc||0;
+      local.teamInc=+cloud.teamInc||0;
+      local.diamondInc=+cloud.diamondInc||0;
+      if((+cloud.nextSpin||0)>(+local.nextSpin||0)){
+        local.nextSpin=cloud.nextSpin;
+        local.spins=cloud.spins;
+        local.spinGot=cloud.spinGot;
+        local.spinDay=cloud.spinDay;
+      }
       localStorage.setItem(key,JSON.stringify(local));
     });
     if(u&&u.user){var nu=load(u.user);if(nu)u=nu;}
     if(done)done();
   }).catch(function(){if(done)done();});
-}
+}  
 var SLICES=[{l:"1.02x",m:1.02,c:"#1a73e8"},{l:"1.04x",m:1.04,c:"#071428"},{l:"1.06x",m:1.06,c:"#3b82f6"},{l:"1.08x",m:1.08,c:"#071428"},{l:"1.10x",m:1.10,c:"#1a73e8"},{l:"No win",m:0,c:"#64748b"}];
 var SLABS=[
   {n:1,name:"First",need:45,dir:0,down:0,tot:0},
