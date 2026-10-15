@@ -1388,7 +1388,14 @@ if(el("inc-dia"))el("inc-dia").textContent=money(u.dDia||0);
     var s=Math.ceil((u.nextSpin-Date.now())/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;
     el("sp-next").textContent="Next spin in "+h+"h "+m+"m "+sec+"s";
   }else{
-    el("sp-next").textContent=u.spins>0?"Spin ready":"—";
+    if((u.spins||0)<=0){
+  if(!u.nextSpin||u.nextSpin<Date.now()) u.nextSpin=Date.now()+86400000;
+  saveU(u);
+  var s=Math.ceil((u.nextSpin-Date.now())/1000);
+  el("sp-next").textContent="Next spin in "+Math.floor(s/3600)+"h "+Math.floor((s%3600)/60)+"m "+(s%60)+"s";
+}else{
+  el("sp-next").textContent="Spin ready";
+}
   }
 }
   u.deps=(u.deps||[]).filter(function(d){return d.st==="PENDING"||(d.t&&(Date.now()-d.t)<300000);});
