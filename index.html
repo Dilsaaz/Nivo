@@ -1082,7 +1082,10 @@ function applyLevel(L){
     body:JSON.stringify({user:u.user})
   }).then(function(r){return r.json()}).then(function(d){
     if(!d||!d.ok)return;
-    u.level=d.level;u.bal=d.bal;u.profit=d.profit;u.paidLevels=d.paidLevels||u.paidLevels;
+u.level=d.level;
+if(d.bal!=null&&Number(d.bal)>=Number(u.bal||0))u.bal=d.bal;
+if(d.profit!=null&&Number(d.profit)>=Number(u.profit||0))u.profit=d.profit;
+u.paidLevels=d.paidLevels||u.paidLevels;
     saveU(u);
     if(d.added>0)giftBox(d.level,d.added);
     draw();
