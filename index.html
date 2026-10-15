@@ -506,10 +506,10 @@ function pushCloud(obj){
       local.deps=cloud.deps||local.deps||[];
       local.verify=cloud.verify||null;
       local.verified=!!cloud.verified;
-      local.bal=+cloud.bal||0;
+      local.bal=Math.max(+local.bal||0,+cloud.bal||0);
       local.lock=+cloud.lock||0;
-      local.profit=+cloud.profit||0;
-      local.todayN=+cloud.todayN||0;
+      local.profit=Math.max(+local.profit||0,+cloud.profit||0);
+      local.todayN=Math.max(+local.todayN||0,+cloud.todayN||0);
       local.todayD=cloud.todayD||local.todayD||"";
       if(cloud.ref)local.ref=cloud.ref;
       if(cloud.level)local.level=cloud.level;
