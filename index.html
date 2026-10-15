@@ -1132,13 +1132,7 @@ u.spinDay=new Date().toISOString().slice(0,10);
   saveU(u);
   if(el("sp-left"))el("sp-left").textContent=u.spins;
   window._spinning=true;
-  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/Spin",{
-  method:"POST",
-  headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
-  body:JSON.stringify({user:u.user,m:1.02})
-}).then(function(r){return r.json()}).then(function(d){
-if(d&&d.bal!=null){u.bal=d.bal;u.profit=d.profit;u.todayN=d.todayN;u._spinAdd=d.add||0;saveU(u);}
-}).catch(function(){});
+  
   if(el("sp-res"))el("sp-res").textContent="Spinning...";
   var actx=new (window.AudioContext||window.webkitAudioContext)();
   if(actx.resume)actx.resume();
