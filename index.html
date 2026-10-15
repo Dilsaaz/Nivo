@@ -997,8 +997,8 @@ function renderAdmin(){
       var a=d.addr||p.addr||"—";
       if(d.st==="PENDING"){
         pw++;
-        var wt=d.t?new Date(d.t).toLocaleString("en-IN",{hour12:true}):"—";
-wdH+='<div class="py-3 border-b"><div class="font-bold">PENDING $'+money(d.amt)+' net · '+p.user+(d.fee?" · fee $"+money(d.fee):"")+'</div><div class="text-xs mt-1">Requested '+wt+'</div><div class="text-xs break-all mt-1 font-mono">'+a+'</div>
+    var wt=d.t?new Date(d.t).toLocaleString("en-IN",{hour12:true}):"—";
+wdH+='<div class="py-3 border-b"><div class="font-bold">PENDING $'+money(d.amt)+' net · '+p.user+(d.fee?" · fee $"+money(d.fee):"")+'</div><div class="text-xs mt-1">Requested '+wt+'</div><div class="text-xs break-all mt-1 font-mono">'+a+'</div><button class="ghost rounded-lg px-3 py-1 mt-1 text-xs" onclick="navigator.clipboard.writeText(\''+a+'\').then(function(){pop(\'Copied\',\''+p.user+'\')})">Copy address</button><div class="mt-2"><button class="btn px-3 py-1 mr-1" onclick="adWd(\''+p.user+'\',\''+d.id+'\',true)">Paid OK</button><button class="ghost rounded-lg px-3 py-1" onclick="adWd(\''+p.user+'\',\''+d.id+'\',false)">No</button></div></div>';
       } else {
         wdH+='<div class="py-2 border-b text-sm"><b>'+d.st+'</b> $'+money(d.amt)+' · '+p.user+'<div class="text-xs break-all font-mono">'+a+'</div>'+(d.st==="APPROVED"||d.st==="SUCCESSFUL"?'<button class="ghost rounded-lg px-3 py-1 mt-1 text-xs" onclick="undoWd(\''+p.user+'\',\''+d.id+'\')">Undo → Pending</button>':'')+'</div>';
       }
