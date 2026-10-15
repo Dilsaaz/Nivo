@@ -1132,13 +1132,7 @@ u.spinDay=new Date().toISOString().slice(0,10);
   saveU(u);
   if(el("sp-left"))el("sp-left").textContent=u.spins;
   window._spinning=true;
-  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/Spin",{
-  method:"POST",
-  headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
-  body:JSON.stringify({user:u.user,m:1.02})
-}).then(function(r){return r.json()}).then(function(d){
-if(d&&d.bal!=null){u.bal=d.bal;u.profit=d.profit;u.todayN=d.todayN;u._spinAdd=d.add||0;saveU(u);}
-}).catch(function(){});
+  
   if(el("sp-res"))el("sp-res").textContent="Spinning...";
   var actx=new (window.AudioContext||window.webkitAudioContext)();
   if(actx.resume)actx.resume();
@@ -1152,23 +1146,31 @@ osc.connect(gain);gain.connect(actx.destination);
 osc.start();
 osc.stop(actx.currentTime+10);
 var tick=setInterval(function(){},11000);
-  var nw=SLICES.findIndex(function(x){return x.m===0});
-  var pay=[];SLICES.forEach(function(x,n){if(x.m>0)pay.push(n)});
-  var i,lv=Number(u.level||1);
-var hit10=lv>=5?1:lv>=4?1:lv>=3?1:lv>=2?1:6;
-if(Math.random()<0.18&&nw>=0)i=nw;
-else if(Math.random()<hit10/30){
-  i=SLICES.findIndex(function(x){return x.m>=1.10;});
-  if(i<0)i=pay[0];
+  var wal=Number(u.bal||0), lv=Number(u.level||1);
+var w={nw:20, a:50, b:20, c:8, d:2, e:0};
+if(lv<2){
+  if(wal<200) w={nw:40,a:35,b:18,c:7,d:0,e:0};
+  else if(wal<500) w={nw:40,a:48,b:10,c:2,d:0,e:0};
+  else if(wal<5000) w={nw:35,a:50,b:12,c:3,d:0,e:0};
+  else w={nw:30,a:60,b:10,c:0,d:0,e:0};
 }else{
-  var bag=[];
-  SLICES.forEach(function(x,n){
-    if(!(x.m>0)||x.m>=1.10)return;
-    var w=x.m>=1.08?(lv>=2?2:8):x.m>=1.06?20:x.m>=1.04?36:50;
-    for(var k=0;k<w;k++)bag.push(n);
-  });
-  i=bag[Math.floor(Math.random()*bag.length)];
+  if(wal<2000) w={nw:20,a:40,b:25,c:10,d:4,e:1};
+  else w={nw:25,a:45,b:22,c:5,d:2,e:1};
 }
+var bag=[], ms=[0,1.02,1.04,1.06,1.08,1.10], ww=[w.nw,w.a,w.b,w.c,w.d,w.e];
+ms.forEach(function(m,n){
+  var idx=SLICES.findIndex(function(x){return x.m===m;});
+  for(var k=0;k<ww[n];k++) if(idx>=0) bag.push(idx);
+});
+var i=bag[Math.floor(Math.random()*bag.length)];
+var m=SLICES[i].m||1.02;
+fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/Spin",{
+  method:"POST",
+  headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+  body:JSON.stringify({user:u.user,m:m})
+}).then(function(r){return r.json()}).then(function(d){
+  if(d&&d.bal!=null){u.bal=d.bal;u.profit=d.profit;u.todayN=d.todayN;u._spinAdd=d.add||0;saveU(u);}
+}).catch(function(){});
   var s=SLICES[i],w=el("wheel");
   if(w){w.style.transition="none";w.style.transform="rotate(0deg)";void w.offsetWidth;w.style.transition="transform 11s cubic-bezier(.12,.7,.12,1)";w.style.transform="rotate("+(360*6+i*-60-30)+"deg)";}
   setTimeout(function(){
