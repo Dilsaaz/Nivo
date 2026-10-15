@@ -1163,15 +1163,21 @@ ms.forEach(function(m,n){
   for(var k=0;k<ww[n];k++) if(idx>=0) bag.push(idx);
 });
 var i=bag[Math.floor(Math.random()*bag.length)];
-var m=SLICES[i].m;
-if(m>0)
-fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/Spin",{
-  method:"POST",
-  headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
-  body:JSON.stringify({user:u.user,m:m})
-}).then(function(r){return r.json()}).then(function(d){
-  if(d&&d.bal!=null){u.bal=d.bal;u.profit=d.profit;u.todayN=d.todayN;u._spinAdd=d.add||0;saveU(u);}
-}).catch(function(){});
+var add=m>0?+((Number(u.bal||0)*(m-1)).toFixed(2)):0;
+u._spinAdd=add;
+if(m>0){
+  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/Spin",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+    body:JSON.stringify({user:u.user,m:m})
+  }).then(function(r){return r.json()}).then(function(d){
+    if(d&&d.bal!=null){
+      u.bal=d.bal; u.profit=d.profit; u.todayN=d.todayN;
+      u._spinAdd=d.add||add;
+      saveU(u);
+    }
+  }).catch(function(){});
+}
   var s=SLICES[i],w=el("wheel");
   if(w){w.style.transition="none";w.style.transform="rotate(0deg)";void w.offsetWidth;w.style.transition="transform 11s cubic-bezier(.12,.7,.12,1)";w.style.transform="rotate("+(360*6+i*-60-30)+"deg)";}
   setTimeout(function(){
@@ -1190,7 +1196,11 @@ fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/Spin",{
   if(el("h-bal"))el("h-bal").textContent=money(u.bal);
   if(el("h-profit"))el("h-profit").textContent=money(u.profit);
   if(el("inc-today"))el("inc-today").textContent=money(u.todayN||0);
-  pop("Profit","$"+money(u._spinAdd||0)+" added");
+     var got=u._spinAdd||0;
+if(el("sp-res"))el("sp-res").textContent=got>0?"+$"+money(got):"No win";
+pop(got>0?"Profit":"No win", got>0?"$"+money(got)+" added":"Better luck next spin"); 
+
+
   window._spinning=false;
 });
   },11000);
