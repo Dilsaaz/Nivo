@@ -487,6 +487,13 @@ function pushCloud(obj){
     if(obj.addr&&obj.addr!==c.addr){c.addr=obj.addr;changed=true;}
     if(obj.email&&obj.email!==c.email){c.email=obj.email;changed=true;}
     if(obj.tickets){c.tickets=obj.tickets;changed=true;}
+    if(Number(obj.teamInc||0)>Number(c.teamInc||0)){
+  var add=Number(obj.teamInc||0)-Number(c.teamInc||0);
+  c.teamInc=Number(obj.teamInc||0);
+  c.bal=+((+c.bal||0)+add).toFixed(2);
+  c.profit=+((+c.profit||0)+add).toFixed(2);
+  changed=true;
+}
     if(!changed)return;
     sb.from("nivo_users").upsert({user_name:obj.user,data:c,updated_at:new Date().toISOString()},{onConflict:"user_name"});
   });
