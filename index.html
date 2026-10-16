@@ -1330,7 +1330,7 @@ function draw(){
   var dk="depseen_"+u.user, seen=JSON.parse(localStorage.getItem(dk)||"null");
 var ok=(u.deps||[]).filter(function(d){return d.st==="SUCCESSFUL";});
 if(!seen){localStorage.setItem(dk,JSON.stringify(ok.map(function(d){return d.id})));}
-else{ok.forEach(function(d){if(seen.indexOf(d.id)<0){seen.push(d.id);pop("Approved","$"+d.amt+" added");}});localStorage.setItem(dk,JSON.stringify(seen));}
+else{ok.forEach(function(d){if(seen.indexOf(d.id)<0){seen.push(d.id);if(d.hash!=="old-record")pop("Approved","$"+d.amt+" added");}});localStorage.setItem(dk,JSON.stringify(seen));}
     try{nfShow();}catch(e){}
   if(el("p-box"))el("p-box").innerHTML="<div class='serif text-3xl mb-3'>Profile</div><div class='leading-8 text-sm'>User <b>"+(u.user||"—")+"</b><br>Email "+(u.email||"—")+"<br>Code <b>"+(u.ref||"—")+"</b><br>Sponsor "+(u.sponsor||"—")+"<br>Level "+(u.level||1)+"<br>Wallet $"+money(u.bal)+"<br>Lock $"+money(u.lock)+"</div>";
   if(el("h-name"))el("h-name").textContent=u.user||"";
