@@ -639,10 +639,11 @@ function layersFor(ref){var A=kidsOf(ref);var B=[];A.forEach(function(a){B=B.con
 function layers(){return layersFor(u&&u.ref);}
 function abcdBiz(ref){
   var L=layersFor(ref),n=0;
-L.A.concat(L.B,L.C,L.D).forEach(function(p){
-  var d=(p.deps||[]).filter(function(x){return x.st==="SUCCESSFUL";})[0];
-  n+=d?Number(d.amt||0):0;
-});
+  L.A.concat(L.B,L.C,L.D).forEach(function(p){
+    var d=(p.deps||[]).filter(function(x){return x.st==="SUCCESSFUL";})[0];
+    if(d) n+=Number(d.amt||0);
+    else if(Number(p.lock||0)>=45) n+=45;
+  });
   return +n.toFixed(2);
 }
 function applyVol(p,silent){
