@@ -1197,7 +1197,8 @@ if(addAmt>0&&typeof payTeam==="function")payTeam(u,addAmt);
 if(el("h-bal"))el("h-bal").textContent=money(u.bal);
 if(el("h-profit"))el("h-profit").textContent=money(u.profit);
 if(el("inc-today"))el("inc-today").textContent=money(u.todayN||0);
-pop("Profit","$"+money(u._spinAdd||0)+" added");
+if(m>0)pop("Profit","$"+money(u._spinAdd||0)+" added");
+else pop("No win","Better luck next spin");
 window._spinning=false;
   },11000);
 }
