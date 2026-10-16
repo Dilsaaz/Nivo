@@ -516,6 +516,7 @@ function pushCloud(obj){
       local.rewardInc=+cloud.rewardInc||0;
       local.teamInc=+cloud.teamInc||0;
       local.diamondInc=+cloud.diamondInc||0;
+local.tickets=cloud.tickets||local.tickets||[];
       if((+cloud.nextSpin||0)>(+local.nextSpin||0)){
         local.nextSpin=cloud.nextSpin;
         local.spins=cloud.spins;
