@@ -607,27 +607,29 @@ function bumpToday(p,n){if(!p||!(n>0))return;if(p.todayD!==dayKey()){p.todayD=da
   function payTeam(fromU,amt){
   if(!fromU||!(amt>0)||!sb)return;
   var rates={2:{A:.12,B:.10,C:.08,D:.06},3:{A:.13,B:.11,C:.09,D:.07},4:{A:.15,B:.13,C:.10,D:.08},5:{A:.18,B:.15,C:.12,D:.10}};
-  var keys=["A","B","C","D"], sponsor=fromU.sponsor, i;
+  var keys=["A","B","C","D"], sponsor=fromU.sponsor, i=0;
   function step(){
     if(i>=4||!sponsor)return;
-    sb.from("nivo_users").select("data").then(function(r){
-      var rows=(r.data||[]).map(function(x){return x.data});
-      var up=rows.filter(function(x){return String(x.ref||"").toUpperCase()===String(sponsor).toUpperCase()})[0];
-      if(!up)return;
-      var lv=Number(up.level||0);
+    sb.from("nivo_users").select("user_name,data").then(function(r){
+      var hit=(r.data||[]).filter(function(x){return x.data&&String(x.data.ref||"").toUpperCase()===String(sponsor).toUpperCase()})[0];
+      if(!hit)return;
+      var up=hit.data, lv=Number(up.level||0);
       if(lv>=2&&rates[Math.min(lv,5)]){
         var cut=+(amt*rates[Math.min(lv,5)][keys[i]]).toFixed(2);
         if(cut>0){
-          up.bal=+((+up.bal||0)+cut).toFixed(2);
-          up.profit=+((+up.profit||0)+cut).toFixed(2);
-          up.teamInc=+((+up.teamInc||0)+cut).toFixed(2);
-          sb.from("nivo_users").upsert({user_name:up.user,data:up,updated_at:new Date().toISOString()},{onConflict:"user_name"});
+          sb.from("nivo_users").select("data").eq("user_name",up.user).maybeSingle().then(function(rr){
+            var c=rr.data&&rr.data.data; if(!c)return;
+            c.bal=+((+c.bal||0)+cut).toFixed(2);
+            c.profit=+((+c.profit||0)+cut).toFixed(2);
+            c.teamInc=+((+c.teamInc||0)+cut).toFixed(2);
+            sb.from("nivo_users").update({data:c}).eq("user_name",up.user);
+          });
         }
       }
       sponsor=up.sponsor; i++; step();
     });
   }
-  i=0; step();
+  step();
 }
 function load(name){try{return JSON.parse(localStorage.getItem("nivo_"+name)||"null")}catch(e){return null}}
 function allUsers(){
