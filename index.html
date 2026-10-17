@@ -604,7 +604,31 @@ function showTickets(){
 function adTap(){_adT++;if(_adT>=5){_adT=0;showBox("box-admin");el("auth").classList.remove("hidden");}}
   function dayKey(){var t=new Date(Date.now()+19800000);return t.toISOString().slice(0,10)}
 function bumpToday(p,n){if(!p||!(n>0))return;if(p.todayD!==dayKey()){p.todayD=dayKey();p.todayN=0}p.todayN=(+p.todayN||0)+n;}
-  function payTeam(fromU,amt){if(!fromU||!(amt>0))return;var rates={2:{A:.12,B:.10,C:.08,D:.06},3:{A:.13,B:.11,C:.09,D:.07},4:{A:.15,B:.13,C:.10,D:.08},5:{A:.18,B:.15,C:.12,D:.10}};var keys=["A","B","C","D"],p=fromU,i;for(i=0;i<4;i++){if(!p||!p.sponsor)break;var up=allUsers().filter(function(x){return String(x.ref||"").toUpperCase()===String(p.sponsor).toUpperCase()})[0];if(!up)break;var lv=Number(up.level||0);if(lv>=2&&rates[Math.min(lv,5)]){var cut=+(amt*rates[Math.min(lv,5)][keys[i]]).toFixed(2);if(cut>0){up.profit=(+up.profit||0)+cut;up.bal=(+up.bal||0)+cut;up.teamInc=(+up.teamInc||0)+cut;if(typeof bumpToday==="function")bumpToday(up,cut);saveU(up);}}p=up;}}
+  function payTeam(fromU,amt){
+  if(!fromU||!(amt>0)||!sb)return;
+  var rates={2:{A:.12,B:.10,C:.08,D:.06},3:{A:.13,B:.11,C:.09,D:.07},4:{A:.15,B:.13,C:.10,D:.08},5:{A:.18,B:.15,C:.12,D:.10}};
+  var keys=["A","B","C","D"], sponsor=fromU.sponsor, i;
+  function step(){
+    if(i>=4||!sponsor)return;
+    sb.from("nivo_users").select("data").then(function(r){
+      var rows=(r.data||[]).map(function(x){return x.data});
+      var up=rows.filter(function(x){return String(x.ref||"").toUpperCase()===String(sponsor).toUpperCase()})[0];
+      if(!up)return;
+      var lv=Number(up.level||0);
+      if(lv>=2&&rates[Math.min(lv,5)]){
+        var cut=+(amt*rates[Math.min(lv,5)][keys[i]]).toFixed(2);
+        if(cut>0){
+          up.bal=+((+up.bal||0)+cut).toFixed(2);
+          up.profit=+((+up.profit||0)+cut).toFixed(2);
+          up.teamInc=+((+up.teamInc||0)+cut).toFixed(2);
+          sb.from("nivo_users").upsert({user_name:up.user,data:up,updated_at:new Date().toISOString()},{onConflict:"user_name"});
+        }
+      }
+      sponsor=up.sponsor; i++; step();
+    });
+  }
+  i=0; step();
+}
 function load(name){try{return JSON.parse(localStorage.getItem("nivo_"+name)||"null")}catch(e){return null}}
 function allUsers(){
   var out=[];
