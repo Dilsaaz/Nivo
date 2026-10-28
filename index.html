@@ -1226,11 +1226,19 @@ if(m>0)fetch("https://mzwgpztqgufbmgcbukqo.supabase.co/functions/v1/spin",{
   method:"POST",
   headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
   body:JSON.stringify({user:u.user,m:m})
-}).then(function(r){return r.json()}).then(function(d){
-  if(d&&d.bal!=null){u.bal=d.bal;u.profit=d.profit;u.todayN=d.todayN;u._spinAdd=d.add||0;saveU(u);}
-  var addAmt=d.add||(m>0?+((u.bal||0)*(m-1)/(m||1)).toFixed(2):0);
-if(addAmt>0&&typeof payTeam==="function")payTeam(u,addAmt);
-}).catch(function(){});
+.then(function(r){return r.json()}).then(function(d){
+  console.log("SPIN RESPONSE:", d);
+  alert("SPIN RESPONSE:\n" + JSON.stringify(d, null, 2));
+  if(d && d.bal != null){
+    u.bal = d.bal;
+    u.profit = d.profit;
+    u.todayN = d.todayN;
+    u._spinAdd = d.add || 0;
+    saveU(u);
+  }
+}).catch(function(e){
+  alert("SPIN ERROR: " + e);
+});
   var s=SLICES[i],w=el("wheel");
   if(w){w.style.transition="none";w.style.transform="rotate(0deg)";void w.offsetWidth;w.style.transition="transform 11s cubic-bezier(.12,.7,.12,1)";w.style.transform="rotate("+(360*6+i*-60-30)+"deg)";}
   setTimeout(function(){
