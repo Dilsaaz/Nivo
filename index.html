@@ -1242,28 +1242,7 @@ if(m>0){
     throw new Error("Invalid spin response");
   }
 
-  u.bal = Number(d.bal);
-  u.profit = Number(d.profit || 0);
-  u.todayN = Number(d.todayN || 0);
-  u._spinAdd = Number(d.add || 0);
-
-  saveU(u);
-  draw();
-
-  if(el("h-bal")) el("h-bal").textContent = money(u.bal);
-  if(el("w-bal")) el("w-bal").textContent = money(u.bal);
-  if(el("h-profit")) el("h-profit").textContent = money(u.profit);
-  if(el("w-free")) el("w-free").textContent = money(u.profit);
-  if(el("inc-today")) el("inc-today").textContent = money(u.todayN);
-})
-.catch(function(e){
-  console.error("SPIN ERROR:", e);
-  window._spinning = false;
-  if(el("sp-res")) el("sp-res").textContent = "";
-  pop("Spin error", e.message || "Please try again.");
-});
-
-}
+  
 
 
   
