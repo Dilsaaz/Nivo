@@ -1255,8 +1255,7 @@ if(m>0){
   });
 }
 
-  alert("SPIN ERROR: " + e);
-});
+  
   var s=SLICES[i],w=el("wheel");
   if(w){w.style.transition="none";w.style.transform="rotate(0deg)";void w.offsetWidth;w.style.transition="transform 11s cubic-bezier(.12,.7,.12,1)";w.style.transform="rotate("+(360*6+i*-60-30)+"deg)";}
   setTimeout(function(){
