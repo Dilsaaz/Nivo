@@ -1222,21 +1222,39 @@ ms.forEach(function(mm,n){
 });
 var i=bag[Math.floor(Math.random()*bag.length)];
 var m=SLICES[i].m;
-if(m>0)fetch("https://mzwgpztqgufbmgcbukqo.supabase.co/functions/v1/spin",{
-  method:"POST",
-  headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
-  body:JSON.stringify({user:u.user,m:m})
-.then(function(r){return r.json()}).then(function(d){
-  console.log("SPIN RESPONSE:", d);
-  alert("SPIN RESPONSE:\n" + JSON.stringify(d, null, 2));
-  if(d && d.bal != null){
-    u.bal = d.bal;
-    u.profit = d.profit;
-    u.todayN = d.todayN;
-    u._spinAdd = d.add || 0;
-    saveU(u);
-  }
-}).catch(function(e){
+
+if(m>0){
+  fetch("https://mzwgpztqgufbmgcbukqo.supabase.co/functions/v1/spin",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "apikey":SB_KEY,
+      "Authorization":"Bearer "+SB_KEY
+    },
+    body:JSON.stringify({user:u.user,m:m})
+  })
+  .then(function(r){
+    return r.json();
+  })
+  .then(function(d){
+    console.log("SPIN RESPONSE:",d);
+
+    if(d && d.bal != null){
+      u.bal = d.bal;
+      u.profit = d.profit;
+      u.todayN = d.todayN;
+      u._spinAdd = d.add || 0;
+      saveU(u);
+    }
+  })
+  .catch(function(e){
+    console.error("SPIN ERROR:",e);
+    window._spinning = false;
+    if(el("sp-res"))el("sp-res").textContent="";
+    pop("Spin error","Please try again.");
+  });
+}
+
   alert("SPIN ERROR: " + e);
 });
   var s=SLICES[i],w=el("wheel");
