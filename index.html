@@ -682,7 +682,7 @@ function abcdBiz(ref){
 function applyVol(p,silent){
   if(!p||!p.ref)return 0;
   var biz=abcdBiz(p.ref);
-  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/volume",{
+  fetch("https://mzwgpztqgufbmgcbukqo.supabase.co/functions/v1/volume",{
     method:"POST",
     headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
     body:JSON.stringify({user:p.user,biz:biz})
@@ -823,7 +823,7 @@ tab=function(id){
 function submitVerify(){
   var hash=el("vf-hash").value.trim();
   if(!hash){pop("Hash","Paste the TX hash");return}
-  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/verify",{
+  fetch("https://mzwgpztqgufbmgcbukqo.supabase.co/functions/v1/verify",{
     method:"POST",
     headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
     body:JSON.stringify({user:u.user,hash:hash})
@@ -841,7 +841,7 @@ function copyAddr(){navigator.clipboard.writeText(ADDR).then(function(){el("copy
   var amt=Number(el("dep-amt").value);
   if(!amt||amt<45){pop("Minimum","Enter amount $45 or more");return;}
   pop("Opening","Payment page…");
-  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/nowpay",{
+  fetch("https://mzwgpztqgufbmgcbukqo.supabase.co/functions/v1/deposit",{
     method:"POST",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({user:u.user,amt:amt})
@@ -857,7 +857,7 @@ function sendDep(){
   var amt=Number(el("dep-amt").value),hash=(box.value||"").trim();
   if(!amt||amt<45){pop("Minimum","Enter amount $45 or more");return;}
   if(!/^0x[0-9a-fA-F]{64}$/.test(hash)){pop("TX hash","Paste full BEP20 hash");return;}
-  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/deposit",{
+  fetch("https://mzwgpztqgufbmgcbukqo.supabase.co/functions/v1/deposit",{
     method:"POST",
     headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
     body:JSON.stringify({user:u.user,amount:amt,hash:hash,sponsor:u.sponsor||""})
@@ -937,7 +937,7 @@ if(amt > limit){
     pop("Locked","Package $"+locked+" stays locked. You can withdraw $"+money(Math.max(0,maxW)));
     return;
   }
-  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/withdraw",{
+  fetch("https://mzwgpztqgufbmgcbukqo.supabase.co/functions/v1/Withdraw",{
   method:"POST",
   headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
   body:JSON.stringify({user:u.user,amount:amt,address:u.addr})
@@ -961,7 +961,7 @@ function undoWd(user,id){
 function findUser(name){return allUsers().filter(function(x){return x.user===name})[0]}
 function adDep(user,id,ok,amt){
   function done(){
-    fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/approve",{
+    fetch("https://mzwgpztqgufbmgcbukqo.supabase.co/functions/v1/approve",{
       method:"POST",
       headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
       body:JSON.stringify({admin:ADMIN_ID,pass:ADMIN_PW,user:user,id:id,ok:ok,kind:"deposit"})
@@ -972,7 +972,7 @@ function adDep(user,id,ok,amt){
     }).catch(function(){pop("Admin","not saved");});
   }
   if(!ok){done();return}
-  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/deposit",{
+  fetch("https://mzwgpztqgufbmgcbukqo.supabase.co/functions/v1/sponsor",{
     method:"POST",
     headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
     body:JSON.stringify({user:user,amount:amt||45,hash:id})
@@ -994,7 +994,7 @@ function showCom(layer){
   box.innerHTML=tabs+"<div class='font-bold mb-2'>"+k+" team</div><table class='w-full text-sm'><thead><tr class='text-slate-500 text-left'><th class='py-1'>Name</th><th>Status</th><th>Code</th></tr></thead><tbody>"+rows+"</tbody></table>";
 }
 function adWd(user,id,ok){
-  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/approve",{
+  fetch("https://mzwgpztqgufbmgcbukqo.supabase.co/functions/v1/Withdraw",{
     method:"POST",
     headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
     body:JSON.stringify({admin:ADMIN_ID,pass:ADMIN_PW,user:user,id:id,ok:ok,kind:"withdraw"})
@@ -1005,7 +1005,7 @@ function adWd(user,id,ok){
   }).catch(function(){pop("Admin","not saved");});
 }
   function adVf(user,ok){
-  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/approve",{
+  fetch("https://mzwgpztqgufbmgcbukqo.supabase.co/functions/v1/approve",{
     method:"POST",
     headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
     body:JSON.stringify({admin:ADMIN_ID,pass:ADMIN_PW,user:user,id:"verify",ok:ok,kind:"verify"})
@@ -1134,7 +1134,7 @@ function applyLevel(L){
   var lv=levelOf(L)||1;
   u.level=lv;
   saveU(u);
-  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/level",{
+  fetch("https://mzwgpztqgufbmgcbukqo.supabase.co/functions/v1/level",{
     method:"POST",
     headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
     body:JSON.stringify({user:u.user})
@@ -1222,7 +1222,7 @@ ms.forEach(function(mm,n){
 });
 var i=bag[Math.floor(Math.random()*bag.length)];
 var m=SLICES[i].m;
-if(m>0)fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/Spin",{
+if(m>0)fetch("https://mzwgpztqgufbmgcbukqo.supabase.co/functions/v1/spin",{
   method:"POST",
   headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
   body:JSON.stringify({user:u.user,m:m})
@@ -1313,7 +1313,7 @@ function nfFlip(side){
     return '<i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:'+(x?"#f5a623":"#cbd5e1")+'"></i>';
   }).join("");
   if(!win){
-    fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/game",{
+    fetch("https://mzwgpztqgufbmgcbukqo.supabase.co/functions/v1/Game",{
       method:"POST",
       headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
       body:JSON.stringify({user:u.user,delta:-nf.stake,income:0})
@@ -1362,7 +1362,7 @@ function gzPick(btn){
   btn.style.color=win?"#ca8a04":"#94a3b8";
   var delta=win?+(gzAmt*1.55-gzAmt).toFixed(2):-gzAmt;
   var income=win?delta:0;
-  fetch("https://adpubgmpuyqobsvftmou.supabase.co/functions/v1/game",{
+  fetch("https://mzwgpztqgufbmgcbukqo.supabase.co/functions/v1/Game",{
     method:"POST",
     headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},
     body:JSON.stringify({user:u.user,delta:delta,income:income})
