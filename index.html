@@ -1234,6 +1234,7 @@ if(m>0){
     body:JSON.stringify({user:u.user,m:m})
   })
 
+
 .then(function(r){
   return r.json().then(function(d){
     if(!r.ok || (d && d.error)){
@@ -1263,14 +1264,13 @@ if(m>0){
   if(el("w-free")) el("w-free").textContent = money(u.profit);
   if(el("inc-today")) el("inc-today").textContent = money(u.todayN);
 })
+.catch(function(e){
+  console.error("SPIN ERROR:", e);
+  window._spinning = false;
+  if(el("sp-res")) el("sp-res").textContent = "";
+  pop("Spin error", e.message || "Please try again.");
+});
 
-  .catch(function(e){
-    console.error("SPIN ERROR:",e);
-    window._spinning = false;
-    if(el("sp-res"))el("sp-res").textContent="";
-    pop("Spin error","Please try again.");
-  });
-}
 
   
   var s=SLICES[i],w=el("wheel");
