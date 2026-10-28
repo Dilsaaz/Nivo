@@ -1235,14 +1235,6 @@ if(m>0){
   })
 
 
-.then(function(r){
-  return r.json().then(function(d){
-    if(!r.ok || (d && d.error)){
-      throw new Error((d && d.error) || ("HTTP " + r.status));
-    }
-    return d;
-  });
-})
 .then(function(d){
   console.log("SPIN RESPONSE:", d);
 
